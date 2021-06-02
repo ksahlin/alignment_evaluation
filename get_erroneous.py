@@ -39,33 +39,79 @@ def overlap(q_a, q_b, p_a, p_b):
 
 def get_stats(truth, predicted1, predicted2):
 
-    nr_aligned = len(predicted)
+    nr_aligned_method1 = len(predicted1)
+    nr_aligned_method2 = len(predicted2)
     nr_total = len(truth)
     
-    good = 0
-    missed = 0
-    unaligned = 0
-    for read_acc in predicted1:
-        pred_ref_id, pred_start, pred_stop = predicted1[read_acc]
+    good_method1 = 0
+    bad_method1 = 0
+    unaligned_method1 = 0
+
+    good_method2 = 0
+    bad_method2 = 0
+    unaligned_method2 = 0
+
+    # missed = 0
+    # unaligned = 0
+    # good_ok = 0
+    # missed_ok = 0
+    # unaligned_ok = 0
+
+    for read_acc in truth:
         true_ref_id, true_start, true_stop = truth[read_acc]
-        if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
-            if read_acc in predicted2:
-                pred2_ref_id, pred2_start, pred2_stop = predicted2[read_acc]
-                if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
-                    good +=1
-                else:
-                    print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
-                    missed += 1
+        if read_acc in predicted1:
+            pred_ref_id, pred_start, pred_stop = predicted1[read_acc]
+            if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
+                good_method1 += 1
             else:
-                unaligned += 1
+                bad_method1 += 1
         else:
-            pass
-            # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+            unaligned_method1 += 1
 
-    print("good:", good)
-    print("missed:", missed)
-    print("Unaligned:", unaligned) 
+        if read_acc in predicted2:
+            pred_ref_id, pred_start, pred_stop = predicted2[read_acc]
+            if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
+                good_method2 += 1
+            else:
+                bad_method2 += 1
+        else:
+            unaligned_method2 += 1
 
+        # if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
+        #     if read_acc in predicted2:
+        #         pred2_ref_id, pred2_start, pred2_stop = predicted2[read_acc]
+        #         if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
+        #             good +=1
+        #         else:
+        #             # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+        #             missed += 1
+        #     else:
+        #         unaligned += 1
+        # else:
+        #     if read_acc in predicted2:
+        #         pred2_ref_id, pred2_start, pred2_stop = predicted2[read_acc]
+        #         if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
+        #             good_ok +=1
+        #         else:
+        #             # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+        #             missed_ok += 1
+        #     else:
+        #         unaligned_ok += 1
+        #     # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+
+    print("nr_aligned method1:", nr_aligned_method1)
+    print("good_method1:", good_method1)
+    print("bad_method1:", bad_method1)
+    print("unaligned_method1:", unaligned_method1) 
+    
+    print("nr_aligned method2:", nr_aligned_method2)
+    print("good_method2:", good_method2)
+    print("bad_method2:", bad_method2)
+    print("unaligned_method2:", unaligned_method2)
+
+    # print("good (only method 2):", good_ok)
+    # print("missed (only method 2):", missed_ok)
+    # print("Unaligned (only method 2):", unaligned_ok) 
 
 def main(args):
 
