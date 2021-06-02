@@ -37,37 +37,53 @@ def overlap(q_a, q_b, p_a, p_b):
     assert q_a < q_b and p_a < p_b
     return  (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b)
 
-def get_stats(truth, predicted):
+def get_stats(truth, predicted1, predicted2):
 
     nr_aligned = len(predicted)
     nr_total = len(truth)
     
-    correct = 0
-    for read_acc in predicted:
-        pred_ref_id, pred_start, pred_stop = predicted[read_acc]
+    good = 0
+    missed = 0
+    unaligned = 0
+    for read_acc in predicted1:
+        pred_ref_id, pred_start, pred_stop = predicted1[read_acc]
         true_ref_id, true_start, true_stop = truth[read_acc]
         if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
-            correct += 1
+            if read_acc in predicted2:
+                pred2_ref_id, pred2_start, pred2_stop = predicted2[read_acc]
+                if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
+                    good +=1
+                else:
+                    print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+                    missed += 1
+            else:
+                unaligned += 1
         else:
             pass
             # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
 
-    return 100*(nr_aligned/nr_total), 100*correct/nr_aligned
+    print("good:", good)
+    print("missed:", missed)
+    print("Unaligned:", unaligned) 
 
 
 def main(args):
 
     truth = read_sam(args.truth)
 
-    if args.predicted_sam:
-        predicted = read_sam(args.predicted_sam)
-    elif args.predicted_paf:
-        predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
-        print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
+    if args.predicted_sam_method1:
+        predicted1 = read_sam(args.predicted_sam_method1)
 
-    percent_aligned, percent_correct = get_stats(truth, predicted)
-    print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
-    print("Accuracy: {0}".format(round(percent_correct, 3)))
+    if args.predicted_sam_method2:
+        predicted2 = read_sam(args.predicted_sam_method2)
+
+    # elif args.predicted_paf:
+    #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
+    #     print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
+
+    get_stats(truth, predicted1, predicted2)
+    # print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
+    # print("Accuracy: {0}".format(round(percent_correct, 3)))
 
 
 
@@ -75,8 +91,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--truth', type=str, default=False, help='True coordinates (SAM)')
-    parser.add_argument('--predicted_sam', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
-    parser.add_argument('--predicted_paf', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    parser.add_argument('--predicted_sam_method1', type=str, default="", help='Predicted coordinates (SAM/PAF)')
+    parser.add_argument('--predicted_sam_method2', type=str, default="", help='Predicted coordinates (SAM/PAF)')
+    # parser.add_argument('--predicted_paf', type=str, default="", help='Predicted coordinates (SAM/PAF)')
     parser.add_argument('--outfile', type=str, default=None, help='Path to file.')
     # parser.set_defaults(which='main')
     args = parser.parse_args()
