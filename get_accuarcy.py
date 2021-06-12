@@ -46,11 +46,13 @@ def get_stats(truth, predicted):
     for read_acc in predicted:
         pred_ref_id, pred_start, pred_stop = predicted[read_acc]
         true_ref_id, true_start, true_stop = truth[read_acc]
+        # print(read_acc, pred_start, pred_stop, true_start, true_stop)
         if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
             correct += 1
+            # print(read_acc)
         else:
             pass
-            # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+            print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
 
     return 100*(nr_aligned/nr_total), 100*correct/nr_aligned
 
