@@ -15,6 +15,9 @@ def read_sam(sam_file):
         if read.flag == 0 or read.flag == 16:
             # print(read.query_name, len(read_positions))
             read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+        elif read.flag == 4:
+            read_positions[read.query_name] = False
+
     return read_positions     
 
 
@@ -39,11 +42,22 @@ def overlap(q_a, q_b, p_a, p_b):
 
 def get_stats(truth, predicted):
 
-    nr_aligned = len(predicted)
+    # nr_aligned = len(predicted)
     nr_total = len(truth)
-    
+    unaligned = 0 
+    nr_aligned = 0
+    over_mapped = 0
     correct = 0
     for read_acc in predicted:
+        if not truth[read_acc]:
+            over_mapped += 1
+            continue
+        if not predicted[read_acc]:
+            unaligned += 1
+            continue
+
+        nr_aligned += 1
+
         pred_ref_id, pred_start, pred_stop = predicted[read_acc]
         true_ref_id, true_start, true_stop = truth[read_acc]
         # print(read_acc, pred_start, pred_stop, true_start, true_stop)
@@ -52,9 +66,9 @@ def get_stats(truth, predicted):
             # print(read_acc)
         else:
             pass
-            print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
+            # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
 
-    return 100*(nr_aligned/nr_total), 100*correct/nr_aligned
+    return 100*(nr_aligned/nr_total), 100*correct/nr_aligned, over_mapped
 
 
 def main(args):
@@ -67,10 +81,10 @@ def main(args):
         predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
         print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
-    percent_aligned, percent_correct = get_stats(truth, predicted)
+    percent_aligned, percent_correct, over_mapped = get_stats(truth, predicted)
     print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
     print("Accuracy: {0}".format(round(percent_correct, 3)))
-
+    print("Over-aligned (unmapped in grough truth file): {0}".format(over_mapped))
 
 
 
