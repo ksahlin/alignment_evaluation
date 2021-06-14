@@ -33,7 +33,7 @@ def mkdir_p(path):
             raise
 
 rule all:
-   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
+   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
 
 
 rule mason_simulate_variants:
