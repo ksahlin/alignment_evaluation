@@ -63,8 +63,9 @@ rule mason_simulate_reads:
 
 rule minimap2_index:
     input: ref = config["HG38"]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}_indexing_time_and_mem.txt",
+    output: 
             mm_index =  config["ROOT_OUT"] + "/alignments/minimap2/{dataset}/{read_length}.mmi"
+            # time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}_indexing_time_and_mem.txt",
     run:
         # ref = config["HG38"]
 
@@ -73,7 +74,7 @@ rule minimap2_index:
         time_outfolder = config["ROOT_OUT"] + "/time_and_mem/minimap2/{0}/".format(wildcards.dataset)
         mkdir_p(time_outfolder)
 
-        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr -d {output.mm_index} {input.ref} 2> {output.time_and_mem}")
+        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr -d {output.mm_index} {input.ref}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
