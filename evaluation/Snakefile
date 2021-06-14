@@ -74,7 +74,7 @@ rule minimap2_index:
         time_outfolder = config["ROOT_OUT"] + "/time_and_mem/minimap2/{0}/".format(wildcards.dataset)
         mkdir_p(time_outfolder)
 
-        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr -d {output.mm_index} {input.ref}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
@@ -83,6 +83,53 @@ rule minimap2_align:
             sam =  config["ROOT_OUT"] + "/alignments/minimap2/{dataset}/{read_length}.sam"
     run:
         shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+
+rule bwa_mem_index:
+    input: ref = config["HG38"]
+    output: bwa_index =  config["HG38"] + ".bwt"
+            # time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{dataset}/{read_length}_indexing_time_and_mem.txt",
+    run:
+        # ref = config["HG38"]
+
+        outfolder = config["ROOT_OUT"] + "/alignments/bwa_mem/{0}/".format(wildcards.dataset)
+        mkdir_p(outfolder)
+        time_outfolder = config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{0}/".format(wildcards.dataset)
+        mkdir_p(time_outfolder)
+
+        shell("/usr/bin/time -v  bwa index {input.ref}") #  2> {output.time_and_mem}
+
+rule bwa_mem_align:
+    input: fasta =   rules.mason_simulate_reads.output.sim_fa,
+            index = config["HG38"] + ".bwt",
+            ref = config["HG38"]
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/bwa_mem/{dataset}/{read_length}.sam"
+    run:
+        shell("/usr/bin/time -v  bwa mem -t 1  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+
+# rule bowtie2_index:
+#     input: ref = config["HG38"]
+#     output: bwa_index =  config["HG38"] + ".bwt"
+#             # time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{dataset}/{read_length}_indexing_time_and_mem.txt",
+#     run:
+#         # ref = config["HG38"]
+
+#         outfolder = config["ROOT_OUT"] + "/alignments/bwa_mem/{0}/".format(wildcards.dataset)
+#         mkdir_p(outfolder)
+#         time_outfolder = config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{0}/".format(wildcards.dataset)
+#         mkdir_p(time_outfolder)
+
+#         shell("/usr/bin/time -v  bowtie2 index {input.ref}") #  2> {output.time_and_mem}
+
+# rule bowtie2_align:
+#     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
+#             index = config["HG38"] + ".bwt",
+#             ref = config["HG38"]
+#     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
+#             sam =  config["ROOT_OUT"] + "/alignments/bwa_mem/{dataset}/{read_length}.sam"
+#     run:
+#         shell("/usr/bin/time -v  bwa mem -t 1  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+
 
 
 rule accuracy:

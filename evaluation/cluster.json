@@ -48,6 +48,32 @@
         "runtime" : "00:30:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
+    },
+
+
+    "bwa_mem_index" : 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "bwa_index",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "bwa_mem_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "bwa_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
     }
 
 }
