@@ -85,7 +85,7 @@ rule minimap2_align:
 
 
 rule accuracy:
-    input: aln =  config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.sam",
+    input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{dataset}/{read_length}.sam",
             truth =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result"
     run:
