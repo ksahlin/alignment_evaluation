@@ -91,10 +91,10 @@ rule bwa_mem_index:
     run:
         # ref = config["HG38"]
 
-        outfolder = config["ROOT_OUT"] + "/alignments/bwa_mem/{0}/".format(wildcards.dataset)
-        mkdir_p(outfolder)
-        time_outfolder = config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{0}/".format(wildcards.dataset)
-        mkdir_p(time_outfolder)
+        # outfolder = config["ROOT_OUT"] + "/alignments/bwa_mem/{0}/".format(wildcards.dataset)
+        # mkdir_p(outfolder)
+        # time_outfolder = config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{0}/".format(wildcards.dataset)
+        # mkdir_p(time_outfolder)
 
         shell("/usr/bin/time -v  bwa index {input.ref}") #  2> {output.time_and_mem}
 
