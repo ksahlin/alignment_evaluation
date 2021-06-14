@@ -43,9 +43,9 @@ rule mason_simulate_variants:
         if wildcards.dataset == "SIM1":
             shell("mason_variator -ir {input.ref} -ov {output.sim_vcf}")
         elif wildcards.dataset == "SIM2":
-            shell("mason_variator -ir {input.ref} -ov {output.sim_vcf} --sv-indel-rate 0.000001 --snp-rate 0.001 --small-indel-rate 0.00001  --max-small-indel-size 20")
+            shell("mason_variator --sv-indel-rate 0.000001 --snp-rate 0.001 --small-indel-rate 0.00001 --max-small-indel-size 20  -ir {input.ref} -ov {output.sim_vcf}")
         elif wildcards.dataset == "SIM3":
-            shell("mason_variator -ir {input.ref} -ov {output.sim_vcf} --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001  --max-small-indel-size 50")
+            shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
 
 
 rule mason_simulate_reads:
