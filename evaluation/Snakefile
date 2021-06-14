@@ -76,7 +76,7 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -ax sr -d {output.mm_index} {ref} 2> {output.time_and_mem}")
 
 rule minimap2_align:
-    input: fasta =   rules.mason_simulate_reads.sim_fa,
+    input: fasta =   rules.mason_simulate_reads.output.sim_fa,
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/minimap2/{dataset}/{read_length}.sam"
