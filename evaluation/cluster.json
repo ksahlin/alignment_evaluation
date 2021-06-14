@@ -15,7 +15,7 @@
     "simulate" : 
     {
         "account" : "snic2020-5-651",
-        "cpus-per-task" : "8",
+        "cpus-per-task" : "5",
         "C" : "mem128GB",
         "Nodes" : 1,
         "runtime" : "3-00:00:00",
@@ -28,11 +28,11 @@
     "minimap2_index" : 
     {
         "account" : "snic2020-5-651",
-        "jobname" : "desalt_index",
+        "jobname" : "minimap2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
+        "runtime" : "00:30:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -45,85 +45,9 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
+        "runtime" : "00:30:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
-    },
-
-    "bwa_mem_index" : 
-    {
-        "account" : "snic2020-5-651",
-        "jobname" : "desalt_index",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-
-    "bwa_mem_align": 
-    {
-        "account" : "snic2020-5-651",
-        "jobname" : "minimap2",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-    "bowtie2_mem_index" : 
-    {
-        "account" : "snic2020-5-651",
-        "jobname" : "desalt_index",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-
-    "bowtie2_align": 
-    {
-        "account" : "snic2020-5-651",
-        "jobname" : "minimap2",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-
-    "strobemap_index" : 
-    {
-        "account" : "snic2020-5-651",
-        "jobname" : "desalt_index",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-
-    "strobemap_align": 
-    {
-        "account" : "snic2020-5-651",
-        "jobname" : "minimap2",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "2-00:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
+    }
 
 }

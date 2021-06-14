@@ -73,7 +73,7 @@ rule minimap2_index:
         time_outfolder = config["ROOT_OUT"] + "/time_and_mem/minimap2/{0}/".format(wildcards.dataset)
         mkdir_p(time_outfolder)
 
-        shell("/usr/bin/time -v  minimap2 -ax sr -d {output.mm_index} {ref} 2> {output.time_and_mem}")
+        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr -d {output.mm_index} {ref} 2> {output.time_and_mem}")
 
 rule minimap2_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
@@ -81,7 +81,7 @@ rule minimap2_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/minimap2/{dataset}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  minimap2 -ax sr {input.indsex} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.indsex} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 
 rule accuracy:
