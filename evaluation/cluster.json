@@ -28,7 +28,7 @@
     "minimap2_index" : 
     {
         "account" : "snic2020-5-651",
-        "jobname" : "minimap2_index",
+        "jobname" : "mm2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -41,7 +41,7 @@
     "minimap2_align": 
     {
         "account" : "snic2020-5-651",
-        "jobname" : "minimap2",
+        "jobname" : "mm2_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
