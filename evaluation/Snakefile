@@ -133,10 +133,10 @@ rule strobemap_align:
     input:  ref = config["HG38"],
             fasta =   rules.mason_simulate_reads.output.sim_fa,
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap/{dataset}/{read_length}/aligning_time_and_mem.txt",
+    output: #time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobemap/{dataset}/{read_length}.sam"
-    run:
-        shell("/usr/bin/time -v  strobemap -n 2 -k 22 -o {output.sam} {input.ref} {input.fasta} 1> {output.time_and_mem} ")
+    run: 
+        shell("/usr/bin/time -v  strobemap -n 2 -k 22 -o {output.sam} {input.ref} {input.fasta} ") #  1> {output.time_and_mem}
 
 
 rule accuracy:
