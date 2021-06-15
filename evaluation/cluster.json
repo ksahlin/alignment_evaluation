@@ -6,7 +6,7 @@
         "cpus-per-task" : "8",
         "C" : "mem128GB",
         "Nodes" : 1,
-        "runtime" : "1-00:00:00",
+        "runtime" : "01:00:00",
         "jobname" : "pipeline",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
@@ -18,7 +18,7 @@
         "cpus-per-task" : "5",
         "C" : "mem128GB",
         "Nodes" : 1,
-        "runtime" : "3-00:00:00",
+        "runtime" : "03:00:00",
         "jobname" : "simulate",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
