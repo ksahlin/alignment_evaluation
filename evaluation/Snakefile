@@ -136,6 +136,6 @@ rule accuracy:
             truth =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result"
     run:
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {truth} --predicted_sam aln > {output.out} ")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam aln > {output.out} ")
 
 
