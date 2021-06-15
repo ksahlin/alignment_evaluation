@@ -131,8 +131,8 @@ rule bwa_mem_align:
 
 rule strobemap_align:
     input:  ref = config["HG38"],
-            fasta =   rules.mason_simulate_reads.output.sim_fa,
-            index = rules.minimap2_index.output.mm_index
+            fasta =   rules.mason_simulate_reads.output.sim_fa
+            # index = rules.minimap2_index.output.mm_index
     output: #time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobemap/{dataset}/{read_length}.sam"
     run: 
