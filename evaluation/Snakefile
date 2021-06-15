@@ -33,7 +33,7 @@ def mkdir_p(path):
             raise
 
 rule all:
-   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
+   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
 
 
 rule mason_simulate_variants:
@@ -128,6 +128,15 @@ rule bwa_mem_align:
 #     run:
 #         shell("/usr/bin/time -v  bwa mem -t 1  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
 
+
+rule strobemap_align:
+    input:  ref = config["HG38"],
+            fasta =   rules.mason_simulate_reads.output.sim_fa,
+            index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobemap/{dataset}/{read_length}.sam"
+    run:
+        shell("/usr/bin/time -v  strobemap -n 2 -k 22 -o {output.sam} {input.ref} {input.fasta} 1> {output.time_and_mem} ")
 
 
 rule accuracy:

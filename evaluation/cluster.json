@@ -74,6 +74,18 @@
         "runtime" : "03:30:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
+    },
+
+    "strobemap_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "sm_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
     }
 
 }
