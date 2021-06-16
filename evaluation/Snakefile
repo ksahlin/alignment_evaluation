@@ -132,20 +132,21 @@ rule strobemap_align:
 
 rule accelalign_index:
     input: ref = config["HG38"]
-    output: mm_index =  config["HG38"] + ".mmi"
+    output: accelalign_index =  config["HG38"] + ".hash"
             # time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}_indexing_time_and_mem.txt",
     run:
         shell("/usr/bin/time -v  accindex -t 1 {input.ref}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
-            ref = config["HG38"],
+            index = rules.accelalign_index.output.accelalign_index,
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/accelalign/{dataset}/{read_length}.sam"
     run:
+        ref = config["HG38"]
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {ref} {input.fasta} 2>&1 | tee {output.time_and_mem}")
 
 
 
