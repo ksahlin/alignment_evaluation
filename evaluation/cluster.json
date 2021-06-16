@@ -3,7 +3,7 @@
     "__default__" : 
     {
         "account" : "snic2020-5-651",
-        "cpus-per-task" : "8",
+        "cpus-per-task" : "3",
         "C" : "mem128GB",
         "Nodes" : 1,
         "runtime" : "01:00:00",
