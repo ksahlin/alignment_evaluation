@@ -149,6 +149,26 @@ rule accelalign_align:
         shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {ref} {input.fasta} 2>&1 | tee {output.time_and_mem}")
 
 
+rule bowtie2_index:
+    input: ref = config["HG38"]
+    output: index =  config["HG38"] + "-bt2"
+            # time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}_indexing_time_and_mem.txt",
+    run:
+        shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {output.index} ") #  2> {output.time_and_mem}
+
+rule bowtie2_align:
+    input: fasta =   rules.mason_simulate_reads.output.sim_fa,
+            bt2_index = rules.bowtie2_index.output.index,
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/bowtie2/{dataset}/{read_length}.sam"
+    run:
+        ref = config["HG38"]
+        shell("/usr/bin/time -v  bowtie2 -p 1 -x {input.bt2_index} -f -U {input.fasta}  -S {output.sam} {ref}  2>&1 | tee {output.time_and_mem}")
+
+
+
+
 
 rule accuracy:
     input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{dataset}/{read_length}.sam",
@@ -160,7 +180,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign']) # 'bowtie', ,
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign', "bowtie2"])
     output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -171,7 +191,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign']) #'bowtie', ,
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign', "bowtie2"])
     output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
