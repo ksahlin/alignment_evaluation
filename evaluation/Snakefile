@@ -33,7 +33,9 @@ def mkdir_p(path):
             raise
 
 rule all:
-   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
+   input:  config["ROOT_OUT"] + "/evaluation/accuracy.result",
+           config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
+            # expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
 
 
 rule mason_simulate_variants:
@@ -128,11 +130,60 @@ rule strobemap_align:
         shell("/usr/bin/time -v  strobemap -n 2 -k 22 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
 
 
+rule accelalign_index:
+    input: ref = config["HG38"]
+    output: mm_index =  config["HG38"] + ".mmi"
+            # time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}_indexing_time_and_mem.txt",
+    run:
+        shell("/usr/bin/time -v  accindex -t 1 {input.ref}") #  2> {output.time_and_mem}
+
+rule accelalign_align:
+    input: fasta =   rules.mason_simulate_reads.output.sim_fa,
+            ref = config["HG38"],
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/accelalign/{dataset}/{read_length}.sam"
+    run:
+        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}")
+
+
+
 rule accuracy:
     input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{dataset}/{read_length}.sam",
             truth =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result"
     run:
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+
+
+
+rule summary_alignment_stats:
+   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
+    output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
+    run:
+        shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
+        for f in input.time_and_mem_files:
+            shell("echo -n {wildcards.tool},{wildcards.dataset},{wildcards.read_length}, >> {output.out} ")
+            shell("echo {f} >> {output.out} ")
+            
+
+
+rule summary_time_and_mem:
+    input: time_and_mem_files =  config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",
+    output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
+    run:
+        # summary_file = open(out, "w")
+        shell('echo "tool,dataset,read_length,memory,time" > {output.out}')
+
+        for f in input.time_and_mem_files:
+            shell("/usr/bin/time -v  python summarize_time_and_memory.py {wildcards.tool} {wildcards.dataset} {wildcards.read_length} {f}  >> {output.out} ")
+
+
+
+
+
+
+
 
 
