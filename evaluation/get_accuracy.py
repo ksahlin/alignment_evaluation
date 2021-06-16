@@ -1,5 +1,6 @@
 
 
+
 import os,sys
 import argparse
 
@@ -82,9 +83,10 @@ def main(args):
         print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
     percent_aligned, percent_correct, over_mapped = get_stats(truth, predicted)
-    print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
-    print("Accuracy: {0}".format(round(percent_correct, 3)))
-    print("Over-aligned (unmapped in grough truth file): {0}".format(over_mapped))
+    print(round(percent_aligned, 3), round(percent_correct, 3), over_mapped)
+    # print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
+    # print("Accuracy: {0}".format(round(percent_correct, 3)))
+    # print("Over-aligned (unmapped in grough truth file): {0}".format(over_mapped))
 
 
 
