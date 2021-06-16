@@ -159,18 +159,18 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-   input: expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap"]) #"strobemap", 'bwa', 'bowtie', 'accelalign',
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign']) # 'bowtie', ,
     output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
-        for f in input.time_and_mem_files:
+        for f in input.accuracy_files:
             shell("echo -n {wildcards.tool},{wildcards.dataset},{wildcards.read_length}, >> {output.out} ")
             shell("echo {f} >> {output.out} ")
             
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign']) #'bowtie', ,
     output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
