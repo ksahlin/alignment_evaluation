@@ -55,7 +55,7 @@ def parse_gnu_time(stderr_file):
             tot_wallclock_secs = tot_wallclock_secs - index_time_mm2
         elif index_time_aa:
             tot_wallclock_secs = tot_wallclock_secs - index_time_aa
-        elif index_time_strobemap_match:
+        elif index_time_strobemap:
             tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap
 
     elif len(vals) == 2:
@@ -64,8 +64,8 @@ def parse_gnu_time(stderr_file):
 
         if index_time_mm2:
             tot_wallclock_secs = tot_wallclock_secs - index_time_mm2
-        elif index_time_strobemap_match:
-            tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap_match
+        elif index_time_strobemap:
+            tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap
 
     return usertime, tot_wallclock_secs, memory_gb
 
