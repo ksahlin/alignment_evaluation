@@ -58,7 +58,7 @@ rule mason_simulate_reads:
     run:
 
         if wildcards.read_length == "250" or wildcards.read_length == "300": # to not give abort trap in simulator due to too low fragmint size
-            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 700")
+            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 1000")
         else:
             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam}")
 
