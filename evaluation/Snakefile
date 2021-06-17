@@ -82,7 +82,7 @@ rule minimap2_align:
 
 rule bwa_mem_index:
     input: ref = config["HG38"]
-    output: bwa_index =  config["HG38"] + ".bwt"
+    output: bwa_index =  config["HG38"] + ".bwt",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/indexing_time_and_mem.txt",
     run:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
@@ -109,8 +109,8 @@ rule strobemap_align:
 
 rule accelalign_index:
     input: ref = config["HG38"]
-    output: accelalign_index =  config["HG38"] + ".hash"
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/indexing_time_and_mem.txt",
+    output: accelalign_index =  config["HG38"] + ".hash",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/indexing_time_and_mem.txt"
     run:
         shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
