@@ -36,7 +36,8 @@ def parse_gnu_time(stderr_file):
             index_time_mm2 = float(final_time.strip())
 
         if index_time_strobemap_match:
-            index_time_strobemap = float(usertime_match.group().split(':')[1].strip())
+            # print(index_time_strobemap_match)
+            index_time_strobemap = float(index_time_strobemap_match.group().split(':')[1].strip())
 
 
     vals = list(map(lambda x: float(x), wallclocktime.split(":") ))
