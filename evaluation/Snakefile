@@ -184,7 +184,7 @@ rule summary_time_and_mem:
     output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
-        shell('echo "tool,dataset,read_length,memory,time" > {output.out}')
+        shell('echo "tool,dataset,read_length,time,memory" > {output.out}')
 
         for f in input.time_and_mem_files:
             string = f.split("/")
