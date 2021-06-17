@@ -64,7 +64,7 @@ rule mason_simulate_reads:
 
 rule fasta_to_fastq:
     input: fasta = rules.mason_simulate_reads.output.sim_fa,
-    output: fastq = config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.fa"
+    output: fastq = config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.fq"
     run:
         shell("fasta2fastq  {input.fasta} {output.fastq}")
 
