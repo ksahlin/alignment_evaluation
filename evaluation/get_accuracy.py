@@ -39,8 +39,8 @@ def read_paf(paf_file):
 
 def overlap(q_a, q_b, p_a, p_b):
     assert q_a <= q_b and p_a <= p_b
-    if (q_a == q_b) or (p_a == p_b):
-        print("Cigar bug")
+    # if (q_a == q_b) or (p_a == p_b):
+    #     print("Cigar bug")
     return  (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b)
 
 def get_stats(truth, predicted):
