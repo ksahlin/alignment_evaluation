@@ -28,7 +28,7 @@ def parse_gnu_time(stderr_file):
             wallclocktime = wct_match.group().split()[7]
         if mem_match:
             mem_tmp = int(mem_match.group().split()[5])
-            memory_gb = mem_tmp / 4000000.0 
+            memory_gb = mem_tmp / 1000000.0 
 
         if index_time_mm2_match:
             prefix_cut = index_time_mm2_match.group().split('main::')[1]
