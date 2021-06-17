@@ -56,7 +56,7 @@ def parse_gnu_time(stderr_file):
         elif index_time_aa:
             tot_wallclock_secs = tot_wallclock_secs - index_time_aa
         elif index_time_strobemap_match:
-            tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap_match
+            tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap
 
     elif len(vals) == 2:
         m,s = vals

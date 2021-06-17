@@ -16,6 +16,7 @@ from matplotlib import pyplot
 
 
 def plot_accuracy(input_csv, outfolder):
+    sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
 
@@ -41,15 +42,15 @@ def plot_accuracy(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(95, 100), xticks=[100,150,200,250,300])
+    g.set(ylim=(94, 100), xticks=[100,150,200,250,300])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-
     plt.savefig(os.path.join(outfolder, "accuracy_plot.eps"))
     plt.savefig(os.path.join(outfolder, "accuracy_plot.pdf"))
     plt.close()
 
 def plot_percentage_aligned(input_csv, outfolder):
+    sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
 
@@ -75,15 +76,15 @@ def plot_percentage_aligned(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(40, 100), xticks=[100,150,200,250,300])
+    g.set(ylim=(94, 100), xticks=[100,150,200,250,300])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-
     plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.eps"))
     plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.pdf"))
     plt.close()
 
 def plot_overaligned(input_csv, outfolder):
+    sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
 
@@ -112,7 +113,6 @@ def plot_overaligned(input_csv, outfolder):
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-
     plt.savefig(os.path.join(outfolder, "overaligned_plot.eps"))
     plt.savefig(os.path.join(outfolder, "overaligned_plot.pdf"))
     plt.close()
@@ -121,6 +121,8 @@ def plot_overaligned(input_csv, outfolder):
 def plot_memory_usage(input_csv, outfolder):
     # tool,dataset,read_length,time,memory
     indata = pd.read_csv(input_csv)
+
+    sns.set_style("whitegrid")
 
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool",
@@ -137,15 +139,15 @@ def plot_memory_usage(input_csv, outfolder):
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-
     plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
     plt.savefig(os.path.join(outfolder, "memory_plot.pdf"))
     plt.close()
 
 def plot_runtime(input_csv, outfolder):
     # tool,dataset,read_length,time,memory
-    indata = pd.read_csv(input_csv)
+    sns.set_style("whitegrid")
 
+    indata = pd.read_csv(input_csv)
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool",
         col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
@@ -159,16 +161,17 @@ def plot_runtime(input_csv, outfolder):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    g.set( yticks=[500,1000,1500,2000,4000,6000,8000,10000,12000]) #ylim=(40, 100),
+
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-
     plt.savefig(os.path.join(outfolder, "time_plot.eps"))
     plt.savefig(os.path.join(outfolder, "time_plot.pdf"))
     plt.close()
 
 
 def main(args):
-
+    sns.set_style("whitegrid")
     plot_accuracy(args.accuracy_csv, args.outfolder)
     plot_percentage_aligned(args.accuracy_csv, args.outfolder)
     plot_overaligned(args.accuracy_csv, args.outfolder)
