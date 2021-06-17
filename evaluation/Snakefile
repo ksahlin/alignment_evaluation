@@ -58,7 +58,7 @@ rule mason_simulate_reads:
     run:
 
         if wildcards.read_length == "250" or wildcards.read_length == "300": # to not give abort trap in simulator due to too low fragmint size
-            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 500")
+            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 700")
         else:
             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam}")
 
@@ -165,7 +165,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign', "bowtie2"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign', "bowtie2"])
     output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -180,7 +180,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign', "bowtie2"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign', "bowtie2"])
     output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
