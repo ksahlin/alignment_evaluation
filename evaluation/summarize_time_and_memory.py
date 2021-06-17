@@ -15,7 +15,7 @@ def parse_gnu_time(stderr_file):
         mem_match = re.search('Maximum resident set size \(kbytes\): [\d.:]+', l) 
 
         # minimap2
-        index_time_mm2_match = re.search('\[M::main::[\d.:]+*[\d.:]+\] loaded/built the index for', l) 
+        index_time_mm2_match = re.search('\[M::main::[\d.:]+\*[\d.:]+\] loaded/built the index for', l) 
         
         # strobemap
 

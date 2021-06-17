@@ -75,7 +75,7 @@ def plot_percentage_aligned(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(95, 100), xticks=[100,150,200,250,300])
+    g.set(ylim=(40, 100), xticks=[100,150,200,250,300])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
 
