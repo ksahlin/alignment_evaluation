@@ -7,6 +7,7 @@ import re
 def parse_gnu_time(stderr_file):
     lines = open(stderr_file, 'r').readlines()
     index_time_mm2 = False
+    index_time_aa = False
     index_time_strobemap = False
 
     for l in lines:
@@ -21,6 +22,8 @@ def parse_gnu_time(stderr_file):
 
         index_time_strobemap_match = re.search('Total time indexing: [\d.:]+', l) 
 
+        # accelalign
+        index_time_accelalign_match = re.search('Setup reference in [\d.:]+ secs', l) 
 
         if usertime_match:
             usertime = float(usertime_match.group().split(':')[1].strip())
@@ -38,7 +41,11 @@ def parse_gnu_time(stderr_file):
         if index_time_strobemap_match:
             # print(index_time_strobemap_match)
             index_time_strobemap = float(index_time_strobemap_match.group().split(':')[1].strip())
-
+        
+        if index_time_accelalign_match:
+            prefix_cut = index_time_accelalign_match.group().split('reference in ')[1]
+            final_time = prefix_cut.split(' secs')[0]
+            index_time_aa = float(final_time.strip())
 
     vals = list(map(lambda x: float(x), wallclocktime.split(":") ))
     if len(vals) == 3:
@@ -46,6 +53,8 @@ def parse_gnu_time(stderr_file):
         tot_wallclock_secs = h*3600.0 + m*60.0 + s
         if index_time_mm2:
             tot_wallclock_secs = tot_wallclock_secs - index_time_mm2
+        elif index_time_aa:
+            tot_wallclock_secs = tot_wallclock_secs - index_time_aa
         elif index_time_strobemap_match:
             tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap_match
 

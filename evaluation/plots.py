@@ -172,14 +172,14 @@ def main(args):
     plot_accuracy(args.accuracy_csv, args.outfolder)
     plot_percentage_aligned(args.accuracy_csv, args.outfolder)
     plot_overaligned(args.accuracy_csv, args.outfolder)
-    plot_runtime(args.runtime_mem_csv, args.outfolder, args.acc)
-    plot_memory_usage(args.runtime_mem_csv, args.outfolder, args.acc)
+    plot_runtime(args.runtime_mem_csv, args.outfolder)
+    plot_memory_usage(args.runtime_mem_csv, args.outfolder)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('accuracy_csv', type=str, help='results file')
-    # parser.add_argument('runtime_mem_csv', type=str, help='results file')
+    parser.add_argument('runtime_mem_csv', type=str, help='results file')
     parser.add_argument('outfolder', type=str,  help='outfolder to plots.')
     args = parser.parse_args()
 
