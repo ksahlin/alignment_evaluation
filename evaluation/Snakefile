@@ -170,7 +170,7 @@ rule summary_alignment_stats:
             dataset = string[-2]
             read_length = string[-1].split(".")[0]
             shell("echo -n {tool},{dataset},{read_length}, >> {output.out} ")
-            shell("echo {f} >> {output.out} ")
+            shell("echo {f} >> {output.out}")
             
 
 
