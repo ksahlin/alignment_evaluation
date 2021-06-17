@@ -32,7 +32,7 @@ def parse_gnu_time(stderr_file):
 
         if index_time_mm2_match:
             prefix_cut = index_time_mm2_match.group().split('main::')[1]
-            final_time = index_time_mm2_match.group().split('*')[0]
+            final_time = prefix_cut.split('*')[0]
             index_time_mm2 = float(final_time.strip())
 
         if index_time_strobemap_match:
