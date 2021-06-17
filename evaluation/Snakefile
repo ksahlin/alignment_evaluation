@@ -143,7 +143,7 @@ rule bowtie2_align:
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -f -U {input.fasta}  -S {output.sam} {ref}  2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
 
 
 
