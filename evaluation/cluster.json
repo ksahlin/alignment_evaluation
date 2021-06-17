@@ -116,7 +116,7 @@
     "bowtie2_index" : 
     {
         "account" : "snic2020-5-651",
-        "jobname" : "bwa_index",
+        "jobname" : "bowtie2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -128,7 +128,7 @@
     "bowtie2_align": 
     {
         "account" : "snic2020-5-651",
-        "jobname" : "bwa_aln",
+        "jobname" : "bowtie2_align",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
