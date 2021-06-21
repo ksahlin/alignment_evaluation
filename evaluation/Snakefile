@@ -86,6 +86,17 @@ rule minimap2_align:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
         shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
 
+rule minimap2_map:
+    input: fasta =   rules.mason_simulate_reads.output.sim_fa,
+            # ref = config["HG38"],
+            index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/minimap2_map/{dataset}/{read_length}.sam"
+    run:
+        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -t 1 -x sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+
+
 rule bwa_mem_index:
     input: ref = config["HG38"]
     output: bwa_index =  config["HG38"] + ".bwt",
@@ -113,6 +124,16 @@ rule strobemap_align:
         shell("/usr/bin/time -v  strobemap -n 2 -k 22 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
 
 
+rule strobemap_map:
+    input:  ref = config["HG38"],
+            fasta =   rules.mason_simulate_reads.output.sim_fa
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobemap_map/{dataset}/{read_length}.sam"
+    run: 
+        shell("/usr/bin/time -v  strobemap -n 2 -k 22 -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
+
+
 rule accelalign_index:
     input: ref = config["HG38"]
     output: accelalign_index =  config["HG38"] + ".hash",
@@ -131,6 +152,16 @@ rule accelalign_align:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
         shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
 
+rule accelalign_map:
+    input: fastq =   rules.fasta_to_fastq.output.fastq,
+            index = rules.accelalign_index.output.accelalign_index,
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/accelalign_map/{dataset}/{read_length}.sam"
+    run:
+        ref = config["HG38"]
+        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  accalign -t 1 -x -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
 
 rule bowtie2_index:
     input: ref = config["HG38"]
@@ -153,19 +184,20 @@ rule bowtie2_align:
 
 
 
-
-
 rule accuracy:
     input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{dataset}/{read_length}.sam",
             truth =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result"
     run:
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobemap_map":
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
+        else:
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign', "bowtie2"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobemap",'accelalign', "bowtie2", "strobemap_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -180,7 +212,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign', "bowtie2"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobemap", 'accelalign', "bowtie2", "strobemap_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
     run:
         # summary_file = open(out, "w")

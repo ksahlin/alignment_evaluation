@@ -161,7 +161,7 @@ def plot_runtime(input_csv, outfolder):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
-    g.set( yticks=[500,1000,1500,2000,4000,6000,8000,10000,12000]) #ylim=(40, 100),
+    g.set( yticks=[0,250,500,1000,1500,2000,4000,6000,8000,10000,12000]) #ylim=(40, 100),
 
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
