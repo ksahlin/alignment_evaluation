@@ -121,7 +121,7 @@ rule strobemap_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobemap/{dataset}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobemap -n 2 -k 22 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 1 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
 
 
 rule strobemap_map:
@@ -131,7 +131,7 @@ rule strobemap_map:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobemap_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobemap_map/{dataset}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobemap -n 2 -k 22 -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 1 -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
 
 
 rule accelalign_index:

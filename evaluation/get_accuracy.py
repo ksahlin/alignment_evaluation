@@ -85,7 +85,7 @@ def main(args):
         # print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
     percent_aligned, percent_correct, over_mapped = get_stats(truth, predicted)
-    out_str = "{0},{1},{2}".format(round(percent_aligned, 3), round(percent_correct, 3), over_mapped)
+    out_str = "{0},{1},{2}".format(round(percent_aligned, 5), round(percent_correct, 5), over_mapped)
     print(out_str)
     # print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
     # print("Accuracy: {0}".format(round(percent_correct, 3)))
