@@ -33,14 +33,14 @@ def mkdir_p(path):
             raise
 
 rule all:
-   input:  config["ROOT_OUT"] + "/evaluation/accuracy.result",
-           config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
-            # expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign"]) #"strobealign", 'bwa', 'bowtie', 'accelalign',
+   input:  config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result" 
+            # config["ROOT_OUT"] + "/evaluation_multithread/accuracy.result"
+            # expand(config["ROOT_OUT"] + "/evaluation_multithread/{tool}/{n_threads}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign"]) #"strobealign", 'bwa', 'bowtie', 'accelalign',
 
 
 rule mason_simulate_variants:
     input:  ref = config["HG38"]
-    output: sim_vcf =  config["ROOT_OUT"] + "/reads/{dataset}/variations.vcf",
+    output: sim_vcf =  config["ROOT_OUT"] + "/reads/SIM1/variations.vcf",
     run:
         if wildcards.dataset == "SIM1":
             shell("mason_variator -ir {input.ref} -ov {output.sim_vcf}")
@@ -53,8 +53,8 @@ rule mason_simulate_variants:
 rule mason_simulate_reads:
     input:  ref = config["HG38"],
             sim_vcf = rules.mason_simulate_variants.output.sim_vcf
-    output: sim_fa =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.fa",
-            sim_sam =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam",
+    output: sim_fa =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
+            sim_sam =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.sam",
     run:
 
         if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
@@ -64,7 +64,7 @@ rule mason_simulate_reads:
 
 rule fasta_to_fastq:
     input: fasta = rules.mason_simulate_reads.output.sim_fa,
-    output: fastq = config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.fq"
+    output: fastq = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fq"
     run:
         shell("fasta2fastq  {input.fasta} {output.fastq}")
 
@@ -80,21 +80,21 @@ rule minimap2_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/minimap2/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/minimap2/{n_threads}/{read_length}.sam"
     run:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 rule minimap2_map:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/minimap2_map/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/minimap2_map/{n_threads}/{read_length}.sam"
     run:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t 1 -x sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -x sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 
 rule bwa_mem_index:
@@ -108,30 +108,30 @@ rule bwa_mem_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/bwa_mem/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/bwa_mem/{n_threads}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  bwa mem -t 1  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  bwa mem -t {wildcards.n_threads}  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 
 rule strobemap_align:
     input:  ref = config["HG38"],
             fasta =   rules.mason_simulate_reads.output.sim_fa
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/strobealign/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign/{n_threads}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t 1 -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
 
 
 rule strobemap_map:
     input:  ref = config["HG38"],
             fasta =   rules.mason_simulate_reads.output.sim_fa
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/strobealign_map/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_map/{n_threads}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t 1 -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
 
 
 rule accelalign_index:
@@ -139,29 +139,29 @@ rule accelalign_index:
     output: accelalign_index =  config["HG38"] + ".hash",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/indexing_time_and_mem.txt"
     run:
-        shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  accindex -t {wildcards.n_threads} {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
     input: fastq =   rules.fasta_to_fastq.output.fastq,
             index = rules.accelalign_index.output.accelalign_index,
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/accelalign/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/accelalign/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
 
 rule accelalign_map:
     input: fastq =   rules.fasta_to_fastq.output.fastq,
             index = rules.accelalign_index.output.accelalign_index,
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/accelalign_map/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/accelalign_map/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 1 -x -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -x -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
 
 rule bowtie2_index:
     input: ref = config["HG38"]
@@ -169,61 +169,61 @@ rule bowtie2_index:
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/indexing_time_and_mem.txt"
     run:
         index =  config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  bowtie2-build --threads {wildcards.n_threads} {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
     input: fasta =   rules.mason_simulate_reads.output.sim_fa,
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/bowtie2/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/bowtie2/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -p {wildcards.n_threads} -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
 
 
 
-rule accuracy:
-    input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{dataset}/{read_length}.sam",
-            truth =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam"
-    output: out = config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result"
-    run:
-        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
-        else:
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+# rule accuracy:
+#     input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{n_threads}/{read_length}.sam",
+#             truth =  config["ROOT_OUT"] + "/reads/{n_threads}/{read_length}.sam"
+#     output: out = config["ROOT_OUT"] + "/evaluation_multithread/{tool}/{n_threads}/{read_length}.result"
+#     run:
+#         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
+#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
+#         else:
+#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
 
 
-rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
-    output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
-    run:
-        shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
-        for f in input.accuracy_files:
-            string = f.split("/")
-            tool = string[-3]
-            dataset = string[-2]
-            read_length = string[-1].split(".")[0]
-            shell("echo -n {tool},{dataset},{read_length}, >> {output.out} ")
-            shell("cat {f} >> {output.out}")
+# rule summary_alignment_stats:
+#     input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_multithread/{tool}/{n_threads}/{read_length}.result",  n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+#     output: out = config["ROOT_OUT"] + "/evaluation_multithread/accuracy.result"
+#     run:
+#         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
+#         for f in input.accuracy_files:
+#             string = f.split("/")
+#             tool = string[-3]
+#             dataset = string[-2]
+#             read_length = string[-1].split(".")[0]
+#             shell("echo -n {tool},{n_threads},{read_length}, >> {output.out} ")
+#             shell("cat {f} >> {output.out}")
             
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
-    output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt",  n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    output: out = config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
-        shell('echo "tool,dataset,read_length,time,memory" > {output.out}')
+        shell('echo "tool,threads,read_length,time,memory" > {output.out}')
 
         for f in input.time_and_mem_files:
             string = f.split("/")
             tool = string[-4]
-            dataset = string[-3]
+            n_threads = string[-3]
             read_length = string[-2]
-            shell("/usr/bin/time -v  python summarize_time_and_memory.py {tool} {dataset} {read_length} {f}  >> {output.out} ")
+            shell("/usr/bin/time -v  python summarize_time_and_memory.py {tool} {n_threads} {read_length} {f}  >> {output.out} ")
 
 
 
