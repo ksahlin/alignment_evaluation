@@ -1,0 +1,175 @@
+{
+
+    "__default__" : 
+    {
+        "account" : "snic2020-5-651",
+        "cpus-per-task" : "3",
+        "C" : "mem128GB",
+        "Nodes" : 1,
+        "runtime" : "01:00:00",
+        "jobname" : "pipeline",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "simulate" : 
+    {
+        "account" : "snic2020-5-651",
+        "cpus-per-task" : "5",
+        "C" : "mem128GB",
+        "Nodes" : 1,
+        "runtime" : "03:00:00",
+        "jobname" : "simulate",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "minimap2_index" : 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "mm2_index",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "00:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "minimap2_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "mm2_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "minimap2_map": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "mm2_map",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "bwa_mem_index" : 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "bwa_index",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "bwa_mem_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "bwa_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "5:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobemap_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "sm_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobemap_map": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "sm_map",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "accelalign_index" : 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "aa_index",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "02:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "accelalign_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "aa_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "accelalign_map": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "aa_map",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "bowtie2_index" : 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "bowtie2_index",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "bowtie2_align": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "bowtie2_align",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "5:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    }
+
+}
