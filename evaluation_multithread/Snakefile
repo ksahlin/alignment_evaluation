@@ -38,35 +38,35 @@ rule all:
             # expand(config["ROOT_OUT"] + "/evaluation_multithread/{tool}/{n_threads}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign"]) #"strobealign", 'bwa', 'bowtie', 'accelalign',
 
 
-rule mason_simulate_variants:
-    input:  ref = config["HG38"]
-    output: sim_vcf =  config["ROOT_OUT"] + "/reads/SIM1/variations.vcf",
-    run:
-        if wildcards.dataset == "SIM1":
-            shell("mason_variator -ir {input.ref} -ov {output.sim_vcf}")
-        elif wildcards.dataset == "SIM2":
-            shell("mason_variator --sv-indel-rate 0.000001 --snp-rate 0.001 --small-indel-rate 0.00001 --max-small-indel-size 20  -ir {input.ref} -ov {output.sim_vcf}")
-        elif wildcards.dataset == "SIM3":
-            shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
+# rule mason_simulate_variants:
+#     input:  ref = config["HG38"]
+#     output: sim_vcf =  config["ROOT_OUT"] + "/reads/SIM1/variations.vcf",
+#     run:
+#         if wildcards.dataset == "SIM1":
+#             shell("mason_variator -ir {input.ref} -ov {output.sim_vcf}")
+#         elif wildcards.dataset == "SIM2":
+#             shell("mason_variator --sv-indel-rate 0.000001 --snp-rate 0.001 --small-indel-rate 0.00001 --max-small-indel-size 20  -ir {input.ref} -ov {output.sim_vcf}")
+#         elif wildcards.dataset == "SIM3":
+#             shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
 
 
-rule mason_simulate_reads:
-    input:  ref = config["HG38"],
-            sim_vcf = rules.mason_simulate_variants.output.sim_vcf
-    output: sim_fa =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
-            sim_sam =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.sam",
-    run:
+# rule mason_simulate_reads:
+#     input:  ref = config["HG38"],
+#             sim_vcf = rules.mason_simulate_variants.output.sim_vcf
+#     output: sim_fa =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
+#             sim_sam =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.sam",
+#     run:
 
-        if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
-            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 1000")
-        else:
-            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam}")
+#         if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
+#             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 1000")
+#         else:
+#             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam}")
 
-rule fasta_to_fastq:
-    input: fasta = rules.mason_simulate_reads.output.sim_fa,
-    output: fastq = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fq"
-    run:
-        shell("fasta2fastq  {input.fasta} {output.fastq}")
+# rule fasta_to_fastq:
+#     input: fasta = rules.mason_simulate_reads.output.sim_fa,
+#     output: fastq = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fq"
+#     run:
+#         shell("fasta2fastq  {input.fasta} {output.fastq}")
 
 
 rule minimap2_index:
@@ -80,7 +80,7 @@ rule minimap2_align:
     input: fasta =   "/dev/shm/kris/{read_length}.fa",
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/minimap2_align/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/minimap2_align/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/minimap2_align/{n_threads}/{read_length}.sam" 
     run:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
@@ -90,7 +90,7 @@ rule minimap2_map:
     input: fasta =   "/dev/shm/kris/{read_length}.fa",
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/minimap2_map/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/minimap2_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/minimap2_map/{n_threads}/{read_length}.sam" 
     run:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
@@ -108,7 +108,7 @@ rule bwa_mem_align:
     input: fasta =   "/dev/shm/kris/{read_length}.fa",
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
-    output: time_and_mem = "/scratch/kris/bwa_mem_align/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/bwa_mem_align/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/bwa_mem_align/{n_threads}/{read_length}.sam" 
     run:
         shell("/usr/bin/time -v  bwa mem -t {wildcards.n_threads}  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
@@ -118,7 +118,7 @@ rule strobemap_align:
     input:  ref = config["HG38"],
             fasta =   "/dev/shm/kris/{read_length}.fa"
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/strobemap_align/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/strobemap_align/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/strobemap_align/{n_threads}/{read_length}.sam" 
     run: 
         shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
@@ -128,7 +128,7 @@ rule strobemap_map:
     input:  ref = config["HG38"],
             fasta =   "/dev/shm/kris/{read_length}.fa"
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/strobemap_map/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/strobemap_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/strobemap_map/{n_threads}/{read_length}.sam" 
     run: 
         shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
@@ -145,7 +145,7 @@ rule accelalign_align:
     input: fastq =  "/dev/shm/kris/{read_length}.fa",
             index = rules.accelalign_index.output.accelalign_index,
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/accelalign_align/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/accelalign_align/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/accelalign_align/{n_threads}/{read_length}.sam" 
     run:
         ref = config["HG38"]
@@ -156,7 +156,7 @@ rule accelalign_map:
     input: fastq =  "/dev/shm/kris/{read_length}.fa",
             index = rules.accelalign_index.output.accelalign_index,
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/accelalign_map/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/accelalign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/accelalign_map/{n_threads}/{read_length}.sam" 
     run:
         ref = config["HG38"]
@@ -175,7 +175,7 @@ rule bowtie2_align:
     input: fasta =   "/dev/shm/kris/{read_length}.fa",
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/bowtie2/{n_threads}/{read_length}_time_and_mem.txt",
+    output: time_and_mem = "/scratch/kris/bowtie2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  "/scratch/kris/bowtie2/{n_threads}/{read_length}.sam" 
     run:
         ref = config["HG38"]
@@ -212,7 +212,7 @@ rule bowtie2_align:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand("/scratch/kris/{tool}/{n_threads}/{read_length}_time_and_mem.txt",  n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand("/scratch/kris/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt",  n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
