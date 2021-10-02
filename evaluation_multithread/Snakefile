@@ -88,7 +88,7 @@ rule minimap2_align:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -ax sr {input.index} {input.fasta} 1>  {tmp_sam} 2> {tmp_time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t {wildcards.n_threads} -ax sr {input.index} {input.fasta} 2>&1 | tee {tmp_time_and_mem} ")
 
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
@@ -105,7 +105,7 @@ rule minimap2_map:
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -x sr {input.index} {input.fasta} 1>  {tmp_sam} 2> {tmp_time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t {wildcards.n_threads} -x sr {input.index} {input.fasta} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -127,7 +127,7 @@ rule bwa_mem_align:
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        shell("/usr/bin/time -v  bwa mem -t {wildcards.n_threads}  {input.ref} {input.fasta} 1>  {tmp_sam} 2> {tmp_time_and_mem} ")
+        shell("/usr/bin/time -v  bwa mem -o {tmp_sam} -t {wildcards.n_threads}  {input.ref} {input.fasta} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
