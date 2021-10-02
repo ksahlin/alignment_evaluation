@@ -257,7 +257,7 @@ rule bowtie2_align:
 # n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"]
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt",  n_threads =  ["2"], read_length =  ["100"], tool=["minimap2",  "strobealign"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt", n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result"
     run:
         # summary_file = open(out, "w")

@@ -87,7 +87,7 @@
         "mail_type" : "FAIL"
     },
 
-    "strobemap_align": 
+    "strobealign": 
     {
         "account" : "snic2020-5-651",
         "jobname" : "sm_aln",
@@ -99,7 +99,7 @@
         "mail_type" : "FAIL"
     },
 
-    "strobemap_map": 
+    "strobealign_map": 
     {
         "account" : "snic2020-5-651",
         "jobname" : "sm_map",
