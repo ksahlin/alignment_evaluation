@@ -77,25 +77,37 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
-    input: fasta =   "/scratch/kris/reads/{read_length}.fa",
+    input: fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/minimap2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/minimap2/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/minimap2/{n_threads}/{read_length}.sam"
     run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -ax sr {input.index} {input.fasta} 1>  {tmp_sam} 2> {tmp_time_and_mem} ")
+
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
-    input: fasta =   "/scratch/kris/reads/{read_length}.fa",
+    input: fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/minimap2_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/minimap2_map/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/minimap2_map/{n_threads}/{read_length}.sam"
     run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -x sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-
+        shell("/usr/bin/time -v  minimap2 -t {wildcards.n_threads} -x sr {input.index} {input.fasta} 1>  {tmp_sam} 2> {tmp_time_and_mem} ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule bwa_mem_index:
     input: ref = config["HG38"]
@@ -105,34 +117,51 @@ rule bwa_mem_index:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem_align:
-    input: fasta =   "/scratch/kris/reads/{read_length}.fa",
+    input: fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
-    output: time_and_mem = "/scratch/kris/bwa_mem/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/bwa_mem/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/bwa_mem/{n_threads}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  bwa mem -t {wildcards.n_threads}  {input.ref} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        shell("/usr/bin/time -v  bwa mem -t {wildcards.n_threads}  {input.ref} {input.fasta} 1>  {tmp_sam} 2> {tmp_time_and_mem} ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 
 rule strobemap_align:
     input:  ref = config["HG38"],
-            fasta =   "/scratch/kris/reads/{read_length}.fa"
+            fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa"
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/strobealign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/strobealign/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign/{n_threads}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -o {tmp_sam} {input.ref} {input.fasta} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 
 rule strobemap_map:
     input:  ref = config["HG38"],
-            fasta =   "/scratch/kris/reads/{read_length}.fa"
+            fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa"
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/strobealign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/strobealign_map/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_map/{n_threads}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -x -o {output.sam} {input.ref} {input.fasta} 2>&1 | tee {output.time_and_mem}") #  
-
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        shell("/usr/bin/time -v  strobealign -t {wildcards.n_threads} -x -o {tmp_sam} {input.ref} {input.fasta} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_index:
     input: ref = config["HG38"]
@@ -142,26 +171,37 @@ rule accelalign_index:
         shell("/usr/bin/time -v  accindex -t {wildcards.n_threads} {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
-    input: fastq =  "/scratch/kris/reads/{read_length}.fa",
-            index = rules.accelalign_index.output.accelalign_index,
+    input: fastq = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fq",
+            index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/accelalign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/accelalign/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/accelalign/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
-        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -o {tmp_sam} {ref} {input.fastq} 2>&1 | tee {tmp_time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_map:
-    input: fastq =  "/scratch/kris/reads/{read_length}.fa",
-            index = rules.accelalign_index.output.accelalign_index,
+    input: fastq = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fq",
+            index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/accelalign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/accelalign_map/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/accelalign_map/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
-        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -x -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
 
 rule bowtie2_index:
     input: ref = config["HG38"]
@@ -172,16 +212,21 @@ rule bowtie2_index:
         shell("/usr/bin/time -v  bowtie2-build --threads {wildcards.n_threads} {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
-    input: fasta =   "/scratch/kris/reads/{read_length}.fa",
+    input: fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa"
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem = "/scratch/kris/bowtie2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  "/scratch/kris/bowtie2/{n_threads}/{read_length}.sam" 
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/bowtie2/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         shell("/usr/bin/time -v  bowtie2 -p {wildcards.n_threads} -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
-
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 
 # rule accuracy:
@@ -209,10 +254,10 @@ rule bowtie2_align:
 #             shell("echo -n {tool},{n_threads},{read_length}, >> {output.out} ")
 #             shell("cat {f} >> {output.out}")
             
-
+# n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"]
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand("/scratch/kris/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt",  n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt",  n_threads =  ["2"], read_length =  ["100"], tool=["minimap2",  "strobealign"])
     output: out = config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
