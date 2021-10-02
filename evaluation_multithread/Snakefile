@@ -212,7 +212,7 @@ rule bowtie2_index:
         shell("/usr/bin/time -v  bowtie2-build --threads {wildcards.n_threads} {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
-    input: fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa"
+    input: fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
