@@ -132,7 +132,7 @@ rule bwa_mem_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
-rule strobemap_align:
+rule strobealign:
     input:  ref = config["HG38"],
             fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa"
             # index = rules.minimap2_index.output.mm_index
@@ -148,7 +148,7 @@ rule strobemap_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
-rule strobemap_map:
+rule strobealign_map:
     input:  ref = config["HG38"],
             fasta = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa"
             # index = rules.minimap2_index.output.mm_index
