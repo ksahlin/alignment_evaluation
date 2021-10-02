@@ -178,7 +178,7 @@ rule accelalign_align:
             sam =  config["ROOT_OUT"] + "/alignments/accelalign/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
-        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fq".format(input.fastq, wildcards.read_length))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
@@ -194,7 +194,7 @@ rule accelalign_map:
             sam =  config["ROOT_OUT"] + "/alignments/accelalign_map/{n_threads}/{read_length}.sam"
     run:
         ref = config["HG38"]
-        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fa".format(input.fasta, wildcards.read_length))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/{1}.fq".format(input.fastq, wildcards.read_length))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
@@ -224,7 +224,7 @@ rule bowtie2_align:
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        shell("/usr/bin/time -v  bowtie2 -p {wildcards.n_threads} -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -p {wildcards.n_threads} -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
