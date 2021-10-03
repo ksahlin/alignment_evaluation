@@ -198,7 +198,7 @@ rule accelalign_map:
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -x -o {output.sam} {ref} {input.fastq} 2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t {wildcards.n_threads} -x -o {tmp_sam} {ref} {input.fastq} 2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -224,7 +224,7 @@ rule bowtie2_align:
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        shell("/usr/bin/time -v  bowtie2 -p {wildcards.n_threads} -x {bt2_index} -f -U {input.fasta}  -S {output.sam}  2>&1 | tee {tmp_time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -p {wildcards.n_threads} -x {bt2_index} -f -U {input.fasta}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
