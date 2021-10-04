@@ -126,9 +126,9 @@ def plot_memory_usage(input_csv, outfolder):
     sns.set_style("whitegrid")
 
     g = sns.relplot(
-        data=indata, x="read_length", y="memory", hue="tool", style="type", linewdith = 3.0,
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
+        data=indata, x="read_length", y="memory", hue="tool", style="type",
+        col="threads", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col_wrap=3, col_order=[2, 4, 8, 16])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
     g.set_axis_labels("Read length", "Memory usage (Gb)")
@@ -140,7 +140,7 @@ def plot_memory_usage(input_csv, outfolder):
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
     plt.savefig(os.path.join(outfolder, "memory_plot.pdf"))
     plt.close()
 
@@ -153,8 +153,8 @@ def plot_runtime(input_csv, outfolder):
     indata = pd.read_csv(input_csv)
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
+        col="threads", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col_wrap=3, col_order=[2, 4, 8, 16])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
     g.set_axis_labels("Read length", "Time (sec)")
@@ -164,11 +164,11 @@ def plot_runtime(input_csv, outfolder):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
-    g.set( yticks=[0,500,1000,1500,2000,4000,6000,8000,10000,12000]) #ylim=(40, 100),
+    g.set( yticks=[0,100,500,1000,1500,2000], ylim=(0, 2000))
 
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "time_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "time_plot.eps"))
     plt.savefig(os.path.join(outfolder, "time_plot.pdf"))
     plt.close()
 
@@ -200,19 +200,19 @@ def add_column(infile):
 
 def main(args):
     sns.set_style("whitegrid")
-    accuracy_csv = add_column(args.accuracy_csv)
+    # accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
 
-    plot_accuracy(accuracy_csv, args.outfolder)
-    plot_percentage_aligned(accuracy_csv, args.outfolder)
-    plot_overaligned(accuracy_csv, args.outfolder)
+    # plot_accuracy(accuracy_csv, args.outfolder)
+    # plot_percentage_aligned(accuracy_csv, args.outfolder)
+    # plot_overaligned(accuracy_csv, args.outfolder)
     plot_runtime(runtime_mem_csv, args.outfolder)
     plot_memory_usage(runtime_mem_csv, args.outfolder)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('accuracy_csv', type=str, help='results file')
+    # parser.add_argument('accuracy_csv', type=str, help='results file')
     parser.add_argument('runtime_mem_csv', type=str, help='results file')
     parser.add_argument('outfolder', type=str,  help='outfolder to plots.')
     args = parser.parse_args()
