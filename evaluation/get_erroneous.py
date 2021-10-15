@@ -12,15 +12,32 @@ def read_sam(sam_file):
 
 
     for read in SAM_file.fetch(until_eof=True):
-        if read.flag == 0 or read.flag == 16:
+        if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
-            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
+            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+        elif read.flag == 4:
+            read_positions[read.query_name] = False
+        
+        elif read.is_paired:
+            if read.is_read1:
+        # elif read.flag == 99 or  read.flag == 83: # Paired end first
+                if not (read.flag == 99 or  read.flag == 83):
+                    print(read.query_name, read.flag)
+                if "/1" not in read.query_name[-4:]:
+                    read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end)
+                else:
+                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
 
-        elif read.flag == 99 or  read.flag == 83: # Paired end first
-            read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end, read)
+        # elif read.flag == 147 or read.flag == 163: # Paired end second
+            if read.is_read2:
+                if not (read.flag == 147 or read.flag == 163):
+                    print(read.query_name, read.flag)
+                if "/2" not in read.query_name[-4:]:
+                    read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end)
+                else:
+                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
 
-        elif read.flag == 147 or read.flag == 163: # Paired end second
-            read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end, read)
+
 
     return read_positions     
 
