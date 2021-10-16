@@ -1,0 +1,9 @@
+{
+
+    "ROOT_OUT" : "/proj/snic2020-16-138/strobemap_eval",
+    "ROOT_IN" : "/home/kris/source/alignment_evaluation",
+
+    "HG38" : "/proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa",
+    "CHM13" : "/proj/snic2020-16-138/ultra_eval/genomes/CHM13.fasta",
+    "drosophila97" : "/proj/snic2020-16-138/ultra_eval/genomes/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa",
+}
