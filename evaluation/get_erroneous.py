@@ -14,7 +14,7 @@ def read_sam(sam_file):
     for read in SAM_file.fetch(until_eof=True):
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
-            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
         elif read.flag == 4:
             read_positions[read.query_name] = False
         
@@ -24,18 +24,18 @@ def read_sam(sam_file):
                 if not (read.flag == 99 or  read.flag == 83):
                     print(read.query_name, read.flag)
                 if "/1" not in read.query_name[-4:]:
-                    read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end, read)
                 else:
-                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
 
         # elif read.flag == 147 or read.flag == 163: # Paired end second
             if read.is_read2:
                 if not (read.flag == 147 or read.flag == 163):
                     print(read.query_name, read.flag)
                 if "/2" not in read.query_name[-4:]:
-                    read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end, read)
                 else:
-                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
 
 
 

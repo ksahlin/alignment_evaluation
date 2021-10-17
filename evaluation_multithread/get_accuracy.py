@@ -16,7 +16,7 @@ def read_sam(sam_file):
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
             read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
-        elif read.flag == 4:
+        elif read.is_unmapped:
             read_positions[read.query_name] = False
         
         elif read.is_paired:
