@@ -75,7 +75,7 @@ rule minimap2_index:
     output: mm_index =  config["HG38"] + ".mmi",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/indexing_time_and_mem.txt",
     run:
-        shell("/usr/bin/time -v  minimap2 -t 8 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -85,7 +85,7 @@ rule minimap2_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/minimap2/{dataset}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  minimap2 -t 8 -ax sr {input.index} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 rule minimap2_map:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -96,7 +96,7 @@ rule minimap2_map:
             sam =  config["ROOT_OUT"] + "/alignments/minimap2_map/{dataset}/{read_length}.sam"
     run:
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t 8 -x sr {input.index} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  minimap2 -t 1 -x sr {input.index} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 
 rule bwa_mem_index:
@@ -114,7 +114,7 @@ rule bwa_mem_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/bwa_mem/{dataset}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  bwa mem -t 8  {input.ref} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("/usr/bin/time -v  bwa mem -t 1  {input.ref} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
 
 
 rule strobemap_align:
@@ -125,7 +125,7 @@ rule strobemap_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobealign/{dataset}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t 8 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 1 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}") #  
 
 
 rule strobemap_map:
@@ -136,7 +136,7 @@ rule strobemap_map:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobealign_map/{dataset}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t 8 -x -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 1 -x -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}") #  
 
 
 rule accelalign_index:
@@ -144,7 +144,7 @@ rule accelalign_index:
     output: accelalign_index =  config["HG38"] + ".hash",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/indexing_time_and_mem.txt"
     run:
-        shell("/usr/bin/time -v  accindex -t 8 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -156,7 +156,7 @@ rule accelalign_align:
     run:
         ref = config["HG38"]
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 8 -o {output.sam} {ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}")
 
 rule accelalign_map:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -168,7 +168,7 @@ rule accelalign_map:
     run:
         ref = config["HG38"]
         # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 8 -x -o {output.sam} {ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t 1 -x -o {output.sam} {ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}")
 
 rule bowtie2_index:
     input: ref = config["HG38"]
@@ -176,7 +176,7 @@ rule bowtie2_index:
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/indexing_time_and_mem.txt"
     run:
         index =  config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2-build --threads 8 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -188,7 +188,7 @@ rule bowtie2_align:
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2 -p 8 -x {bt2_index} -1 {input.fastq_L} -2 {input.fastq_R}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -1 {input.fastq_L} -2 {input.fastq_R}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
 
 
 
