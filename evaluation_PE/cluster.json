@@ -12,7 +12,7 @@
         "mail_type" : "FAIL"
     },
 
-    "simulate" : 
+    "mason_simulate_reads" : 
     {
         "account" : "snic2020-5-651",
         "cpus-per-task" : "5",
