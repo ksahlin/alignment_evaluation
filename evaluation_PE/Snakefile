@@ -85,7 +85,16 @@ rule minimap2_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 1 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -95,8 +104,16 @@ rule minimap2_map:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
     run:
-        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  minimap2 -t 1 -x sr {input.index} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 1 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 
 rule bwa_mem_index:
@@ -114,8 +131,16 @@ rule bwa_mem_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}/{read_length}.sam"
     run:
-        shell("/usr/bin/time -v  bwa mem -t 1  {input.ref} {input.fastq_L} {input.fastq_R} 1>  {output.sam} 2> {output.time_and_mem} ")
-
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  bwa mem -o {tmp_sam} -t 1 {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule strobemap_align:
     input:  ref = config["HG38"],
@@ -125,8 +150,16 @@ rule strobemap_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/{dataset}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t 1 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}") #  
-
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  strobealign -t 1 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule strobemap_map:
     input:  ref = config["HG38"],
@@ -136,8 +169,16 @@ rule strobemap_map:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/{dataset}/{read_length}.sam"
     run: 
-        shell("/usr/bin/time -v  strobealign -t 1 -x -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}") #  
-
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  strobealign -t 1 -x -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_index:
     input: ref = config["HG38"]
@@ -155,8 +196,16 @@ rule accelalign_align:
             sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}/{read_length}.sam"
     run:
         ref = config["HG38"]
-        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 1 -o {output.sam} {ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  accalign -t 1 -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_map:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -167,8 +216,16 @@ rule accelalign_map:
             sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign_map/{dataset}/{read_length}.sam"
     run:
         ref = config["HG38"]
-        # shell("/usr/bin/time -v  minimap2 -t 1 -ax sr {input.index} {input.fasta} 1>  {output.sam} 2> {output.time_and_mem} ")
-        shell("/usr/bin/time -v  accalign -t 1 -x -o {output.sam} {ref} {input.fastq_L} {input.fastq_R} 2>&1 | tee {output.time_and_mem}")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  accalign -t 1 -x -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule bowtie2_index:
     input: ref = config["HG38"]
@@ -188,7 +245,14 @@ rule bowtie2_align:
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -1 {input.fastq_L} -2 {input.fastq_R}  -S {output.sam}  2>&1 | tee {output.time_and_mem}")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
 
 
 
