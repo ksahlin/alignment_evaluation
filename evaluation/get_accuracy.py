@@ -97,7 +97,11 @@ def get_stats(truth, predicted):
     #         print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
     # print(correct)
     # print(nr_aligned)
-    return 100*(nr_aligned/nr_total), 100*correct/nr_aligned, over_mapped
+    aligned_percentage = 100*(nr_aligned/nr_total)
+    accuracy = 0.0
+    if nr_aligned > 0:
+        accuracy = 100*correct/nr_aligned
+    return aligned_percentage, accuracy, over_mapped
 
 
 def main(args):
