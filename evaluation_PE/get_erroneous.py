@@ -92,38 +92,49 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
     # unaligned_ok = 0
 
     for read_acc in truth:
+        if not truth[read_acc]:
+            continue
+
         true_ref_id, true_start, true_stop, read = truth[read_acc]
-        if read_acc in predicted1:
+        if not predicted1[read_acc]:
+            unaligned_method1 += 1
+        else:
             pred_ref_id, pred_start, pred_stop, read_p1 = predicted1[read_acc]
             if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
                 good_method1 += 1
-                if read_acc in predicted2:
-                    pred2_ref_id, pred2_start, pred2_stop, read_p2 = predicted2[read_acc]
-                    if not (pred2_start < pred2_stop):
-                        print(read_acc, read_p2.reference_name, read_p2.reference_start, read_p2.reference_end,read_p2.cigarstring, true_ref_id)
-                    if (pred2_ref_id == true_ref_id) and overlap(pred2_start, pred2_stop, true_start, true_stop):
-                        pass
-                    else:
-                        to_improve +=1
-                        # print(read_acc, "MISALIGNED STROBEALIGN" , pred_ref_id, pred2_start, pred2_stop, true_ref_id, true_start, true_stop )
-                        out_misaligned.write(">{0}\n{1}\n".format(read.query_name, read.query_sequence))
-                        misaligned_dict[true_ref_id][pred_ref_id] += 1
-
             else:
                 bad_method1 += 1
-        else:
-            unaligned_method1 += 1
 
-        if read_acc in predicted2:
+            if not predicted2[read_acc]:
+                unaligned_method2 += 1
+                # print(read_acc, "UNALIGNED STROBEALIGN", true_ref_id, true_start, true_stop )
+                out_unaligned.write(">{0}_{2}\n{1}\n".format(read.query_name, read.query_sequence, read.cigarstring))
+                continue
+
+            else:
+                pred2_ref_id, pred2_start, pred2_stop, read_p2 = predicted2[read_acc]
+                if not (pred2_start < pred2_stop):
+                    print(read_acc, read_p2.reference_name, read_p2.reference_start, read_p2.reference_end,read_p2.cigarstring, true_ref_id)
+                
+                if (pred2_ref_id == true_ref_id) and overlap(pred2_start, pred2_stop, true_start, true_stop):
+                    pass
+                else:
+                    to_improve +=1
+                    # print(read_acc, "MISALIGNED STROBEALIGN" , pred_ref_id, pred2_start, pred2_stop, true_ref_id, true_start, true_stop )
+                    out_misaligned.write(">{0}\n{1}\n".format(read.query_name, read.query_sequence))
+                    misaligned_dict[true_ref_id][pred_ref_id] += 1
+
+
+        if not predicted2[read_acc]:
+            unaligned_method2 += 1
+        else:
             pred_ref_id, pred_start, pred_stop, read_p2 = predicted2[read_acc]
             if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
                 good_method2 += 1
             else:
                 bad_method2 += 1
         else:
-            unaligned_method2 += 1
-            # print(read_acc, "UNALIGNED STROBEALIGN", true_ref_id, true_start, true_stop )
-            out_unaligned.write(">{0}_{2}\n{1}\n".format(read.query_name, read.query_sequence, read.cigarstring))
+
 
             # print(read_acc)
 
