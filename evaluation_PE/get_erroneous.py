@@ -186,7 +186,7 @@ def get_stats_individual(truth, predicted, logfile, method):
         if not predicted[read_acc]:
             unaligned_method += 1
         else:
-            pred_ref_id, pred_start, pred_stop, read_p1 = predicted1[read_acc]
+            pred_ref_id, pred_start, pred_stop, read_p1 = predicted[read_acc]
             if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
                 good_method += 1
             else:
