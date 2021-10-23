@@ -236,7 +236,7 @@ def main(args):
             delta_missed[ref1] = nr2 - nr1
 
     for ref, nr in sorted(delta_missed.items(), key = lambda x: x[1], reverse=True):
-        logfile.write("More misaligned strobealign, originally from {0}: {1}\n".format(ref, nr))
+        f.write("More misaligned strobealign, originally from {0}: {1}\n".format(ref, nr))
 
 
 
