@@ -219,8 +219,8 @@ def main(args):
     if args.predicted_sam_method2:
         predicted2 = read_sam(args.predicted_sam_method2, args.n)
 
-    get_stats_individual(truth, predicted1, "minimap2")
-    get_stats_individual(truth, predicted2, "strobealign")
+    get_stats_individual(truth, predicted1, open(args.logfile, "w"), "minimap2")
+    get_stats_individual(truth, predicted2, open(args.logfile, "w"), "strobealign")
 
     # get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
 
