@@ -133,32 +133,6 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
                 good_method2 += 1
             else:
                 bad_method2 += 1
-        else:
-
-
-            # print(read_acc)
-
-        # if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
-        #     if read_acc in predicted2:
-        #         pred2_ref_id, pred2_start, pred2_stop = predicted2[read_acc]
-        #         if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
-        #             good +=1
-        #         else:
-        #             # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
-        #             missed += 1
-        #     else:
-        #         unaligned += 1
-        # else:
-        #     if read_acc in predicted2:
-        #         pred2_ref_id, pred2_start, pred2_stop = predicted2[read_acc]
-        #         if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
-        #             good_ok +=1
-        #         else:
-        #             # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
-        #             missed_ok += 1
-        #     else:
-        #         unaligned_ok += 1
-        #     # print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
 
 
     print("nr_aligned method1:", nr_aligned_method1)
