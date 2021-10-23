@@ -165,8 +165,8 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logf
 
 
 def get_stats_individual(truth, predicted, logfile, method):
-    logfile.write("")
-    logfile.write("METHOD: {0}".format(method))
+    logfile.write("\n\n")
+    logfile.write("METHOD: {0}\n".format(method))
     nr_aligned_method = len(predicted)
     nr_total = len(truth)
     
@@ -218,9 +218,9 @@ def main(args):
 
     if args.predicted_sam_method2:
         predicted2 = read_sam(args.predicted_sam_method2, args.n)
-
-    get_stats_individual(truth, predicted1, open(args.logfile, "w"), "minimap2")
-    get_stats_individual(truth, predicted2, open(args.logfile, "w"), "strobealign")
+    f = open(args.logfile, "w")
+    get_stats_individual(truth, predicted1, f, "minimap2")
+    get_stats_individual(truth, predicted2, f, "strobealign")
 
     # get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
 
