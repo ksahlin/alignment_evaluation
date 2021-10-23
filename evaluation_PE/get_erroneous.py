@@ -4,6 +4,7 @@ import os,sys
 import argparse
 
 import pysam
+from collections import defaultdict
 
 
 def read_sam(sam_file):
@@ -14,28 +15,28 @@ def read_sam(sam_file):
     for read in SAM_file.fetch(until_eof=True):
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
-            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
         elif read.flag == 4:
             read_positions[read.query_name] = False
         
         elif read.is_paired:
             if read.is_read1:
         # elif read.flag == 99 or  read.flag == 83: # Paired end first
-                if not (read.flag == 99 or  read.flag == 83):
-                    print(read.query_name, read.flag)
+                # if not (read.flag == 99 or  read.flag == 83):
+                #     print(read.query_name, read.flag)
                 if "/1" not in read.query_name[-4:]:
-                    read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end, read)
                 else:
-                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
 
         # elif read.flag == 147 or read.flag == 163: # Paired end second
             if read.is_read2:
-                if not (read.flag == 147 or read.flag == 163):
-                    print(read.query_name, read.flag)
+                # if not (read.flag == 147 or read.flag == 163):
+                #     print(read.query_name, read.flag)
                 if "/2" not in read.query_name[-4:]:
-                    read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end, read)
                 else:
-                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
 
 
 
@@ -76,6 +77,7 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
     unaligned_method2 = 0
 
     to_improve = 0
+    misaligned_dict = defaultdict(lambda: defaultdict(int))
     # missed = 0
     # unaligned = 0
     # good_ok = 0
@@ -94,8 +96,9 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
                         pass
                     else:
                         to_improve +=1
-                        print(read_acc, "MISALIGNED STROBEALIGN" , pred_ref_id, pred2_start, pred2_stop, true_ref_id, true_start, true_stop )
+                        # print(read_acc, "MISALIGNED STROBEALIGN" , pred_ref_id, pred2_start, pred2_stop, true_ref_id, true_start, true_stop )
                         out_misaligned.write(">{0}\n{1}\n".format(read.query_name, read.query_sequence))
+                        misaligned_dict[true_ref_id][pred_ref_id] += 1
 
             else:
                 bad_method1 += 1
@@ -110,7 +113,7 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
                 bad_method2 += 1
         else:
             unaligned_method2 += 1
-            print(read_acc, "UNALIGNED STROBEALIGN", true_ref_id, true_start, true_stop )
+            # print(read_acc, "UNALIGNED STROBEALIGN", true_ref_id, true_start, true_stop )
             out_unaligned.write(">{0}_{2}\n{1}\n".format(read.query_name, read.query_sequence, read.cigarstring))
 
             # print(read_acc)
@@ -149,6 +152,15 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
     print("unaligned_method2:", unaligned_method2)
 
     print("to_improve:", to_improve)
+
+    print("TRUE REF, PRED REF, ONLY STROBEALIGN MISALIGNED", to_improve)
+    for true_ref in misaligned_dict:
+        s = 0
+        for pred_ref in misaligned_dict[true_ref]:
+            s+= misaligned_dict[true_ref][pred_ref]
+            print("{0},{1}: {2}".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
+        print("Total uniquely misaligned on {0}: {1}".format(true_ref, s))
+
     out_misaligned.close()
     out_unaligned.close()
     # print("good (only method 2):", good_ok)
