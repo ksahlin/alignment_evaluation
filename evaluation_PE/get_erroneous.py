@@ -163,6 +163,52 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logf
     # print("missed (only method 2):", missed_ok)
     # print("Unaligned (only method 2):", unaligned_ok) 
 
+
+def get_stats_individual(truth, predicted, logfile, method):
+    logfile.write("")
+    logfile.write("METHOD: {0}".format(method))
+    nr_aligned_method = len(predicted)
+    nr_total = len(truth)
+    
+    good_method = 0
+    bad_method = 0
+    unaligned_method = 0
+    to_improve = 0
+    misaligned_dict = defaultdict(lambda: defaultdict(int))
+
+    for read_acc in truth:
+        if not truth[read_acc]:
+            continue
+        if (read_acc not in predicted):
+            # excluding from analysis since subsampling didnt sample them in at least on of the methods
+            continue 
+        true_ref_id, true_start, true_stop, read = truth[read_acc]
+        if not predicted[read_acc]:
+            unaligned_method += 1
+        else:
+            pred_ref_id, pred_start, pred_stop, read_p1 = predicted1[read_acc]
+            if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
+                good_method += 1
+            else:
+                bad_method += 1
+                misaligned_dict[true_ref_id][pred_ref_id] += 1
+
+
+    logfile.write("nr_aligned:{0}\n".format(nr_aligned_method1))
+    logfile.write("good_method:{0}\n".format(good_method1))
+    logfile.write("bad_method:{0}\n".format(bad_method1))
+    logfile.write("unaligned_method:{0}\n".format(unaligned_method1))
+    logfile.write("to_improve:{0}\n".format(to_improve))
+
+    logfile.write("TRUE REF, PRED REF, MISALIGNED")
+    for true_ref in misaligned_dict:
+        s = 0
+        for pred_ref in misaligned_dict[true_ref]:
+            s+= misaligned_dict[true_ref][pred_ref]
+            # logfile.write("{0},{1}: {2}\n".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
+        logfile.write("Total uniquely misaligned on {0}: {1}\n".format(true_ref, s))
+
+
 def main(args):
 
     truth = read_sam(args.truth, args.n)
@@ -173,13 +219,11 @@ def main(args):
     if args.predicted_sam_method2:
         predicted2 = read_sam(args.predicted_sam_method2, args.n)
 
-    # elif args.predicted_paf:
-    #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
-    #     print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
+    get_stats_individual(truth, predicted1, "minimap2")
+    get_stats_individual(truth, predicted2, "strobealign")
 
-    get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
-    # print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
-    # print("Accuracy: {0}".format(round(percent_correct, 3)))
+    # get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
+
 
 
 
