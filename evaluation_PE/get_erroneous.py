@@ -201,12 +201,17 @@ def get_stats_individual(truth, predicted, logfile, method):
     logfile.write("to_improve:{0}\n".format(to_improve))
 
     logfile.write("TRUE REF, PRED REF, MISALIGNED")
+    tot_mis = {}
     for true_ref in misaligned_dict:
         s = 0
         for pred_ref in misaligned_dict[true_ref]:
             s+= misaligned_dict[true_ref][pred_ref]
             # logfile.write("{0},{1}: {2}\n".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
-        logfile.write("Total uniquely misaligned on {0}: {1}\n".format(true_ref, s))
+        # logfile.write("Total uniquely misaligned on {0}: {1}\n".format(true_ref, s))
+        tot_mis[true_ref] = s
+
+    for ref, nr in sorted(tot_mis.items(), key = lambda x: x[1], reverse=True):
+        logfile.write("Total uniquely misaligned, originally from {0}: {1}\n".format(ref, nr))
 
 
 def main(args):
