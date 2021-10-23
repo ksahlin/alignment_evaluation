@@ -69,7 +69,7 @@ def overlap(q_a, q_b, p_a, p_b):
     assert q_a <= q_b and p_a <= p_b
     return  (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b)
 
-def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
+def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logfile):
 
     nr_aligned_method1 = len(predicted1)
     nr_aligned_method2 = len(predicted2)
@@ -137,25 +137,25 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
                 bad_method2 += 1
 
 
-    print("nr_aligned method1:", nr_aligned_method1)
-    print("good_method1:", good_method1)
-    print("bad_method1:", bad_method1)
-    print("unaligned_method1:", unaligned_method1) 
+    logfile.write("nr_aligned method1:{0}\n".format(nr_aligned_method1))
+    logfile.write("good_method1:{0}\n".format(good_method1))
+    logfile.write("bad_method1:{0}\n".format(bad_method1))
+    logfile.write("unaligned_method1:{0}\n".format(unaligned_method1))
     
-    print("nr_aligned method2:", nr_aligned_method2)
-    print("good_method2:", good_method2)
-    print("bad_method2:", bad_method2)
-    print("unaligned_method2:", unaligned_method2)
+    logfile.write("nr_aligned method2:{0}\n".format(nr_aligned_method2))
+    logfile.write("good_method2:{0}\n".format(good_method2))
+    logfile.write("bad_method2:{0}\n".format(bad_method2))
+    logfile.write("unaligned_method2:{0}\n".format(unaligned_method2))
 
-    print("to_improve:", to_improve)
+    logfile.write("to_improve:{0}\n".format(to_improve))
 
-    print("TRUE REF, PRED REF, ONLY STROBEALIGN MISALIGNED", to_improve)
+    logfile.write("TRUE REF, PRED REF, ONLY STROBEALIGN MISALIGNED", to_improve)
     for true_ref in misaligned_dict:
         s = 0
         for pred_ref in misaligned_dict[true_ref]:
             s+= misaligned_dict[true_ref][pred_ref]
-            print("{0},{1}: {2}".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
-        print("Total uniquely misaligned on {0}: {1}".format(true_ref, s))
+            logfile.write("{0},{1}: {2}\n".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
+        logfile.write("Total uniquely misaligned on {0}: {1}\n".format(true_ref, s))
 
     out_misaligned.close()
     out_unaligned.close()
@@ -177,7 +177,7 @@ def main(args):
     #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
     #     print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
-    get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"))
+    get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
     # print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
     # print("Accuracy: {0}".format(round(percent_correct, 3)))
 
@@ -193,6 +193,7 @@ if __name__ == '__main__':
     parser.add_argument('--om', type=str, default=None, help='Path to outfile misaligned file.')
     parser.add_argument('--ou', type=str, default=None, help='Path to outfile unaligned file.')
     parser.add_argument('--n', type=int, default=1000000, help='Number of reads to infer accuracy from (default is first 1M reads).')
+    parser.add_argument('--logfile', type=str, default= "log.txt", help='Path to logfile with results.')
     # parser.set_defaults(which='main')
     args = parser.parse_args()
 
