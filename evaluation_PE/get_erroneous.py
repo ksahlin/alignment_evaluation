@@ -7,12 +7,14 @@ import pysam
 from collections import defaultdict
 
 
-def read_sam(sam_file):
+def read_sam(sam_file, n):
     SAM_file = pysam.AlignmentFile(sam_file, "r", check_sq=False)
     read_positions = {} # acc -> [ref_id, ref_start, refstop]
 
 
-    for read in SAM_file.fetch(until_eof=True):
+    for i, read in enumerate(SAM_file.fetch(until_eof=True)):
+        if i > n:
+            break
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
             read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
@@ -169,13 +171,13 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
 
 def main(args):
 
-    truth = read_sam(args.truth)
+    truth = read_sam(args.truth, args.n)
 
     if args.predicted_sam_method1:
-        predicted1 = read_sam(args.predicted_sam_method1)
+        predicted1 = read_sam(args.predicted_sam_method1, args.n)
 
     if args.predicted_sam_method2:
-        predicted2 = read_sam(args.predicted_sam_method2)
+        predicted2 = read_sam(args.predicted_sam_method2, args.n)
 
     # elif args.predicted_paf:
     #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
@@ -196,6 +198,7 @@ if __name__ == '__main__':
     # parser.add_argument('--predicted_paf', type=str, default="", help='Predicted coordinates (SAM/PAF)')
     parser.add_argument('--om', type=str, default=None, help='Path to outfile misaligned file.')
     parser.add_argument('--ou', type=str, default=None, help='Path to outfile unaligned file.')
+    parser.add_argument('--n', type=int, default=1000000, help='Number of reads to infer accuracy from (default is first 1M reads).')
     # parser.set_defaults(which='main')
     args = parser.parse_args()
 
