@@ -12,7 +12,9 @@ def read_sam(sam_file, n):
     read_positions = {} # acc -> [ref_id, ref_start, refstop]
 
 
-    for read in SAM_file.fetch(until_eof=True):
+    for i, read in enumerate(SAM_file.fetch(until_eof=True)):
+        if i > n:
+            break
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
             read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
