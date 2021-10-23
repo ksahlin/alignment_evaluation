@@ -149,7 +149,7 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logf
 
     logfile.write("to_improve:{0}\n".format(to_improve))
 
-    logfile.write("TRUE REF, PRED REF, ONLY STROBEALIGN MISALIGNED", to_improve)
+    logfile.write("TRUE REF, PRED REF, ONLY STROBEALIGN MISALIGNED")
     for true_ref in misaligned_dict:
         s = 0
         for pred_ref in misaligned_dict[true_ref]:
