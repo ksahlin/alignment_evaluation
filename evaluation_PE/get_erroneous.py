@@ -206,12 +206,14 @@ def get_stats_individual(truth, predicted, logfile, method):
         s = 0
         for pred_ref in misaligned_dict[true_ref]:
             s+= misaligned_dict[true_ref][pred_ref]
-            # logfile.write("{0},{1}: {2}\n".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
+            logfile.write("{0},{1}: {2}\n".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
         # logfile.write("Total uniquely misaligned on {0}: {1}\n".format(true_ref, s))
         tot_mis[true_ref] = s
 
     for ref, nr in sorted(tot_mis.items(), key = lambda x: x[1], reverse=True):
         logfile.write("Total uniquely misaligned, originally from {0}: {1}\n".format(ref, nr))
+
+    return tot_mis
 
 
 def main(args):
@@ -224,8 +226,20 @@ def main(args):
     if args.predicted_sam_method2:
         predicted2 = read_sam(args.predicted_sam_method2, args.n)
     f = open(args.logfile, "w")
-    get_stats_individual(truth, predicted1, f, "minimap2")
-    get_stats_individual(truth, predicted2, f, "strobealign")
+    tot_mis1 = get_stats_individual(truth, predicted1, f, "minimap2")
+    tot_mis2 = get_stats_individual(truth, predicted2, f, "strobealign")
+
+    delta_missed = {}
+    for ref1, nr1 in sorted(tot_mis1.items(), key = lambda x: x[1], reverse=True):
+        if ref1 in tot_mis2:
+            nr2 = tot_mis2[ref1]
+            delta_missed[ref1] = nr2 - nr1
+
+    for ref, nr in sorted(delta_missed.items(), key = lambda x: x[1], reverse=True):
+        logfile.write("More misaligned strobealign, originally from {0}: {1}\n".format(ref, nr))
+
+
+
 
     # get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
 
