@@ -61,7 +61,7 @@ def read_paf(paf_file):
 
 
 def overlap(q_a, q_b, p_a, p_b):
-    assert q_a < q_b and p_a < p_b
+    assert q_a <= q_b and p_a <= p_b
     return  (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b)
 
 def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
@@ -94,7 +94,9 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
                 good_method1 += 1
                 if read_acc in predicted2:
                     pred2_ref_id, pred2_start, pred2_stop, read_p2 = predicted2[read_acc]
-                    if pred2_ref_id == true_ref_id and overlap(pred2_start, pred2_stop, true_start, true_stop):
+                    if not (pred_start <= pred_stop):
+                        print(read_acc, read_p2.reference_name, read_p2.reference_start, read_p2.reference_end,read_p2.cigarstring, true_ref_id)
+                    if (pred2_ref_id == true_ref_id) and overlap(pred2_start, pred2_stop, true_start, true_stop):
                         pass
                     else:
                         to_improve +=1
