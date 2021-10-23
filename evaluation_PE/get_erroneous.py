@@ -94,7 +94,7 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
                 good_method1 += 1
                 if read_acc in predicted2:
                     pred2_ref_id, pred2_start, pred2_stop, read_p2 = predicted2[read_acc]
-                    if not (pred_start <= pred_stop):
+                    if not (pred2_start < pred2_stop):
                         print(read_acc, read_p2.reference_name, read_p2.reference_start, read_p2.reference_end,read_p2.cigarstring, true_ref_id)
                     if (pred2_ref_id == true_ref_id) and overlap(pred2_start, pred2_stop, true_start, true_stop):
                         pass
