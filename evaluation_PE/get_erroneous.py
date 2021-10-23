@@ -12,14 +12,10 @@ def read_sam(sam_file, n):
     read_positions = {} # acc -> [ref_id, ref_start, refstop]
 
 
-    for i, read in enumerate(SAM_file.fetch(until_eof=True)):
-        if i > n:
-            break
+    for read in SAM_file.fetch(until_eof=True):
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
             read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
-        elif read.flag == 4:
-            read_positions[read.query_name] = False
         
         elif read.is_paired:
             if read.is_read1:
@@ -27,19 +23,26 @@ def read_sam(sam_file, n):
                 # if not (read.flag == 99 or  read.flag == 83):
                 #     print(read.query_name, read.flag)
                 if "/1" not in read.query_name[-4:]:
-                    read_positions[read.query_name + "/1"] = (read.reference_name, read.reference_start, read.reference_end, read)
+                    q_name = read.query_name + "/1"
                 else:
-                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
+                    q_name = read.query_name
 
         # elif read.flag == 147 or read.flag == 163: # Paired end second
             if read.is_read2:
                 # if not (read.flag == 147 or read.flag == 163):
                 #     print(read.query_name, read.flag)
                 if "/2" not in read.query_name[-4:]:
-                    read_positions[read.query_name + "/2"] = (read.reference_name, read.reference_start, read.reference_end, read)
+                    q_name = read.query_name + "/2"
                 else:
-                    read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end, read)
+                    q_name = read.query_name
 
+            if read.is_unmapped: 
+                read_positions[q_name] = False
+            else:
+                read_positions[q_name] = (read.reference_name, read.reference_start, read.reference_end, read)
+        
+        elif (not read.is_paired) and read.is_unmapped: # single and unmapped
+            read_positions[read.query_name] = False
 
 
     return read_positions     
