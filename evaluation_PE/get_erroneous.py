@@ -194,10 +194,10 @@ def get_stats_individual(truth, predicted, logfile, method):
                 misaligned_dict[true_ref_id][pred_ref_id] += 1
 
 
-    logfile.write("nr_aligned:{0}\n".format(nr_aligned_method1))
-    logfile.write("good_method:{0}\n".format(good_method1))
-    logfile.write("bad_method:{0}\n".format(bad_method1))
-    logfile.write("unaligned_method:{0}\n".format(unaligned_method1))
+    logfile.write("nr_aligned:{0}\n".format(nr_aligned_method))
+    logfile.write("good_method:{0}\n".format(good_method))
+    logfile.write("bad_method:{0}\n".format(bad_method))
+    logfile.write("unaligned_method:{0}\n".format(unaligned_method))
     logfile.write("to_improve:{0}\n".format(to_improve))
 
     logfile.write("TRUE REF, PRED REF, MISALIGNED")
