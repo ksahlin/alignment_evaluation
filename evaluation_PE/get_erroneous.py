@@ -94,7 +94,9 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned):
     for read_acc in truth:
         if not truth[read_acc]:
             continue
-
+        if (read_acc not in predicted1) or (read_acc not in predicted2):
+            # excluding from analysis since subsampling didnt sample them in at least on of the methods
+            continue 
         true_ref_id, true_start, true_stop, read = truth[read_acc]
         if not predicted1[read_acc]:
             unaligned_method1 += 1
