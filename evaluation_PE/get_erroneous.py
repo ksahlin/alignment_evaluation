@@ -69,7 +69,15 @@ def overlap(q_a, q_b, p_a, p_b):
     assert q_a <= q_b and p_a <= p_b
     return  (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b)
 
-def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logfile):
+def reverse_complement(string):
+    #rev_nuc = {'A':'T', 'C':'G', 'G':'C', 'T':'A', 'N':'N', 'X':'X'}
+    # Modified for Abyss output
+    rev_nuc = {'A':'T', 'C':'G', 'G':'C', 'T':'A', 'a':'t', 'c':'g', 'g':'c', 't':'a', 'N':'N', 'X':'X', 'n':'n', 'Y':'R', 'R':'Y', 'K':'M', 'M':'K', 'S':'S', 'W':'W', 'B':'V', 'V':'B', 'H':'D', 'D':'H', 'y':'r', 'r':'y', 'k':'m', 'm':'k', 's':'s', 'w':'w', 'b':'v', 'v':'b', 'h':'d', 'd':'h'}
+
+    rev_comp = ''.join([rev_nuc[nucl] for nucl in reversed(string)])
+    return(rev_comp)
+
+def get_stats(truth, predicted1, predicted2, out_misaligned1, out_misaligned2, out_unaligned, logfile):
 
     nr_aligned_method1 = len(predicted1)
     nr_aligned_method2 = len(predicted2)
@@ -123,8 +131,19 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logf
                 else:
                     to_improve +=1
                     # print(read_acc, "MISALIGNED STROBEALIGN" , pred_ref_id, pred2_start, pred2_stop, true_ref_id, true_start, true_stop )
-                    out_misaligned.write(">{0}\n{1}\n".format(read.query_name, read.query_sequence))
-                    misaligned_dict[true_ref_id][pred_ref_id] += 1
+                    if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
+                        if read.is_reverse:
+                            r = reverse_complement(read.query_sequence)
+                        else:
+                            r = read.query_sequence
+                        if read.is_read1:
+                            r_name = read.query_name + "/1"
+                            out_misaligned1.write(">{0}\n{1}\n".format(r_name, r))
+                        else:
+                            r_name = read.query_name + "/2"
+                            out_misaligned2.write(">{0}\n{1}\n".format(r_name, r))
+
+                        misaligned_dict[true_ref_id][pred_ref_id] += 1
 
 
         if not predicted2[read_acc]:
@@ -155,9 +174,10 @@ def get_stats(truth, predicted1, predicted2, out_misaligned, out_unaligned, logf
         for pred_ref in misaligned_dict[true_ref]:
             s+= misaligned_dict[true_ref][pred_ref]
             logfile.write("{0},{1}: {2}\n".format(true_ref, pred_ref, misaligned_dict[true_ref][pred_ref]))
-        logfile.write("Total uniquely misaligned on {0}: {1}\n".format(true_ref, s))
+        logfile.write("Only misaligned by strobealign {0}: {1}\n".format(true_ref, s))
 
-    out_misaligned.close()
+    out_misaligned1.close()
+    out_misaligned2.close()
     out_unaligned.close()
     # print("good (only method 2):", good_ok)
     # print("missed (only method 2):", missed_ok)
@@ -200,7 +220,7 @@ def get_stats_individual(truth, predicted, logfile, method):
     logfile.write("unaligned_method:{0}\n".format(unaligned_method))
     logfile.write("to_improve:{0}\n".format(to_improve))
 
-    logfile.write("TRUE REF, PRED REF, MISALIGNED")
+    logfile.write("TRUE REF, PRED REF, MISALIGNED\n")
     tot_mis = {}
     for true_ref in misaligned_dict:
         s = 0
@@ -235,13 +255,13 @@ def main(args):
             nr2 = tot_mis2[ref1]
             delta_missed[ref1] = nr2 - nr1
 
+    f.write("\n")
     for ref, nr in sorted(delta_missed.items(), key = lambda x: x[1], reverse=True):
         f.write("More misaligned strobealign, originally from {0}: {1}\n".format(ref, nr))
 
-
-
-
-    # get_stats(truth, predicted1, predicted2, open(args.om, "w"), open(args.ou, "w"), open(args.logfile, "w"))
+    om1 = open(args.om + "_1.fa", "w")
+    om2 = open(args.om + "_2.fa", "w")
+    get_stats(truth, predicted1, predicted2, om1, om2, open(args.ou, "w"), f)
 
 
 
@@ -253,7 +273,7 @@ if __name__ == '__main__':
     parser.add_argument('--predicted_sam_method1', type=str, default="", help='Predicted coordinates (SAM/PAF)')
     parser.add_argument('--predicted_sam_method2', type=str, default="", help='Predicted coordinates (SAM/PAF)')
     # parser.add_argument('--predicted_paf', type=str, default="", help='Predicted coordinates (SAM/PAF)')
-    parser.add_argument('--om', type=str, default=None, help='Path to outfile misaligned file.')
+    parser.add_argument('--om', type=str, default=None, help='Prefix path name to outfile misaligned file.')
     parser.add_argument('--ou', type=str, default=None, help='Path to outfile unaligned file.')
     parser.add_argument('--n', type=int, default=1000000, help='Number of reads to infer accuracy from (default is first 1M reads).')
     parser.add_argument('--logfile', type=str, default= "log.txt", help='Path to logfile with results.')
