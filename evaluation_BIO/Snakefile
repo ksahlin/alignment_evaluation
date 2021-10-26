@@ -239,7 +239,7 @@ rule bowtie2_align:
 
 # rule summary_alignment_stats:
 #     input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result",  dataset = ["MOTHER"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
-#     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy.result"
+#     output: out = config["ROOT_OUT"] + "/evaluation_BIO/accuracy.result"
 #     run:
 #         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
 #         for f in input.accuracy_files:
@@ -254,7 +254,7 @@ rule bowtie2_align:
 
 rule summary_time_and_mem:
     input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["MOTHER"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
-    output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem.result"
+    output: out = config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
         shell('echo "tool,dataset,read_length,time,memory" > {output.out}')
