@@ -1,0 +1,276 @@
+
+
+"""
+    snakemake --keep-going -j 999999 --cluster "sbatch -A {cluster.account} --C {cluster.C} -c {cluster.cpus-per-task} -N {cluster.Nodes}  -t {cluster.runtime} -J {cluster.jobname} --mail-type={cluster.mail_type} --mail-user={cluster.mail}" --cluster-config cluster.json --configfile experiments.json --latency-wait 100 --verbose -n
+"""
+
+shell.prefix("set -o pipefail; ")
+configfile: "experiments.json"
+
+# wildcard_constraints:
+#     nr_reads="[\d]+",
+
+####################################################
+########## standard python functions ###############
+####################################################
+
+import re
+import os
+import errno
+import shutil
+import glob
+
+
+
+def mkdir_p(path):
+    print("creating", path)
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+rule all:
+   input:  config["ROOT_OUT"] + "/evaluation_PE/accuracy.result",
+           config["ROOT_OUT"] + "/evaluation_PE/time_and_mem.result"
+            # expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign"]) #"strobealign", 'bwa', 'bowtie', 'accelalign',
+
+
+
+rule minimap2_index:
+    input: ref = config["HG38"]
+    output: mm_index =  config["HG38"] + ".mmi",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/indexing_time_and_mem.txt",
+    run:
+        shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+
+rule minimap2_align:
+    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+            # ref = config["HG38"],
+            index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 1 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule minimap2_map:
+    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+            # ref = config["HG38"],
+            index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 1 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
+rule bwa_mem_index:
+    input: ref = config["HG38"]
+    output: bwa_index =  config["HG38"] + ".bwt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/indexing_time_and_mem.txt",
+    run:
+        shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+
+rule bwa_mem_align:
+    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+            index = config["HG38"] + ".bwt",
+            ref = config["HG38"]
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  bwa mem -o {tmp_sam} -t 1 {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule strobemap_align:
+    input:  ref = config["HG38"],
+            fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq"
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/{dataset}.sam"
+    run: 
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  strobealign -t 1 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule strobemap_map:
+    input:  ref = config["HG38"],
+            fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq"
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/{dataset}.sam"
+    run: 
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  strobealign -t 1 -x -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule accelalign_index:
+    input: ref = config["HG38"]
+    output: accelalign_index =  config["HG38"] + ".hash",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/indexing_time_and_mem.txt"
+    run:
+        shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+
+rule accelalign_align:
+    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+            index = rules.accelalign_index.output.accelalign_index
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}.sam"
+    run:
+        ref = config["HG38"]
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  accalign -t 1 -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule accelalign_map:
+    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+            index = rules.accelalign_index.output.accelalign_index
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign_map/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign_map/{dataset}.sam"
+    run:
+        ref = config["HG38"]
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  accalign -t 1 -x -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule bowtie2_index:
+    input: ref = config["HG38"]
+    output: index =  config["HG38"] + "-bt2.1.bt2",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/indexing_time_and_mem.txt"
+    run:
+        index =  config["HG38"] + "-bt2"
+        shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+
+rule bowtie2_align:
+    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+            bt2_index =  config["HG38"] + "-bt2.1.bt2",
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam"
+    run:
+        ref = config["HG38"]
+        bt2_index = config["HG38"] + "-bt2"
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
+
+
+
+rule accuracy:
+    input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam",
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}.sam"
+    output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result"
+    run:
+        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
+        else:
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+
+
+
+rule summary_alignment_stats:
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy.result"
+    run:
+        shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
+        for f in input.accuracy_files:
+            string = f.split("/")
+            tool = string[-2]
+            dataset = string[-1].split(".")[0]
+            read_length = 250
+            shell("echo -n {tool},{dataset},{read_length}, >> {output.out} ")
+            shell("cat {f} >> {output.out}")
+            
+
+
+rule summary_time_and_mem:
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem.result"
+    run:
+        # summary_file = open(out, "w")
+        shell('echo "tool,dataset,read_length,time,memory" > {output.out}')
+
+        for f in input.time_and_mem_files:
+            string = f.split("/")
+            tool = string[-3]
+            dataset = string[-2]
+            read_length = 250
+            shell("/usr/bin/time -v  python summarize_time_and_memory.py {tool} {dataset} {read_length} {f}  >> {output.out} ")
+
+
+
+
+
+
+
+
+
