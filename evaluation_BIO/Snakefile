@@ -33,8 +33,8 @@ def mkdir_p(path):
             raise
 
 rule all:
-   input:  config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result",
-            config["ROOT_OUT"] + "/evaluation_BIO/overlap.result"
+   input:  config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result"
+            # config["ROOT_OUT"] + "/evaluation_BIO/overlap.result"
 
 
 
@@ -221,19 +221,20 @@ rule bowtie2_align:
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 
-
-rule overlap:
-    input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam",
-           bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam",
-           aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
-    output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result"
-    run:
-        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map": 
-            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --paf  {input.aln} > {output.out} ")
-        else:
-            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --sam3  {input.aln} > {output.out} ")
+# rule overlap:
+#     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam",
+#            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam",
+#            aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
+#     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result"
+#     run:
+#         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map": 
+#             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --paf  {input.aln} > {output.out} ")
+#         else:
+#             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --sam3  {input.aln} > {output.out} ")
 
 
 
