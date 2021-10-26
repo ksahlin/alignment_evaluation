@@ -62,31 +62,43 @@ def read_paf(paf_file):
     return read_positions, mapped_to_multiple_pos
 
 
-def overlap(q_a, q_b, p_a, p_b):
+def overlap(t1, t2):
+    q_id, q_a, q_b = t1
+    p_id, p_a, p_b = t2
     assert q_a <= q_b and p_a <= p_b
-    # if (q_a == q_b) or (p_a == p_b):
-    #     print("Cigar bug")
-    return  (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b)
+    return (q_id == p_id) and  ( (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b) )
 
-def get_stats(truth, predicted):
+def get_stats(sam1, sam2, sam3):
+    total_aligned = {"sam1" : 0, "sam2": 0, "sam3": 0}
+    overlaps = { "all":0, 
+                 "sam1-sam2" : 0, "sam1-sam3" : 0, "sam2-sam3" : 0,
+                 "sam1-unique" : 0, "sam2-unique" : 0, "sam3-unique" : 0}
 
-    # nr_aligned = len(predicted)
-    nr_total = len(truth)
-    unaligned = 0 
-    nr_aligned = 0
-    over_mapped = 0
-    correct = 0
-    for read_acc in predicted:
-        if not truth[read_acc]:
-            over_mapped += 1
-            continue
-        if not predicted[read_acc]:
-            unaligned += 1
-            continue
+    nr_total = len(sam1)
+    print("TOT reads: ", nr_total)
 
-        nr_aligned += 1
+    for read_acc in sam1:
+        # check if mapped
+        if sam1[read_acc]: # mapped in sam1
+            total_aligned["sam1"] += 1
+            sam1_rid, sam1_a, sam1_b = sam1[read_acc]
+        if sam2[read_acc]: # mapped in sam2
+            total_aligned["sam2"] += 1
+            sam2_rid, sam2_a, sam2_b = sam2[read_acc]
+        if sam3[read_acc]: # mapped in sam3
+            total_aligned["sam3"] += 1
+            sam3_rid, sam3_a, sam3_b = sam3[read_acc]
 
-        pred_ref_id, pred_start, pred_stop = predicted[read_acc]
+        # do the actual overlap analyses
+        if sam1[read_acc] and sam2[read_acc] and sam3[read_acc]:
+            o1 = overlap(sam1[read_acc], sam2[read_acc])
+            o2 = overlap(sam1[read_acc], sam3[read_acc])
+            o3 = overlap(sam2[read_acc], sam3[read_acc])
+
+            if o1 and o2 and o3:
+
+
+
         true_ref_id, true_start, true_stop = truth[read_acc]
         # print(read_acc, pred_start, pred_stop, true_start, true_stop)
         if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
@@ -101,33 +113,41 @@ def get_stats(truth, predicted):
     accuracy = 0.0
     if nr_aligned > 0:
         accuracy = 100*correct/nr_aligned
-    return aligned_percentage, accuracy, over_mapped
+    return total_aligned, overlaps
 
 
 def main(args):
 
-    truth = read_sam(args.truth)
+    sam1 = read_sam(args.sam1)
+    sam2 = read_sam(args.sam2)
+    sam3 = read_sam(args.sam3)
 
-    if args.predicted_sam:
-        predicted = read_sam(args.predicted_sam)
-    elif args.predicted_paf:
-        predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
-        # print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
+    # if args.predicted_sam:
+    #     predicted = read_sam(args.predicted_sam)
+    # elif args.predicted_paf:
+    #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
+    #     # print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
-    percent_aligned, percent_correct, over_mapped = get_stats(truth, predicted)
-    out_str = "{0},{1},{2}".format(round(percent_aligned, 5), round(percent_correct, 5), over_mapped)
-    print(out_str)
-    # print("Percentage aligned: {0}".format(round(percent_aligned, 3)))
-    # print("Accuracy: {0}".format(round(percent_correct, 3)))
-    # print("Over-aligned (unmapped in grough truth file): {0}".format(over_mapped))
+    total_aligned, overlaps = get_stats(sam1, sam2, sam3)
+
+    for method, tot_aln in total_aligned.items():
+        print("{0}: {1}".format(method, round(tot_aln/8000000,5)))
+
+    for ovl, nr_in_common in overlaps.items():
+        print("{0} : {1}".format(ovl, nr_in_common))
 
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--truth', type=str, default=False, help='True coordinates (SAM)')
-    parser.add_argument('--predicted_sam', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
-    parser.add_argument('--predicted_paf', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    parser.add_argument('--sam1', type=str, default=False, help='True coordinates (SAM)')
+    parser.add_argument('--sam2', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    parser.add_argument('--sam3', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+
+    # parser.add_argument('--paf1', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    # parser.add_argument('--paf2', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    # parser.add_argument('--paf3', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+
     parser.add_argument('--outfile', type=str, default=None, help='Path to file.')
     # parser.set_defaults(which='main')
     args = parser.parse_args()
