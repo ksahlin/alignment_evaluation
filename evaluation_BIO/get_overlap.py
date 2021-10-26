@@ -94,25 +94,19 @@ def get_stats(sam1, sam2, sam3):
             o1 = overlap(sam1[read_acc], sam2[read_acc])
             o2 = overlap(sam1[read_acc], sam3[read_acc])
             o3 = overlap(sam2[read_acc], sam3[read_acc])
-
             if o1 and o2 and o3:
+                overlaps["all"] += 1
+            elif o1:
+                overlaps["sam1-sam2"] += 1
+            elif o2:
+                overlaps["sam1-sam3"] += 1               
+            elif o3:
+                overlaps["sam2-sam3"] += 1
+            else:
+                overlaps["sam1-unique"] += 1
+                overlaps["sam2-unique"] += 1
+                ["sam3-unique"] += 1
 
-
-
-        true_ref_id, true_start, true_stop = truth[read_acc]
-        # print(read_acc, pred_start, pred_stop, true_start, true_stop)
-        if pred_ref_id == true_ref_id and overlap(pred_start, pred_stop, true_start, true_stop):
-            correct += 1
-            # print(read_acc)
-        else:
-            pass
-    #         print(read_acc, pred_ref_id, pred_start, pred_stop, true_ref_id, true_start, true_stop )
-    # print(correct)
-    # print(nr_aligned)
-    aligned_percentage = 100*(nr_aligned/nr_total)
-    accuracy = 0.0
-    if nr_aligned > 0:
-        accuracy = 100*correct/nr_aligned
     return total_aligned, overlaps
 
 
@@ -140,13 +134,13 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--sam1', type=str, default=False, help='True coordinates (SAM)')
-    parser.add_argument('--sam2', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
-    parser.add_argument('--sam3', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    parser.add_argument('--sam1', type=str, default=False, help='Predicted coordinates (SAM)')
+    parser.add_argument('--sam2', type=str, default="", help='Predicted coordinates (SAM)')
+    parser.add_argument('--sam3', type=str, default="", help='Predicted coordinates (SAM)')
 
-    # parser.add_argument('--paf1', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
-    # parser.add_argument('--paf2', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
-    # parser.add_argument('--paf3', type=str, default="", help='Perdicted coordinates (SAM/PAF)')
+    parser.add_argument('--paf', type=str, default="", help='Predicted coordinates (PAF)')
+    # parser.add_argument('--paf2', type=str, default="", help='Predicted coordinates (SAM/PAF)')
+    # parser.add_argument('--paf3', type=str, default="", help='Predicted coordinates (SAM/PAF)')
 
     parser.add_argument('--outfile', type=str, default=None, help='Path to file.')
     # parser.set_defaults(which='main')
