@@ -68,11 +68,11 @@ def overlap(t1, t2):
     assert q_a <= q_b and p_a <= p_b
     return (q_id == p_id) and  ( (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b) )
 
-def get_stats(sam1, sam2, sam3):
-    total_aligned = {"sam1" : 0, "sam2": 0, "sam3": 0}
+def get_stats(sam1, sam2, sam_tool, tool_name):
+    total_aligned = {"bwa_mem" : 0, "bowtie2": 0, tool_name: 0}
     overlaps = { "all":0, 
-                 "sam1-sam2" : 0, "sam1-sam3" : 0, "sam2-sam3" : 0,
-                 "sam1-unique" : 0, "sam2-unique" : 0, "sam3-unique" : 0}
+                 "bwa_mem-bowtie2" : 0, "bwa_mem-"+ tool_name : 0, "bowtie2-" + tool_name : 0,
+                 "bwa_mem-unique" : 0, "bowtie2-unique" : 0, tool_name + "-unique" : 0}
 
     nr_total = len(sam1)
     print("TOT reads: ", nr_total)
@@ -80,32 +80,35 @@ def get_stats(sam1, sam2, sam3):
     for read_acc in sam1:
         # check if mapped
         if sam1[read_acc]: # mapped in sam1
-            total_aligned["sam1"] += 1
+            total_aligned["bwa_mem"] += 1
             sam1_rid, sam1_a, sam1_b = sam1[read_acc]
         if sam2[read_acc]: # mapped in sam2
-            total_aligned["sam2"] += 1
+            total_aligned["bowtie2"] += 1
             sam2_rid, sam2_a, sam2_b = sam2[read_acc]
-        if sam3[read_acc]: # mapped in sam3
-            total_aligned["sam3"] += 1
-            sam3_rid, sam3_a, sam3_b = sam3[read_acc]
+        if sam_tool[read_acc]: # mapped in sam_tool
+            total_aligned[tool_name] += 1
+            sam3_rid, sam3_a, sam3_b = sam_tool[read_acc]
 
         # do the actual overlap analyses
-        if sam1[read_acc] and sam2[read_acc] and sam3[read_acc]:
+        if sam1[read_acc] and sam2[read_acc] and sam_tool[read_acc]:
             o1 = overlap(sam1[read_acc], sam2[read_acc])
-            o2 = overlap(sam1[read_acc], sam3[read_acc])
-            o3 = overlap(sam2[read_acc], sam3[read_acc])
+            o2 = overlap(sam1[read_acc], sam_tool[read_acc])
+            o3 = overlap(sam2[read_acc], sam_tool[read_acc])
             if o1 and o2 and o3:
                 overlaps["all"] += 1
             elif o1:
-                overlaps["sam1-sam2"] += 1
+                overlaps["bwa_mem-bowtie2"] += 1
+                overlaps[ tool_name + "-unique"] += 1
             elif o2:
-                overlaps["sam1-sam3"] += 1               
+                overlaps["bwa_mem-"+tool_name] += 1
+                overlaps["bowtie2-unique"] += 1          
             elif o3:
-                overlaps["sam2-sam3"] += 1
+                overlaps["bowtie2-" + tool_name] += 1
+                overlaps["bwa_mem-unique"] += 1
             else:
-                overlaps["sam1-unique"] += 1
-                overlaps["sam2-unique"] += 1
-                ["sam3-unique"] += 1
+                overlaps["bwa_mem-unique"] += 1
+                overlaps["bowtie2-unique"] += 1
+                overlaps[ tool_name + "-unique"] += 1
 
     return total_aligned, overlaps
 
@@ -114,7 +117,7 @@ def main(args):
 
     sam1 = read_sam(args.sam1)
     sam2 = read_sam(args.sam2)
-    sam3 = read_sam(args.sam3)
+    sam_tool = read_sam(args.sam3)
 
     # if args.predicted_sam:
     #     predicted = read_sam(args.predicted_sam)
@@ -122,10 +125,10 @@ def main(args):
     #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
     #     # print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
-    total_aligned, overlaps = get_stats(sam1, sam2, sam3)
+    total_aligned, overlaps = get_stats(sam1, sam2, sam_tool, args.tool)
 
     for method, tot_aln in total_aligned.items():
-        print("{0}: {1}".format(method, round(tot_aln/8000000,5)))
+        print("{0}: {1}".format(method, round(tot_aln/200000,5)))
 
     for ovl, nr_in_common in overlaps.items():
         print("{0} : {1}".format(ovl, nr_in_common))
@@ -134,14 +137,15 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--sam1', type=str, default=False, help='Predicted coordinates (SAM)')
-    parser.add_argument('--sam2', type=str, default="", help='Predicted coordinates (SAM)')
-    parser.add_argument('--sam3', type=str, default="", help='Predicted coordinates (SAM)')
+    parser.add_argument('--sam1', type=str, default=False, help='Predicted coordinates BWA (SAM)')
+    parser.add_argument('--sam2', type=str, default="", help='Predicted coordinates Bowtie2 (SAM)')
+    parser.add_argument('--sam3', type=str, default="", help='Predicted coordinates of the tool (SAM)')
 
-    parser.add_argument('--paf', type=str, default="", help='Predicted coordinates (PAF)')
+    parser.add_argument('--paf', type=str, default="", help='Predicted coordinates of the tool (PAF)')
     # parser.add_argument('--paf2', type=str, default="", help='Predicted coordinates (SAM/PAF)')
     # parser.add_argument('--paf3', type=str, default="", help='Predicted coordinates (SAM/PAF)')
 
+    parser.add_argument('--tool', type=str, default="", help='The tool to compare against BWA and Bowtie2')
     parser.add_argument('--outfile', type=str, default=None, help='Path to file.')
     # parser.set_defaults(which='main')
     args = parser.parse_args()
