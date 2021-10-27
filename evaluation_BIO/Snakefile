@@ -228,13 +228,17 @@ rule bowtie2_align:
 rule overlap:
     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam",
            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam",
+           mm2 =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}.sam",
            aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result"
     run:
         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map": 
             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --paf  {input.aln} --tool {wildcards.tool} > {output.out} ")
+            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.mm2} --paf  {input.aln} --tool {wildcards.tool} >> {output.out} ")
+
         else:
             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --sam3  {input.aln} --tool {wildcards.tool} > {output.out} ")
+            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.mm2} --sam3  {input.aln} --tool {wildcards.tool} >> {output.out} ")
 
  
 
