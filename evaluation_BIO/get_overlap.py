@@ -69,7 +69,7 @@ def overlap(t1, t2):
     assert q_a <= q_b and p_a <= p_b
     return (q_id == p_id) and  ( (p_a <= q_a <= p_b) or (p_a <= q_b <= p_b) or (q_a <= p_a <= q_b) or (q_a <= p_b <= q_b) )
 
-def get_stats(sam1, sam2, sam_tool, tool_name):
+def get_stats(sam1, sam2, sam_tool, tool_name, is_paf):
     total_aligned = {"bwa_mem" : 0, "bowtie2": 0, tool_name: 0}
     overlaps = { "all":0, 
                  "bwa_mem-bowtie2" : 0, "bwa_mem-"+ tool_name : 0, "bowtie2-" + tool_name : 0,
@@ -80,6 +80,10 @@ def get_stats(sam1, sam2, sam_tool, tool_name):
 
     for read_acc in sam1:
         # check if mapped
+        if is_paf:
+            if read_acc not in sam_tool:
+                sam_tool[read_acc] = False
+
         if sam1[read_acc]: # mapped in sam1
             total_aligned["bwa_mem"] += 1
             sam1_rid, sam1_a, sam1_b = sam1[read_acc]
@@ -97,19 +101,46 @@ def get_stats(sam1, sam2, sam_tool, tool_name):
             o3 = overlap(sam2[read_acc], sam_tool[read_acc])
             if o1 and o2 and o3:
                 overlaps["all"] += 1
-            elif o1:
-                overlaps["bwa_mem-bowtie2"] += 1
-                overlaps[ tool_name + "-unique"] += 1
-            elif o2:
-                overlaps["bwa_mem-"+tool_name] += 1
-                overlaps["bowtie2-unique"] += 1          
-            elif o3:
-                overlaps["bowtie2-" + tool_name] += 1
-                overlaps["bwa_mem-unique"] += 1
             else:
-                overlaps["bwa_mem-unique"] += 1
-                overlaps["bowtie2-unique"] += 1
-                overlaps[ tool_name + "-unique"] += 1
+                if o1:
+                    overlaps["bwa_mem-bowtie2"] += 1
+                    # overlaps[ tool_name + "-unique"] += 1
+                if o2:
+                    overlaps["bwa_mem-"+tool_name] += 1
+                    # overlaps["bowtie2-unique"] += 1          
+                if o3:
+                    overlaps["bowtie2-" + tool_name] += 1
+                    # overlaps["bwa_mem-unique"] += 1
+                if (not o1) and (not o2):
+                    overlaps["bwa_mem-unique"] += 1
+                if (not o1) and (not o3):  
+                    overlaps["bowtie2-unique"] += 1         
+                if (not o2) and (not o3): 
+                    overlaps[ tool_name + "-unique"] += 1
+
+        elif sam1[read_acc] and sam2[read_acc]:
+            o = overlap(sam1[read_acc], sam2[read_acc])
+            if o:
+                overlaps["bwa_mem-bowtie2"] += 1
+
+        elif sam1[read_acc] and sam_tool[read_acc]:
+            o = overlap(sam1[read_acc], sam_tool[read_acc])
+            if o:
+                overlaps["bwa_mem-"+tool_name] += 1
+
+        elif sam2[read_acc] and sam_tool[read_acc]:
+            o = overlap(sam2[read_acc], sam_tool[read_acc])
+            if o:
+                overlaps["bowtie2-"+tool_name] += 1
+
+        elif sam1[read_acc]:
+            overlaps["bwa_mem-unique"] += 1
+
+        elif sam2[read_acc]:
+            overlaps["bowtie2-unique"] += 1
+        elif sam_tool[read_acc]:
+            overlaps[ tool_name + "-unique"] += 1
+
 
     return total_aligned, overlaps
 
@@ -118,7 +149,13 @@ def main(args):
 
     sam1 = read_sam(args.sam1)
     sam2 = read_sam(args.sam2)
-    sam_tool = read_sam(args.sam3)
+    if args.sam3:
+        alignments_tool = read_sam(args.sam3)
+        is_paf = False
+    elif args.paf:
+        alignments_tool = read_paf(args.paf)
+        is_paf = True
+
 
     # if args.predicted_sam:
     #     predicted = read_sam(args.predicted_sam)
@@ -126,10 +163,10 @@ def main(args):
     #     predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
     #     # print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
 
-    total_aligned, overlaps = get_stats(sam1, sam2, sam_tool, args.tool)
+    total_aligned, overlaps = get_stats(sam1, sam2, alignments_tool, args.tool, is_paf )
 
     for method, tot_aln in total_aligned.items():
-        print("{0}: {1}".format(method, round(tot_aln/200000,5)))
+        print("{0}: {1}".format(method, round(tot_aln/8000000,5)))
 
     for ovl, nr_in_common in overlaps.items():
         print("{0} : {1}".format(ovl, nr_in_common))
