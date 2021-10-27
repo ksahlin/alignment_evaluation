@@ -13,28 +13,29 @@ def read_sam(sam_file):
 
 
     for read in SAM_file.fetch(until_eof=True):
+        r_name_tmp = read.query_name.split()[0]
         if read.flag == 0 or read.flag == 16: # single end
             # print(read.query_name, len(read_positions))
-            read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
+            read_positions[r_name_tmp] = (read.reference_name, read.reference_start, read.reference_end)
         
         elif read.is_paired:
             if read.is_read1:
         # elif read.flag == 99 or  read.flag == 83: # Paired end first
                 # if not (read.flag == 99 or  read.flag == 83):
-                #     print(read.query_name, read.flag)
-                if "/1" not in read.query_name[-4:]:
-                    q_name = read.query_name + "/1"
+                #     print(r_name_tmp, read.flag)
+                if "/1" not in r_name_tmp[-4:]:
+                    q_name = r_name_tmp + "/1"
                 else:
-                    q_name = read.query_name
+                    q_name = r_name_tmp
 
         # elif read.flag == 147 or read.flag == 163: # Paired end second
             if read.is_read2:
                 # if not (read.flag == 147 or read.flag == 163):
-                #     print(read.query_name, read.flag)
-                if "/2" not in read.query_name[-4:]:
-                    q_name = read.query_name + "/2"
+                #     print(r_name_tmp, read.flag)
+                if "/2" not in r_name_tmp[-4:]:
+                    q_name = r_name_tmp + "/2"
                 else:
-                    q_name = read.query_name
+                    q_name = r_name_tmp
 
             if read.is_unmapped: 
                 read_positions[q_name] = False
@@ -42,7 +43,7 @@ def read_sam(sam_file):
                 read_positions[q_name] = (read.reference_name, read.reference_start, read.reference_end)
         
         elif (not read.is_paired) and read.is_unmapped: # single and unmapped
-            read_positions[read.query_name] = False
+            read_positions[r_name_tmp] = False
 
     return read_positions     
 
