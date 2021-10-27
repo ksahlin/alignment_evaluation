@@ -153,7 +153,7 @@ def main(args):
         alignments_tool = read_sam(args.sam3)
         is_paf = False
     elif args.paf:
-        alignments_tool = read_paf(args.paf)
+        alignments_tool, _ = read_paf(args.paf)
         is_paf = True
 
 

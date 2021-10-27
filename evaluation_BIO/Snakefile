@@ -220,7 +220,7 @@ rule bowtie2_align:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -X 1000 -p 1 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
