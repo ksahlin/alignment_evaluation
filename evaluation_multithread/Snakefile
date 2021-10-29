@@ -35,38 +35,6 @@ def mkdir_p(path):
 rule all:
    input:  config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result" 
             # config["ROOT_OUT"] + "/evaluation_multithread/accuracy.result"
-            # expand(config["ROOT_OUT"] + "/evaluation_multithread/{tool}/{n_threads}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign"]) #"strobealign", 'bwa', 'bowtie', 'accelalign',
-
-
-# rule mason_simulate_variants:
-#     input:  ref = config["HG38"]
-#     output: sim_vcf =  config["ROOT_OUT"] + "/reads/SIM1/variations.vcf",
-#     run:
-#         if wildcards.dataset == "SIM1":
-#             shell("mason_variator -ir {input.ref} -ov {output.sim_vcf}")
-#         elif wildcards.dataset == "SIM2":
-#             shell("mason_variator --sv-indel-rate 0.000001 --snp-rate 0.001 --small-indel-rate 0.00001 --max-small-indel-size 20  -ir {input.ref} -ov {output.sim_vcf}")
-#         elif wildcards.dataset == "SIM3":
-#             shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
-
-
-# rule mason_simulate_reads:
-#     input:  ref = config["HG38"],
-#             sim_vcf = rules.mason_simulate_variants.output.sim_vcf
-#     output: sim_fa =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fa",
-#             sim_sam =  config["ROOT_OUT"] + "/reads/SIM1/{read_length}.sam",
-#     run:
-
-#         if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
-#             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam} --fragment-mean-size 1000")
-#         else:
-#             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fa} -oa {output.sim_sam}")
-
-# rule fasta_to_fastq:
-#     input: fasta = rules.mason_simulate_reads.output.sim_fa,
-#     output: fastq = config["ROOT_OUT"] + "/reads/SIM1/{read_length}.fq"
-#     run:
-#         shell("fasta2fastq  {input.fasta} {output.fastq}")
 
 
 rule minimap2_index:
@@ -77,8 +45,8 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
-    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq",
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
@@ -96,8 +64,8 @@ rule minimap2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
-    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq",
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/minimap2_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/minimap2_map/{n_threads}/{read_length}.sam"
@@ -121,8 +89,8 @@ rule bwa_mem_index:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem_align:
-    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq",
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem/{n_threads}/{read_length}/aligning_time_and_mem.txt",
@@ -142,8 +110,8 @@ rule bwa_mem_align:
 
 rule strobealign:
     input:  ref = config["HG38"],
-            fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq"
+            fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobealign/{n_threads}/{read_length}.sam"
@@ -162,8 +130,8 @@ rule strobealign:
 
 rule strobealign_map:
     input:  ref = config["HG38"],
-            fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq"
+            fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments/strobealign_map/{n_threads}/{read_length}.sam"
@@ -187,8 +155,8 @@ rule accelalign_index:
         shell("/usr/bin/time -v  accindex -t {wildcards.n_threads} {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
-    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq",
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign/{n_threads}/{read_length}/aligning_time_and_mem.txt",
@@ -207,8 +175,8 @@ rule accelalign_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_map:
-    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq",
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/accelalign_map/{n_threads}/{read_length}/aligning_time_and_mem.txt",
@@ -236,8 +204,8 @@ rule bowtie2_index:
         shell("/usr/bin/time -v  bowtie2-build --threads {wildcards.n_threads} {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
-    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_L.fq",
-           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM1/{read_length}_R.fq",
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             bt2_index =  config["HG38"] + "-bt2.1.bt2"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bowtie2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
@@ -288,7 +256,7 @@ rule bowtie2_align:
 # n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"]
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt", n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt", n_threads =  ["4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
