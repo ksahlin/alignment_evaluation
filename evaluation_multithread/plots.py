@@ -154,7 +154,7 @@ def plot_runtime(input_csv, outfolder):
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
         col="threads", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=[2, 4, 8, 16])
+        col_wrap=3, col_order=[4, 8, 16])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
     g.set_axis_labels("Read length", "Time (sec)")
@@ -163,8 +163,11 @@ def plot_runtime(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
+    # g.set(yscale="log")
+    g.set( yticks=[0,100,200,500,1000,1500,2000,2500,3000], ylim=(0, 2000))
+    # g.set( yticks=[100, 200,300,400,500,600,700,800,900,1000,2000,3000], ylim=(0, 3500))
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
-    g.set( yticks=[0,100,500,1000,1500,2000], ylim=(0, 2000))
+
 
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
