@@ -154,9 +154,13 @@ def plot_runtime(input_csv, outfolder):
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
         col="threads", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=[4, 8, 16])
-    # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
-    # axes = g.axes
+        col_wrap=3, col_order=[4, 8, 16], facet_kws={'sharey': False, 'sharex': True})
+
+    # g = sns.relplot(
+    #     data=indata, x="threads", y="time", hue="tool", style="type",
+    #     col="read_length", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+    #     col_wrap=3, col_order=[100, 150, 200, 250, 300], facet_kws={'sharey': False, 'sharex': True})
+
     g.set_axis_labels("Read length", "Time (sec)")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -164,14 +168,19 @@ def plot_runtime(input_csv, outfolder):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     # g.set(yscale="log")
-    g.set( yticks=[0,100,200,500,1000,1500,2000,2500,3000], ylim=(0, 2000))
-    # g.set( yticks=[100, 200,300,400,500,600,700,800,900,1000,2000,3000], ylim=(0, 3500))
-    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
 
+    g.set( yticks=[0,250,500,1000,2000,3000, 4000,5000,6000], ylim=(0, 5200))
+    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    # g.set( xticks=[4,8,16]) #ylim=(40, 100),
+
+    # g.axes[0].set_ylim(0,6000)
+    # g.axes[1].set_ylim(0,4000)
+    # g.axes[2].set_ylim(0,2500)
 
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     # plt.savefig(os.path.join(outfolder, "time_plot.eps"))
+    # plt.tight_layout()
     plt.savefig(os.path.join(outfolder, "time_plot.pdf"))
     plt.close()
 
