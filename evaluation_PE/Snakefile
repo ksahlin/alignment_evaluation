@@ -261,6 +261,35 @@ rule bowtie2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
+
+rule urmap_index:
+    input: ref = config["HG38"]
+    output: ufi_index =  config["HG38"] + ".ufi",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/indexing_time_and_mem.txt",
+    run:
+        # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
+        shell("/usr/bin/time -v  urmap -make_ufi -threads 1 {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
+
+rule urmap_align:
+    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
+            index = rules.urmap_index.output.ufi_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}/{read_length}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
+        shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
 rule accuracy:
     input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
@@ -274,7 +303,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap_align"])
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -289,7 +318,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap_align"])
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
