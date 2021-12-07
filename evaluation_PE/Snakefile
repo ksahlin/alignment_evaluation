@@ -268,7 +268,7 @@ rule urmap_index:
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/indexing_time_and_mem.txt",
     run:
         # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
-        shell("/usr/bin/time -v  urmap -make_ufi -threads 1 {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
+        shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule urmap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -290,32 +290,32 @@ rule urmap_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
-# rule snap_index:
-#     input: ref = config["HG38"]
-#     output: ufi_index =  config["HG38"] + ".ufi",
-#             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
-#     run:
-#         # snap
-#         shell("/usr/bin/time -v  snap -make_ufi -threads 1 {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
+rule snap_index:
+    input: ref = config["HG38"]
+    output: snp_index =  config["HG38"] + "_snap_index/",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
+    run:
+        # snap
+        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snap_index} 2>&1 | tee {output.time_and_mem}") 
 
-# rule snap_align:
-#     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-#             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-#             index = rules.snap_index.output.ufi_index
-#     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/{read_length}/aligning_time_and_mem.txt",
-#             sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam"
-#     run:
-#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-#         shell("echo Copied reads to: $SLURM_JOB_ID")
-#         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-#         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-#         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-#         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-#         # snap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
-#         shell("/usr/bin/time -v  snap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
-#         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-#         shell("mv {tmp_sam} {output.sam}")
+rule snap_align:
+    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
+            index = rules.snap_index.output.snp_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
+        shell("/usr/bin/time -v  snap-aligner paired {input.index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule accuracy:
     input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
