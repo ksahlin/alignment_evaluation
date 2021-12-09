@@ -237,8 +237,8 @@ rule urmap_index:
         shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule urmap_align:
-    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.urmap_index.output.ufi_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{n_threads}/{read_length}.sam"
@@ -269,8 +269,8 @@ rule snap_index:
         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
-    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
+    input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
+           fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.snap_index.output.snp_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{n_threads}/{read_length}.sam"
