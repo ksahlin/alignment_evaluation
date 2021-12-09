@@ -277,6 +277,7 @@ rule urmap_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}/{read_length}.sam"
     run:
+        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")

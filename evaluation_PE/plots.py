@@ -27,7 +27,7 @@ def plot_accuracy(input_csv, outfolder):
     #             "accelalign" : "", "accelalign_map" : (5,5)}
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", kind="line", #dashes = dashes,
-        col="dataset",  # hue="datastructure", style="datastructure",
+        col="dataset", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], # hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -63,7 +63,7 @@ def plot_percentage_aligned(input_csv, outfolder):
     # print(indata)
     g = sns.relplot(
         data=indata, x="read_length", y="aligned", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line",  hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -146,7 +146,7 @@ def plot_memory_usage(input_csv, outfolder):
 
 def plot_runtime(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.4)
+    sns.set(font_scale=1.9)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 
