@@ -228,6 +228,73 @@ rule bowtie2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
+rule urmap_index:
+    input: ref = config["HG38"]
+    output: ufi_index =  config["HG38"] + ".ufi",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/indexing_time_and_mem.txt",
+    run:
+        # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
+        shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
+
+rule urmap_align:
+    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
+            index = rules.urmap_index.output.ufi_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{n_threads}/{read_length}.sam"
+    run:
+        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.n_threads))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        # shell("cp {0} /scratch/$SLURM_JOB_ID/index.ufi".format(input.index))
+        # shell("echo Copied index to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
+        # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
+        shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
+rule snap_index:
+    input: ref = config["HG38"]
+    output: snp_index =  config["HG38"] + "_snap_index/GenomeIndexHash",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
+    run:
+        # snap
+        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
+
+rule snap_align:
+    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
+            index = rules.snap_index.output.snp_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{n_threads}/{read_length}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        # shell("mkdir /scratch/$SLURM_JOB_ID/snap_index")
+        # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
+        # shell("echo Copied index to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
+        # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+        tmp_index = config["HG38"] + "_snap_index"
+        shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
+
+
 # rule accuracy:
 #     input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{n_threads}/{read_length}.sam",
 #             truth =  config["ROOT_OUT"] + "/reads/{n_threads}/{read_length}.sam"
@@ -256,7 +323,7 @@ rule bowtie2_align:
 # n_threads =  ["2", "4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"]
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt", n_threads =  ["4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{n_threads}/{read_length}/aligning_time_and_mem.txt", n_threads =  ["4", "8", "16"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap"])
     output: out = config["ROOT_OUT"] + "/evaluation_multithread/time_and_mem.result"
     run:
         # summary_file = open(out, "w")

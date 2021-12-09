@@ -99,7 +99,7 @@ def plot_overaligned(input_csv, outfolder):
     # print(indata)
     g = sns.relplot(
         data=indata, x="read_length", y="overaligned", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"],  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -127,7 +127,7 @@ def plot_memory_usage(input_csv, outfolder):
 
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"],  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -146,14 +146,14 @@ def plot_memory_usage(input_csv, outfolder):
 
 def plot_runtime(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.4)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"],  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
