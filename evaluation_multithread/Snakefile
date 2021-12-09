@@ -231,7 +231,7 @@ rule bowtie2_align:
 rule urmap_index:
     input: ref = config["HG38"]
     output: ufi_index =  config["HG38"] + ".ufi",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/urmap/indexing_time_and_mem.txt",
     run:
         # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
         shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
@@ -240,10 +240,10 @@ rule urmap_align:
     input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.urmap_index.output.ufi_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{n_threads}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/urmap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/urmap/{n_threads}/{read_length}.sam"
     run:
-        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.n_threads))
+        mkdir_p(config["ROOT_OUT"] + "/alignments/urmap/{0}/".format(wildcards.n_threads))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
@@ -263,7 +263,7 @@ rule urmap_align:
 rule snap_index:
     input: ref = config["HG38"]
     output: snp_index =  config["HG38"] + "_snap_index/GenomeIndexHash",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/indexing_time_and_mem.txt",
     run:
         # snap
         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
@@ -272,8 +272,8 @@ rule snap_align:
     input: fastq_L = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_L.fq",
            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = rules.snap_index.output.snp_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{n_threads}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/{n_threads}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/snap/{n_threads}/{read_length}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
