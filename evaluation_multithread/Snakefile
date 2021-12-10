@@ -280,9 +280,9 @@ rule snap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
-        shell("mkdir /scratch/$SLURM_JOB_ID/snap_index")
         ref = config["HG38"]
-        tmp_index = config["HG38"] + "_snap_index"
+        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+        shell("mkdir {tmp_index}")
         shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index}") 
         # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
         # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
