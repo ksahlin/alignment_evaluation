@@ -27,7 +27,7 @@ def plot_accuracy(input_csv, outfolder):
     #             "accelalign" : "", "accelalign_map" : (5,5)}
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", kind="line", #dashes = dashes,
-        col="dataset",  # hue="datastructure", style="datastructure",
+        col="dataset", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], # hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -63,7 +63,7 @@ def plot_percentage_aligned(input_csv, outfolder):
     # print(indata)
     g = sns.relplot(
         data=indata, x="read_length", y="aligned", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -99,7 +99,7 @@ def plot_overaligned(input_csv, outfolder):
     # print(indata)
     g = sns.relplot(
         data=indata, x="read_length", y="overaligned", hue="tool", style="type",
-        col="dataset", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -127,8 +127,8 @@ def plot_memory_usage(input_csv, outfolder):
 
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type",
-        col="threads", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=[2, 4, 8, 16])
+        col="threads", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"], #dashes = dashes, hue="datastructure", style="datastructure",
+        col_wrap=3, col_order=[4, 8, 16])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
     g.set_axis_labels("Read length", "Memory usage (Gb)")
@@ -153,7 +153,7 @@ def plot_runtime(input_csv, outfolder):
     indata = pd.read_csv(input_csv)
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
-        col="threads", kind="line",  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="threads", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"], #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=[4, 8, 16], facet_kws={'sharey': False, 'sharex': True})
 
     # g = sns.relplot(
@@ -167,9 +167,10 @@ def plot_runtime(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    # g.set(yscale="log")
+    g.set(yscale="log")
+    g.set( yticks=[i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)]) #, ylim=(0, 5200))
 
-    g.set( yticks=[0,250,500,1000,2000,3000, 4000,5000,6000], ylim=(0, 5200))
+    # g.set( yticks=[0,250,500,1000,2000,3000, 4000,5000,6000], ylim=(0, 5200))
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
     # g.set( xticks=[4,8,16]) #ylim=(40, 100),
 

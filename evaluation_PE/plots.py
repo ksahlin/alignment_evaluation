@@ -27,7 +27,7 @@ def plot_accuracy(input_csv, outfolder):
     #             "accelalign" : "", "accelalign_map" : (5,5)}
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", kind="line", #dashes = dashes,
-        col="dataset", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], # hue="datastructure", style="datastructure",
+        col="dataset", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"], # hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -63,7 +63,7 @@ def plot_percentage_aligned(input_csv, outfolder):
     # print(indata)
     g = sns.relplot(
         data=indata, x="read_length", y="aligned", hue="tool", style="type",
-        col="dataset", kind="line",  hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"], #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line",  hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"], #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -99,7 +99,7 @@ def plot_overaligned(input_csv, outfolder):
     # print(indata)
     g = sns.relplot(
         data=indata, x="read_length", y="overaligned", hue="tool", style="type",
-        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"],  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"],  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -127,7 +127,7 @@ def plot_memory_usage(input_csv, outfolder):
 
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type",
-        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"],  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"],  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -153,7 +153,7 @@ def plot_runtime(input_csv, outfolder):
     indata = pd.read_csv(input_csv)
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
-        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "snap", "urmap"],  #dashes = dashes, hue="datastructure", style="datastructure",
+        col="dataset", kind="line", hue_order = ["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"],  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"])
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
