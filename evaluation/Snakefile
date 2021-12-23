@@ -127,7 +127,7 @@ rule bwa_mem_align:
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
-rule strobemap_align:
+rule strobealign:
     input:  ref = config["HG38"],
             fastq =   rules.mason_simulate_reads.output.sim_fq
             # index = rules.minimap2_index.output.mm_index
@@ -144,7 +144,7 @@ rule strobemap_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
-rule strobemap_map:
+rule strobealign_map:
     input:  ref = config["HG38"],
             fastq =   rules.mason_simulate_reads.output.sim_fq
             # index = rules.minimap2_index.output.mm_index
