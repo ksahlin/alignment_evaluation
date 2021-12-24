@@ -11,8 +11,8 @@ def parse_gnu_time(stderr_file):
     index_time_strobemap = False
 
     for l in lines:
-        wct_match = re.search('[\d]+ real', l) 
-        mem_match = re.search('[\d]+ maximum resident set size', l) 
+        wct_match = re.search('[\d.]+ real', l) 
+        mem_match = re.search('[\d]+  maximum resident set size', l) 
 
         # minimap2
         index_time_mm2_match = re.search('\[M::main::[\d.:]+\*[\d.:]+\] loaded/built the index for', l) 
@@ -25,7 +25,7 @@ def parse_gnu_time(stderr_file):
         index_time_accelalign_match = re.search('Setup reference in [\d.:]+ secs', l) 
 
         if wct_match:
-            wallclocktime = wct_match.group().split()[0]
+            wallclocktime = float(wct_match.group().split()[0])
         if mem_match:
             mem_tmp = int(mem_match.group().split()[0])
             memory_gb = mem_tmp / 1000000.0 
@@ -45,14 +45,14 @@ def parse_gnu_time(stderr_file):
             index_time_aa = float(final_time.strip())
 
     if index_time_mm2:
-        tot_wallclock_secs = tot_wallclock_secs - index_time_mm2
+        tot_wallclock_secs = wallclocktime - index_time_mm2
     elif index_time_aa:
-        tot_wallclock_secs = tot_wallclock_secs - index_time_aa
+        tot_wallclock_secs = wallclocktime - index_time_aa
     elif index_time_strobemap:
-        tot_wallclock_secs = tot_wallclock_secs - index_time_strobemap
+        tot_wallclock_secs = wallclocktime - index_time_strobemap
 
-    return tot_wallclock_secs, memory_gb
-    
+    return round(tot_wallclock_secs,2), round(memory_gb,2)
+
     # vals = list(map(lambda x: float(x), wallclocktime.split(".") ))
     # if len(vals) == 3:
     #     h,m,s = vals
