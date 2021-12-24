@@ -11,7 +11,7 @@ fi
 
 refs=$1
 outroot=$2
-eval_script_dir="/Users/kxs624/Documents/workspace/alignment_evaluation/evaluation_PE"
+eval_script_dir="/Users/kxs624/Documents/workspace/alignment_evaluation/scripts"
 strobealign_dev_dir="/Users/kxs624/Documents/workspace/StrobeAlign"
 echo $outroot
 
@@ -37,17 +37,21 @@ do
         # mkdir -p $outroot/$chr_id/
         # mason_simulator -ir $refs/$chr_id.fa -n 100000 --illumina-read-length $read_lengh --fragment-mean-size 300 -o $outroot/$chr_id/$read_lengh.L.fq -or $outroot/$chr_id/$read_lengh.R.fq -oa $outroot/$chr_id/$read_lengh.sam
 
-        # /usr/bin/time -l minimap2 -t 2 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq 1> $outroot/$chr_id/$read_lengh.minimap2.sam 2>  $outroot/$chr_id/$read_lengh.minimap2.stderr
-        # echo -n $chr_id,$read_lengh,minimap2,
-        # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.minimap2.sam
+        /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq 1> $outroot/$chr_id/$read_lengh.minimap2.sam 2>  $outroot/$chr_id/$read_lengh.minimap2.stderr
+        echo -n $chr_id,$read_lengh,minimap2,align
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.minimap2.sam
+        python $eval_script_dir/get_time_alignment.py $outroot/$chr_id/$read_lengh.minimap2.stderr
 
-        # /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1  -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
-        # echo -n $chr_id,$read_lengh,strobealign,
-        # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.strobealign.sam
+        /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1  -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
+        echo -n $chr_id,$read_lengh,strobealign,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.strobealign.sam
+        python $eval_script_dir/get_time_alignment.py $outroot/$chr_id/$read_lengh.strobealign.stderr
 
         /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -x -o $outroot/$chr_id/$read_lengh.strobealign.paf $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
-        echo -n $chr_id,$read_lengh,strobealign,
+        echo -n $chr_id,$read_lengh,strobealign,map,
         python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_paf $outroot/$chr_id/$read_lengh.strobealign.paf
+        python $eval_script_dir/get_time_alignment.py $outroot/$chr_id/$read_lengh.strobealign.stderr
+
     done
 done
 
