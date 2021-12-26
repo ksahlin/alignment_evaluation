@@ -26,21 +26,21 @@ mkdir -p $outroot
 
 
 # USE BITCOUNT n_BITS as parameter to software! bitcount 8 for < 100nt, 16 for 150-200, 32 for 200-250, 64 for >=300
-# Test read length 50-70:
-# Set: k=18, -l -2, -u 3, -c 8 ???
 
-# read length 100 DECIDED:
-# Set: k=18, -l -2, -u 3, -c 8  -> or k=19 for full human?  k19,l-2,u3,c8
+# Test read length 50-70: 
+# DECIDED k 20,l -3, u 0,c 8
 
-# read length 150 DECIDED: 
-# Set: k=19, -l,-u (0,7), -c 8 -> or k20 for full human?
+# read length 100:
+# DECIDED k 20, l -3, u 3, c 8
 
-# read length 200: 
-# Set: k=21, -l,-u (0,9), -c 8 -> or k22 for full human?
+# read length 150: 
+# DECIDED  k=20, l 0, u 7, c 8 
 
+# read length 200-250:
+# DECIDED k=22, l 2, u 10, c 8
 
 # read length 300:
-# Set: k=23+ l,u (0?,9?), -c 8,16 ?
+# DECIDED  k=23, l 2, u 10, c 8
 
 # It is possible we are overfitting on smaller chromosomes, and that choosing 
 #slightly larger k would be better on whole hg38! In that case, test on larger 
@@ -56,49 +56,65 @@ mkdir -p $outroot
 
 echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 
-for read_lengh in 300 #100 #150 #200 250 300 
+# for read_lengh in 100 #100 #150 #200 250 300 
+# do 
+#     for chr_id in hg38_chr21 hg38_chr1 hg38_chr15 hg38_chr18 hg38_chrX  #hg38_chr1_2 hg38_chr6_15_18_X_Y # hg38_chr1 hg38_chr15 hg38_chr18 hg38_chr21 hg38_chrX #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
+#     do
+#         # mkdir -p $outroot/$chr_id/
+#         # mason_simulator -ir $refs/$chr_id.fa -n 100000 --illumina-read-length $read_lengh --fragment-mean-size 300 -o $outroot/$chr_id/$read_lengh.L.fq -or $outroot/$chr_id/$read_lengh.R.fq -oa $outroot/$chr_id/$read_lengh.sam
+
+#         # minimap2 stats
+#         /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq 1> $outroot/$chr_id/$read_lengh.minimap2.sam 2>  $outroot/$chr_id/$read_lengh.minimap2.stderr
+#         echo -n $chr_id,$read_lengh,minimap2,align,
+#         python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.minimap2.sam --time_mem $outroot/$chr_id/$read_lengh.minimap2.stderr
+
+#         /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -k 22 -l 0 -u 10 -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
+#         echo -n $chr_id,$read_lengh,strobealign,align,8,22,0,10,
+#         python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.strobealign.sam --time_mem $outroot/$chr_id/$read_lengh.strobealign.stderr
+
+#         for bc in 8 #16 # 32
+#         do
+#             for k in 19 20 #18 19 20 #18 19 20 21
+#             do
+#                 for l in -3 -2
+#                 do
+#                     for u in 3 #3 5 #9 #5 7 9
+#                     do
+
+#                         /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -c $bc -k $k -l $l -u $u -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
+#                         echo -n $chr_id,$read_lengh,strobealign,align,$bc,$k,$l,$u,
+#                         python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.strobealign.sam --time_mem $outroot/$chr_id/$read_lengh.strobealign.stderr
+
+#                         # Mapping stats
+#                         # /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -k $k -x -o $outroot/$chr_id/$read_lengh.strobealign.paf $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
+#                         # echo -n $chr_id,$read_lengh,strobealign_k20,map,
+#                         # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_paf $outroot/$chr_id/$read_lengh.strobealign.paf --time_mem $outroot/$chr_id/$read_lengh.strobealign.stderr
+#                     done
+#                 done
+#             done
+#             echo
+#         done
+#         echo "NEW CHR"
+#         echo
+#     done
+# done
+
+
+for read_lengh in 100 150 200 250 300 
 do 
-    for chr_id in hg38_chr1 hg38_chr15 hg38_chr18 hg38_chr21 hg38_chrX # hg38_chr1_2 # hg38_chr6_15_18_X_Y  
+    for chr_id in hg38_chr1_2 hg38_chr6_15_18_X_Y # hg38_chr1 hg38_chr15 hg38_chr18 hg38_chr21 hg38_chrX #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
     do
-        # mkdir -p $outroot/$chr_id/
-        # mason_simulator -ir $refs/$chr_id.fa -n 100000 --illumina-read-length $read_lengh --fragment-mean-size 300 -o $outroot/$chr_id/$read_lengh.L.fq -or $outroot/$chr_id/$read_lengh.R.fq -oa $outroot/$chr_id/$read_lengh.sam
 
         # minimap2 stats
         /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq 1> $outroot/$chr_id/$read_lengh.minimap2.sam 2>  $outroot/$chr_id/$read_lengh.minimap2.stderr
         echo -n $chr_id,$read_lengh,minimap2,align,
         python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.minimap2.sam --time_mem $outroot/$chr_id/$read_lengh.minimap2.stderr
 
-        /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -k 22 -l 0 -u 10 -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
-        echo -n $chr_id,$read_lengh,strobealign,align,8,22,0,10,
+        /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -r $read_lengh -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
+        echo -n $chr_id,$read_lengh,strobealign,align,
         python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.strobealign.sam --time_mem $outroot/$chr_id/$read_lengh.strobealign.stderr
 
-        for bc in 8 16 # 32
-        do
-            for k in 22 23 24 #18 19 20 #18 19 20 21
-            do
-                for l in 0
-                do
-                    for u in 7 9 #3 5 #9 #5 7 9
-                    do
-
-                        /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -c $bc -k $k -l $l -u $u -o $outroot/$chr_id/$read_lengh.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
-                        echo -n $chr_id,$read_lengh,strobealign,align,$bc,$k,$l,$u,
-                        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_sam $outroot/$chr_id/$read_lengh.strobealign.sam --time_mem $outroot/$chr_id/$read_lengh.strobealign.stderr
-
-                        # Mapping stats
-                        # /usr/bin/time -l $strobealign_dev_dir/./strobealign -t 1 -k $k -x -o $outroot/$chr_id/$read_lengh.strobealign.paf $refs/$chr_id.fa $outroot/$chr_id/$read_lengh.L.fq $outroot/$chr_id/$read_lengh.R.fq &>  $outroot/$chr_id/$read_lengh.strobealign.stderr
-                        # echo -n $chr_id,$read_lengh,strobealign_k20,map,
-                        # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_lengh.sam --predicted_paf $outroot/$chr_id/$read_lengh.strobealign.paf --time_mem $outroot/$chr_id/$read_lengh.strobealign.stderr
-                    done
-                done
-            done
-            echo
-        done
-        echo "NEW CHR"
-        echo
     done
 done
-
-
 
 
