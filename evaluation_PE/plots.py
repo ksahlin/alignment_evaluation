@@ -73,7 +73,7 @@ def plot_percentage_aligned(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(94, 100), xticks=[100,150,200,250,300])
+    g.set(ylim=(98, 100), xticks=[100,150,200,250,300])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.eps"))
@@ -163,8 +163,12 @@ def plot_runtime(input_csv, outfolder):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
+    g.set(yscale="log")
+    g.set( yticks= [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)]) #, ylim=(0, 5200))
+    # g.set_yticklabels( ["100"] + ["" for i in range(200,999,100)] + ["1000"] +  ["" for i in range(2000,9999,1000)] + ["10000"] +  [i for i in range(1000,2999,1000)]])
+
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
-    g.set( yticks=[0,1000,2000,4000,6000,12000,18000,24000]) #ylim=(40, 100),
+    # g.set( yticks=[0,1000,2000,4000,6000,12000,18000,24000]) #ylim=(40, 100),
 
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
