@@ -146,7 +146,7 @@ def plot_memory_usage(input_csv, outfolder, palette):
 
 def plot_runtime(input_csv, outfolder, palette):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.4)
+    sns.set(font_scale=1.9)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 

@@ -110,7 +110,7 @@ rule bwa_mem_align:
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
-rule strobemap_align:
+rule strobealign:
     input:  ref = config["HG38"],
             fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
             fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq"
@@ -129,7 +129,7 @@ rule strobemap_align:
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
-rule strobemap_map:
+rule strobealign_map:
     input:  ref = config["HG38"],
             fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
             fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq"
