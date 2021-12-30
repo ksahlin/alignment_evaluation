@@ -111,6 +111,30 @@
         "mail_type" : "FAIL"
     },
 
+    "strobealign_skylake": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "smsk_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_skylake_map": 
+    {
+        "account" : "snic2020-5-651",
+        "jobname" : "smsk_map",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
     "accelalign_index" : 
     {
         "account" : "snic2020-5-651",
