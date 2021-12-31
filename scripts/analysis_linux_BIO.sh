@@ -33,6 +33,7 @@ reads_dir="/proj/snic2020-16-138/strobemap_eval/reads_PE"
 reads1="/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/D3_S1_L001_R1_001.fastq"
 reads2="/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/D3_S1_L001_R2_001.fastq"
 dataset="MOTHER"
+read_length="250"
 
 echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 
@@ -44,7 +45,7 @@ mkdir -p $outroot/$dataset
 bowtie2="/proj/snic2020-16-138/strobemap_eval/alignments_PE/bowtie2/MOTHER.sam"
 bwa_mem="/proj/snic2020-16-138/strobemap_eval/alignments_PE/bwa_mem/MOTHER.sam"
 
-strobealign_pred=$outroot/$dataset/$read_length/v0.2.strobealign.sam
+strobealign_pred=$outroot/$dataset/v0.2.strobealign.sam
 
 /usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/v0.2.strobealign.stderr
 echo -n $read_length,strobealign,align,
