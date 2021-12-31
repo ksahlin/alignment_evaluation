@@ -15,7 +15,7 @@ import pandas as pd
 from matplotlib import pyplot
 
 
-def plot_accuracy(input_csv, outfolder, palette):
+def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.9)
     sns.set_style("whitegrid")
@@ -26,8 +26,8 @@ def plot_accuracy(input_csv, outfolder, palette):
     #             "strobealign" : "", "strobealign_map" : (5,5),
     #             "accelalign" : "", "accelalign_map" : (5,5)}
     # print(indata)
-    g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", kind="line", #dashes = dashes,
-        col="dataset", hue_order = ["minimap2",'accelalign', "bowtie2", "urmap", "snap", "bwa_mem", "strobealign"], # hue="datastructure", style="datastructure",
+    g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", linewidth = linewidth, kind="line", #dashes = dashes,
+        col="dataset", hue_order = tools, # hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -44,7 +44,7 @@ def plot_accuracy(input_csv, outfolder, palette):
     plt.savefig(os.path.join(outfolder, "accuracy_plot.pdf"))
     plt.close()
 
-def plot_percentage_aligned(input_csv, outfolder, palette):
+def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.9)
     sns.set_style("whitegrid")
@@ -62,8 +62,8 @@ def plot_percentage_aligned(input_csv, outfolder, palette):
     #              "hybridstrobes3" : (1,1)}
     # print(indata)
     g = sns.relplot(
-        data=indata, x="read_length", y="aligned", hue="tool", style="type",
-        col="dataset", kind="line",  hue_order = ["minimap2",'accelalign', "bowtie2", "urmap", "snap", "bwa_mem", "strobealign"], #dashes = dashes, hue="datastructure", style="datastructure",
+        data=indata, x="read_length", y="aligned", hue="tool", style="type", linewidth = linewidth,
+        col="dataset", kind="line",  hue_order = tools, #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -80,7 +80,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette):
     plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.pdf"))
     plt.close()
 
-def plot_overaligned(input_csv, outfolder, palette):
+def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.9)
     sns.set_style("whitegrid")
@@ -98,8 +98,8 @@ def plot_overaligned(input_csv, outfolder, palette):
     #              "hybridstrobes3" : (1,1)}
     # print(indata)
     g = sns.relplot(
-        data=indata, x="read_length", y="overaligned", hue="tool", style="type",
-        col="dataset", kind="line", hue_order = ["minimap2",'accelalign', "bowtie2", "urmap", "snap", "bwa_mem", "strobealign"],  #dashes = dashes, hue="datastructure", style="datastructure",
+        data=indata, x="read_length", y="overaligned", hue="tool", style="type", linewidth = linewidth,
+        col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -117,7 +117,7 @@ def plot_overaligned(input_csv, outfolder, palette):
     plt.close()
 
 
-def plot_memory_usage(input_csv, outfolder, palette):
+def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.9)
     # tool,dataset,read_length,time,memory
@@ -126,8 +126,8 @@ def plot_memory_usage(input_csv, outfolder, palette):
     sns.set_style("whitegrid")
 
     g = sns.relplot(
-        data=indata, x="read_length", y="memory", hue="tool", style="type",
-        col="dataset", kind="line", hue_order = ["minimap2",'accelalign', "bowtie2", "urmap", "snap", "bwa_mem", "strobealign"],  #dashes = dashes, hue="datastructure", style="datastructure",
+        data=indata, x="read_length", y="memory", hue="tool", style="type", linewidth = linewidth, 
+        col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -144,7 +144,7 @@ def plot_memory_usage(input_csv, outfolder, palette):
     plt.savefig(os.path.join(outfolder, "memory_plot.pdf"))
     plt.close()
 
-def plot_runtime(input_csv, outfolder, palette):
+def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.9)
     # tool,dataset,read_length,time,memory
@@ -152,8 +152,8 @@ def plot_runtime(input_csv, outfolder, palette):
 
     indata = pd.read_csv(input_csv)
     g = sns.relplot(
-        data=indata, x="read_length", y="time", hue="tool", style="type",
-        col="dataset", kind="line", hue_order = ["minimap2",'accelalign', "bowtie2", "urmap", "snap", "bwa_mem", "strobealign"],  #dashes = dashes, hue="datastructure", style="datastructure",
+        data=indata, x="read_length", y="time", hue="tool", style="type", linewidth = linewidth,
+        col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
         col_wrap=3, col_order=["SIM1", "SIM2", "SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -213,14 +213,16 @@ def main(args):
     'urmap' : 'tab:grey',
     'snap' : 'pink'
     }
+    tools =["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"]
+
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
 
-    plot_accuracy(accuracy_csv, args.outfolder, palette)
-    plot_percentage_aligned(accuracy_csv, args.outfolder, palette)
-    plot_overaligned(accuracy_csv, args.outfolder, palette)
-    plot_runtime(runtime_mem_csv, args.outfolder, palette)
-    plot_memory_usage(runtime_mem_csv, args.outfolder, palette)
+    plot_accuracy(accuracy_csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_percentage_aligned(accuracy_csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_overaligned(accuracy_csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_runtime(runtime_mem_csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_memory_usage(runtime_mem_csv, args.outfolder, palette, tools, linewidth = 2.5)
 
 
 if __name__ == '__main__':

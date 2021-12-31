@@ -112,7 +112,7 @@ echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 # done
 
 
-for read_lengh in 100 150 200 250 300 
+for read_lengh in 100 150 #200 250 300 
 do 
     for chr_id in hg38_chr18 hg38_chrX hg38_chr21 hg38_chr1 hg38_chr15 # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
     do
