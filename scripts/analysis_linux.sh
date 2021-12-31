@@ -67,7 +67,7 @@ do
                     strobealign_pred=$outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.sam
                     /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
                     echo -n $read_length,strobealign,align,
-                    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.strobealign.stderr
+                    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
                 done
             done
         done
