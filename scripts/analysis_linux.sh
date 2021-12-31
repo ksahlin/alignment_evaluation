@@ -13,33 +13,24 @@
 #conda init bash
 set -o errexit
 
-# RUN scripts e.g. as: ./mini_analysis.sh /proj/snic2020-16-138/strobemap_eval/tmp/ read_lengh
-
-if [ $# -lt 2 ]; then
-    # TODO: print usage
-    echo "./mini_analysis.sh <eval_dir> <read_length>"
-    exit 1
-fi
-
-outroot=$1
-read_length=$2
-eval_script_dir="/home/kris/source/alignment_evaluation/scripts"
-echo $outroot
-
-# mkdir -p $outroot
-
-hg38="/proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa"
-reads_dir="/proj/snic2020-16-138/strobemap_eval/reads_PE"
-
+########################
+### EDIT THESE LINES ###
+read_length="100"
 bc_sizes=`seq 8 8 16`
-
-# 100: 
 k_sizes=$(seq 18 21)
 offsets=$(seq 1 2)
 spans=$(seq 4 3 7)
+########################
+########################
 
-# 150: 
-# 200
+outroot="/proj/snic2020-16-138/strobemap_eval/tmp/"
+eval_script_dir="/home/kris/source/alignment_evaluation/scripts"
+echo $outroot
+
+mkdir -p $outroot
+
+hg38="/proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa"
+reads_dir="/proj/snic2020-16-138/strobemap_eval/reads_PE"
 
 
 # /usr/bin/time -v strobealign -t 1 -r 250 -o /proj/snic2020-16-138/strobemap_eval/tmp/SIM3_250.sam /proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa 
