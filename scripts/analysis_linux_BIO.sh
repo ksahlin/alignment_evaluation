@@ -15,7 +15,6 @@ set -o errexit
 
 ########################
 ### EDIT THESE LINES ###
-read_length="100"
 bc_sizes=`seq 8 8 16`
 k_sizes=$(seq 18 21)
 offsets=$(seq 1 2)
@@ -31,50 +30,47 @@ mkdir -p $outroot
 
 hg38="/proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa"
 reads_dir="/proj/snic2020-16-138/strobemap_eval/reads_PE"
-
-
-# /usr/bin/time -v strobealign -t 1 -r 250 -o /proj/snic2020-16-138/strobemap_eval/tmp/SIM3_250.sam /proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa 
-#                                       /proj/snic2020-16-138/strobemap_eval/reads_PE/SIM3/250_L.fq /proj/snic2020-16-138/strobemap_eval/reads_PE/SIM3/250_R.fq 2>&1 | tee /proj/snic2020-16-138/strobemap_eval/tmp/SIM3_250.out
+reads1="/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/D3_S1_L001_R1_001.fastq"
+reads2="/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/D3_S1_L001_R2_001.fastq"
+datates="MOTHER"
 
 echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 
-for dataset in SIM1 SIM2 SIM3 
-do 
-    echo
-    echo $dataset
-    echo
-    mkdir -p $outroot/$dataset/$read_length
-    strobealign_pred=$outroot/$dataset/$read_length/v0.2.strobealign.sam
-    truth=$reads_dir/$dataset/$read_length.sam
+echo
+echo $dataset
+echo
+mkdir -p $outroot/$dataset/$read_length
+strobealign_pred=$outroot/$dataset/$read_length/v0.2.strobealign.sam
+truth=$reads_dir/$dataset$/$read_length.sam
 
-    /usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/v0.2.strobealign.stderr
-    echo -n $read_length,strobealign,align,
-    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/v0.2.strobealign.stderr
-    echo
+/usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/v0.2.strobealign.stderr
+echo -n $chr_id,$read_length,strobealign,align,
+python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/v0.2.strobealign.stderr
+echo
 
 
-    for k in $k_sizes
+for k in $k_sizes
+do
+    for offset in $offsets
     do
-        for offset in $offsets
+        l=$(($offset - $k/5))
+        for span in $spans
         do
-            l=$(($offset - $k/5))
-            for span in $spans
+            u=$(($l + $span))
+            for bc in $bc_sizes
             do
-                u=$(($l + $span))
-                for bc in $bc_sizes
-                do
-                    # echo $k,$l,$u,$bc 
-                    strobealign_pred=$outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.sam
-                    /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
-                    echo -n $read_length,strobealign,align,
-                    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.strobealign.stderr
-                done
+                # echo $k,$l,$u,$bc 
+                strobealign_pred=$outroot/$dataset/$k.$l.$u.$bc.strobealign.sam
+                /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/$k.$l.$u.$bc.strobealign.stderr
+                echo -n $chr_id,$read_length,strobealign,align,
+                python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$k.$l.$u.strobealign.stderr
             done
         done
-        echo
     done
-
+    echo
 done
+
+
 
 
 # for read_length in 100 150 #200 250 300 
@@ -84,7 +80,7 @@ done
 
 #         # minimap2 stats
 #         # /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.minimap2.sam 2>  $outroot/$chr_id/$read_length.minimap2.stderr
-#         # echo -n $read_length,minimap2,align,
+#         # echo -n $chr_id,$read_length,minimap2,align,
 #         # python $eval_script_dir/get_stats_linux.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.minimap2.sam --time_mem $outroot/$chr_id/$read_length.minimap2.stderr
 
 #         /usr/bin/time   -l $strobealign_dev_dir/./strobealign -t 1 -r $read_length -o $outroot/$chr_id/$read_length.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq &>  $outroot/$chr_id/$read_length.strobealign.stderr
