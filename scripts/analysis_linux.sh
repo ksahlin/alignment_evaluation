@@ -1,12 +1,23 @@
-#!/bin/bash
+#!/bin/sh
+#SBATCH -A snic2020-5-651
+#SBATCH -N 1
+#SBATCH -C mem128GB
+#SBATCH -c 20
+#SBATCH --time=02-00:00:00
+# Memory per node specification is in MB. It is optional. 
+# The default limit is 3000MB per core.
+#SBATCH --job-name="test_strobealign"
+#SBATCH --mail-user=ksahlin@kth.se
+#SBATCH --mail-type=ALL
 
-set -e
+#conda init bash
+set -o errexit
 
 # RUN scripts e.g. as: ./mini_analysis.sh /proj/snic2020-16-138/strobemap_eval/tmp/ read_lengh
 
 if [ $# -lt 2 ]; then
     # TODO: print usage
-    echo "./mini_analysis.sh <ref_path> <outroot>"
+    echo "./mini_analysis.sh <eval_dir> <read_length>"
     exit 1
 fi
 
@@ -19,7 +30,14 @@ echo $outroot
 
 hg38="/proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa"
 reads_dir="/proj/snic2020-16-138/strobemap_eval/reads_PE"
-# 100: k= 18, 19, 20, 21, l = -floor(k/3) + 1/+3/+5, u =l + 2, l+4, l+6
+
+bc_sizes=`seq 8 8 16`
+
+# 100: 
+k_sizes=$(seq 18 21)
+offsets=$(seq 1 2)
+spans=$(seq 4 3 7)
+
 # 150: 
 # 200
 
@@ -34,36 +52,36 @@ do
     echo
     echo $dataset
     echo
-        mkdir -p $outroot/$dataset/$read_length
-        strobealign_pred=$outroot/$dataset/$read_length/v0.2.strobealign.sam
-        truth=$reads_dir/$dataset$/$read_length.sam
+    mkdir -p $outroot/$dataset/$read_length
+    strobealign_pred=$outroot/$dataset/$read_length/v0.2.strobealign.sam
+    truth=$reads_dir/$dataset$/$read_length.sam
 
-        /usr/bin/time -l strobealign -t 8 -r $read_lengh -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/v0.2.strobealign.stderr
-        echo -n $chr_id,$read_lengh,strobealign,align,
-        python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/v0.2.strobealign.stderr
-        echo
+    /usr/bin/time -l strobealign -t 8 -r $read_lengh -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/v0.2.strobealign.stderr
+    echo -n $chr_id,$read_lengh,strobealign,align,
+    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/v0.2.strobealign.stderr
+    echo
 
 
-        for k in 18 19 20 21
+    for k in $k_sizes
+    do
+        for offset in $offsets
         do
-            for offset in 1 2 
+            l=$(($offset - $k/5))
+            for span in $spans
             do
-                l=$(($offset - $k/5))
-                for span in 4 7
+                u=$(($l + $span))
+                for bc in $bc_sizes
                 do
-                    u=$(($l + $span))
-                    for bc in 8 16
-                    do
-                        # echo $k,$l,$u,$bc 
-                        strobealign_pred=$outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.sam
-                        /usr/bin/time -l strobealign -t 8 -k -l -u -c  -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
-                        echo -n $chr_id,$read_lengh,strobealign,align,
-                        python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.strobealign.stderr
-                    done
+                    # echo $k,$l,$u,$bc 
+                    strobealign_pred=$outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.sam
+                    /usr/bin/time -l strobealign -t 8 -k -l -u -c  -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
+                    echo -n $chr_id,$read_lengh,strobealign,align,
+                    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.strobealign.stderr
                 done
             done
-            echo
         done
+        echo
+    done
 
 done
 
