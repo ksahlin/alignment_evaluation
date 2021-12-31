@@ -6,7 +6,7 @@
 #SBATCH --time=02-00:00:00
 # Memory per node specification is in MB. It is optional. 
 # The default limit is 3000MB per core.
-#SBATCH --job-name="test_strobealign"
+#SBATCH --job-name="sa_bio"
 #SBATCH --mail-user=ksahlin@kth.se
 #SBATCH --mail-type=ALL
 
@@ -16,9 +16,9 @@ set -o errexit
 ########################
 ### EDIT THESE LINES ###
 bc_sizes=`seq 8 8 16`
-k_sizes=$(seq 18 21)
-offsets=$(seq 1 2)
-spans=$(seq 4 3 7)
+k_sizes=$(seq 20 23)
+offsets=`seq 5 2 7`
+spans=`seq 6 3 9`
 ########################
 ########################
 
@@ -32,20 +32,23 @@ hg38="/proj/snic2020-16-138/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_a
 reads_dir="/proj/snic2020-16-138/strobemap_eval/reads_PE"
 reads1="/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/D3_S1_L001_R1_001.fastq"
 reads2="/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/D3_S1_L001_R2_001.fastq"
-datates="MOTHER"
+dataset="MOTHER"
 
 echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 
 echo
 echo $dataset
 echo
-mkdir -p $outroot/$dataset/$read_length
+mkdir -p $outroot/$dataset
+
+bowtie2="/proj/snic2020-16-138/strobemap_eval/alignments_PE/bowtie2/MOTHER.sam"
+bwa_mem="/proj/snic2020-16-138/strobemap_eval/alignments_PE/bwa_mem/MOTHER.sam"
+
 strobealign_pred=$outroot/$dataset/$read_length/v0.2.strobealign.sam
-truth=$reads_dir/$dataset$/$read_length.sam
 
 /usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/v0.2.strobealign.stderr
-echo -n $chr_id,$read_length,strobealign,align,
-python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/v0.2.strobealign.stderr
+echo -n $read_length,strobealign,align,
+python $eval_script_dir/get_overlap.py --sam1 $bwa_mem --sam2 $bowtie2 --sam3  $strobealign_pred --tool strobealign
 echo
 
 
@@ -62,8 +65,8 @@ do
                 # echo $k,$l,$u,$bc 
                 strobealign_pred=$outroot/$dataset/$k.$l.$u.$bc.strobealign.sam
                 /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/$k.$l.$u.$bc.strobealign.stderr
-                echo -n $chr_id,$read_length,strobealign,align,
-                python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$k.$l.$u.strobealign.stderr
+                echo -n $read_length,strobealign,align,
+                python $eval_script_dir/get_overlap.py --sam1 $bwa_mem --sam2 $bowtie2 --sam3  $strobealign_pred --tool strobealign
             done
         done
     done
