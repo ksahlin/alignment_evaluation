@@ -80,6 +80,7 @@ do
     /usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/v0.2.strobealign.stderr
     echo -n default,$read_length,strobealign,align,
     python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/v0.2.strobealign.stderr
+    rm $strobealign_pred
     echo
 
 
@@ -98,6 +99,7 @@ do
                     /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
                     echo -n $k,$l,$u,$bc,$read_length,strobealign,align,
                     python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr 2> $outroot/$dataset/$read_length/$k.$l.$u.$bc.analysis.stderr
+                    rm $strobealign_pred
                 done
             done
         done

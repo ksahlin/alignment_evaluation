@@ -68,6 +68,7 @@ do
                 /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/$k.$l.$u.$bc.strobealign.stderr
                 echo -n $k,$l,$u,$bc,$read_length,strobealign,align,
                 python $eval_script_dir/get_overlap.py --sam1 $bwa_mem --sam2 $bowtie2 --sam3  $strobealign_pred --tool strobealign 2> $outroot/$dataset/$k.$l.$u.$bc.analysis.stderr
+                rm $strobealign_pred
             done
         done
     done
