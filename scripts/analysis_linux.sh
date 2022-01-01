@@ -6,7 +6,7 @@
 #SBATCH --time=02-00:00:00
 # Memory per node specification is in MB. It is optional. 
 # The default limit is 3000MB per core.
-#SBATCH --job-name="test_strobealign"
+#SBATCH --job-name="sa_300"
 #SBATCH --mail-user=ksahlin@kth.se
 #SBATCH --mail-type=ALL
 
@@ -15,11 +15,41 @@ set -o errexit
 
 ########################
 ### EDIT THESE LINES ###
+
+# 100
 read_length="100"
 bc_sizes=`seq 8 8 16`
 k_sizes=$(seq 18 21)
 offsets=$(seq 1 2)
 spans=$(seq 4 3 7)
+
+# # 150
+# read_length="150"
+# bc_sizes=`seq 8 8 16`
+# k_sizes=$(seq 18 21)
+# offsets=`seq 3 2 5`
+# spans=`seq 6 3 9`
+
+# #200
+# read_length="200"
+# bc_sizes=`seq 8 8 16`
+# k_sizes=$(seq 21 24)
+# offsets=`seq 7 2 9`
+# spans=`seq 6 3 9`
+
+# #250
+# read_length="200"
+# bc_sizes=`seq 8 8 16`
+# k_sizes=$(seq 21 24)
+# offsets=`seq 7 2 9`
+# spans=`seq 6 3 9`
+
+# #300
+# read_length="300"
+# bc_sizes=`seq 8 8 16`
+# k_sizes=$(seq 20 23)
+# offsets=`seq 5 2 7`
+# spans=`seq 6 3 9`
 ########################
 ########################
 
@@ -48,7 +78,7 @@ do
     truth=$reads_dir/$dataset/$read_length.sam
 
     /usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/v0.2.strobealign.stderr
-    echo -n $read_length,strobealign,align,
+    echo -n default,$read_length,strobealign,align,
     python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/v0.2.strobealign.stderr
     echo
 
@@ -66,8 +96,8 @@ do
                     # echo $k,$l,$u,$bc 
                     strobealign_pred=$outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.sam
                     /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads_dir/$dataset/${read_length}_L.fq $reads_dir/$dataset/${read_length}_R.fq &>  $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
-                    echo -n $read_length,strobealign,align,
-                    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr
+                    echo -n $k,$l,$u,$bc,$read_length,strobealign,align,
+                    python $eval_script_dir/get_stats_linux.py --truth $truth --predicted_sam $strobealign_pred --time_mem $outroot/$dataset/$read_length/$k.$l.$u.$bc.strobealign.stderr 2> $outroot/$dataset/$read_length/$k.$l.$u.$bc.analysis.stderr
                 done
             done
         done

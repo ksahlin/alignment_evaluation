@@ -11,7 +11,7 @@
 #SBATCH --mail-type=ALL
 
 #conda init bash
-set -o errexit
+# set -o errexit
 
 ########################
 ### EDIT THESE LINES ###
@@ -48,7 +48,7 @@ bwa_mem="/proj/snic2020-16-138/strobemap_eval/alignments_PE/bwa_mem/MOTHER.sam"
 strobealign_pred=$outroot/$dataset/v0.2.strobealign.sam
 
 /usr/bin/time -v strobealign -t 8 -r $read_length -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/v0.2.strobealign.stderr
-echo -n $read_length,strobealign,align,
+echo -n default,$read_length,strobealign,align,
 python $eval_script_dir/get_overlap.py --sam1 $bwa_mem --sam2 $bowtie2 --sam3  $strobealign_pred --tool strobealign
 echo
 
@@ -66,8 +66,8 @@ do
                 # echo $k,$l,$u,$bc 
                 strobealign_pred=$outroot/$dataset/$k.$l.$u.$bc.strobealign.sam
                 /usr/bin/time -v strobealign -t 8 -k $k -l $l -u $u -c $bc -o $strobealign_pred $hg38 $reads1 $reads2 &>  $outroot/$dataset/$k.$l.$u.$bc.strobealign.stderr
-                echo -n $read_length,strobealign,align,
-                python $eval_script_dir/get_overlap.py --sam1 $bwa_mem --sam2 $bowtie2 --sam3  $strobealign_pred --tool strobealign
+                echo -n $k,$l,$u,$bc,$read_length,strobealign,align,
+                python $eval_script_dir/get_overlap.py --sam1 $bwa_mem --sam2 $bowtie2 --sam3  $strobealign_pred --tool strobealign 2> $outroot/$dataset/$k.$l.$u.$bc.analysis.stderr
             done
         done
     done
