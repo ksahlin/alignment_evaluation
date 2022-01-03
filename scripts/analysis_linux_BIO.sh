@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -A snic2020-5-651
+#SBATCH -A snic2021-5-572
 #SBATCH -N 1
 #SBATCH -C mem128GB
 #SBATCH -c 20
