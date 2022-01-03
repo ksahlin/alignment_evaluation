@@ -15,17 +15,17 @@
 
 ########################
 ### EDIT THESE LINES ###
-# # Pass 1, best: bc=8,k=20,l=1,u=7 (offset=5, span=6)
-# bc_sizes=`seq 8 8 16`
-# k_sizes=$(seq 20 23)
-# offsets=`seq 5 2 7`
-# spans=`seq 6 3 9`
-
-# Pass 2,
+# Pass 1, best: bc=8,k=20,l=1,u=7 (offset=5, span=6)
 bc_sizes=`seq 8 8 16`
-k_sizes=$(seq 15 18)
+k_sizes=$(seq 19 22)
 offsets=`seq 4 2 8`
 spans=`seq 6 3 9`
+
+# Pass 2,
+# bc_sizes=`seq 8 8 16`
+# k_sizes=$(seq 15 18)
+# offsets=`seq 4 2 8`
+# spans=`seq 6 3 9`
 ########################
 ########################
 
