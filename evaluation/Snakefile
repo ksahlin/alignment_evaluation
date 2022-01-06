@@ -57,7 +57,7 @@ rule mason_simulate_reads:
             sim_sam =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam",
     run:
 
-        if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
+        if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragment size
             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq} -oa {output.sim_sam} --fragment-mean-size 700")
         else:
             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq} -oa {output.sim_sam}")
@@ -226,7 +226,9 @@ rule bowtie2_align:
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
-        shell("/usr/bin/time -v  bowtie2 -p 1 -x {bt2_index} -U {tmp_fq}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
+
+        if wildcards.read_length == "250" or wildcards.read_length == "300": 
+            shell("/usr/bin/time -v  bowtie2 --local -p 1 -x {bt2_index} -U {tmp_fq}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 

@@ -24,19 +24,19 @@ def mkdir_p(path):
 
 
 
-def plot_histogram_distance(x, outfolder, h, l, name, bins=50):
+def plot_histogram_distance(x, outfolder, name, bins=50):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.bar(x.keys(), x.values())
-    ax.set_ylabel('Count')
-    ax.set_xlabel('Offset of next strobe sampled')
+    ax.set_ylabel('Count', fontsize=16)
+    ax.set_xlabel('Offset of next strobe sampled', fontsize=16)
     # plt.title('HASH: {0}, LINK: {1}'.format(h,l))
     # plt.xlim(0, 50)
     # plt.yscale('log')
     ax.set_xticks([1,5,10,15,20])
     ax.set_xticklabels(['1','5','10','15','20'])
     plt.tight_layout()
-    outfile = os.path.join(outfolder, "{0}_{1}_{2}.pdf".format(h,l, name))
+    outfile = os.path.join(outfolder, "{0}.pdf".format(name))
     plt.savefig(outfile)
     plt.close()
     plt.cla()
@@ -55,7 +55,7 @@ def main(args):
     C2 = Counter(distances_sampled)
     # most_repetitive = C2.most_common(1)
     # print(h, l, "most_repetitive distance:", most_repetitive[1])
-    plot_histogram_distance(C2, args.outfolder, h, l, "skew_distribution", bins=len(C2))
+    plot_histogram_distance(C2, args.outfolder, "skew_distribution", bins=len(C2))
 
 
 
