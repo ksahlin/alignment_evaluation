@@ -50,8 +50,8 @@ def plot_histogram_seeds(data, outfolder, name, bins = 50):
     # p1 = ax.bar(x-(width*3), dfDataTest['ERRh'], width=width, color=color[0], align='center', label=r'$\eta_{ER,h}$')
     # p2 = ax.bar(x-(width*2), dfDataTest['HRRh'], width=width, color=color[1], align='center', label=r'$\eta_{ER,h}$')
     p1, = ax.plot(x, y1,  color=color[0], label=r'Count')
-    p2, = ax2.plot(x, y2, color=color[1], label=r'Percent unique')
-    p3, = ax3.plot(x, y3, color=color[2], label="Percent >= 10 locations")
+    p2, = ax2.plot(x, y2, color=color[1], label=r'Unique')
+    p3, = ax3.plot(x, y3, color=color[2], label=">= 10 locations")
 
     # p5 = ax2.bar(x+(width*1), dfDataTest['HRRc'], width=width, color=color[4], align='center', label=r'$\eta_{HR,h}, \eta_{th,h}$')
 
@@ -62,11 +62,11 @@ def plot_histogram_seeds(data, outfolder, name, bins = 50):
 
     ax.set_xlabel('Seed length', fontsize=16)
     ax.set_ylabel("Seed count (log scale)", fontsize=16)
-    ax2.set_ylabel("Percent unique", fontsize=16)
-    ax3.set_ylabel("Percent >= 10 locations", fontsize=16)
+    ax2.set_ylabel("Unique", fontsize=16)
+    ax3.set_ylabel(">= 10 locations", fontsize=16)
 
-    ax.set_xticks([i for i in range(20, 150, 10)])
-    ax.set_xticklabels([str(i) for i in range(20, 150, 10)])
+    ax.set_xticks([i for i in range(20, 110, 10)])
+    ax.set_xticklabels([str(i) for i in range(20, 110, 10)])
 
     ax.set_yscale('log')
     ax2.set_ylim(0.65, 1.0)
@@ -74,8 +74,9 @@ def plot_histogram_seeds(data, outfolder, name, bins = 50):
     ax2.set_yticks(y2s)
     ax2.set_yticklabels([str(int(100*i)) + "%" for i in y2s])
 
-    ax3.set_ylim(0.0, 0.01)
-    y3s = [0.002, 0.004, 0.006, 0.008, 0.01]
+    ax3.set_ylim(0.0, 0.003)
+    y3s = [0.0005, 0.001, 0.0015, 0.002, 0.0025, 0.003]
+    # y3s = [0.002, 0.004, 0.006, 0.008, 0.01]
     ax3.set_yticks(y3s)
     ax3.set_yticklabels([str(round(100*i, 2)) + "%" for i in y3s])
 
@@ -90,7 +91,7 @@ def plot_histogram_seeds(data, outfolder, name, bins = 50):
     ax.tick_params(axis='x', **tkw)
 
     lns = [p1,p2,p3]
-    ax.legend(handles=lns, loc='best')
+    ax.legend(handles=lns, loc='lower center')
 
 
 
