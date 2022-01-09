@@ -302,7 +302,7 @@ rule urmap_align:
 rule overlap:
     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam",
            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/MOTHER/{dataset}.sam",
-           mm2 =  config["ROOT_OUT"] + "/alignments_PE/minimap2/MOTHER/{dataset}.sam",
+           mm2 =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam",
            aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/MOTHER/{dataset}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result"
     run:
@@ -317,7 +317,7 @@ rule overlap:
  
 
 rule summary_alignment_stats:
-    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap"])
+    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/overlap.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,overlap,overaligned" > {output.out}')
@@ -332,7 +332,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
