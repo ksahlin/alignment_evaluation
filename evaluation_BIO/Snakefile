@@ -225,6 +225,47 @@ rule bowtie2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
+rule snap_index:
+    input: ref = config["HG38"]
+    output: snp_index =  config["HG38"] + "_snap_index/GenomeIndexHash",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/indexing_time_and_mem.txt",
+    run:
+        # snap
+        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
+
+rule snap_align:
+    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+            index = rules.snap_index.output.snp_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        ref = config["HG38"]
+        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+        shell("mkdir {tmp_index}")
+        shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index}") 
+        # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
+        # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
+        shell("echo Copied index to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
+        # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+        # tmp_index = config["HG38"] + "_snap_index"
+        shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t {wildcards.n_threads}  2>&1 | tee {tmp_time_and_mem}  ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
+
+
+
+
 rule overlap:
     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam",
            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/MOTHER/{dataset}.sam",
@@ -243,7 +284,7 @@ rule overlap:
  
 
 rule summary_alignment_stats:
-    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/overlap.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,overlap,overaligned" > {output.out}')
@@ -258,7 +299,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
