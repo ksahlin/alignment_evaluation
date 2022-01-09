@@ -46,12 +46,12 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
-    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+    input: fastq_L =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/MOTHER/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -65,12 +65,12 @@ rule minimap2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
-    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+    input: fastq_L = "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/MOTHER/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -92,12 +92,12 @@ rule bwa_mem_index:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem_align:
-    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+    input: fastq_L = "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -112,11 +112,11 @@ rule bwa_mem_align:
 
 rule strobealign:
     input:  ref = config["HG38"],
-            fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq"
+            fastq_L =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/MOTHER/{dataset}.sam"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -131,11 +131,11 @@ rule strobealign:
 
 rule strobealign_map:
     input:  ref = config["HG38"],
-            fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq"
+            fastq_L = "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/MOTHER/{dataset}.sam"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -156,12 +156,12 @@ rule accelalign_index:
         shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
-    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+    input:  fastq_L =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/MOTHER/{dataset}.sam"
     run:
         ref = config["HG38"]
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -176,12 +176,12 @@ rule accelalign_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_map:
-    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign_map/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign_map/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign_map/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign_map/MOTHER/{dataset}.sam"
     run:
         ref = config["HG38"]
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -204,12 +204,12 @@ rule bowtie2_index:
         shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
-    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R1_001.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/{dataset}/D3_S1_L001_R2_001.fastq", 
+    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/MOTHER/{dataset}.sam"
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
@@ -243,7 +243,7 @@ rule overlap:
  
 
 rule summary_alignment_stats:
-    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result",  dataset = ["MOTHER"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/overlap.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,overlap,overaligned" > {output.out}')
@@ -258,7 +258,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["MOTHER"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result"
     run:
         # summary_file = open(out, "w")

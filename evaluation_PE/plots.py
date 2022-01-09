@@ -213,7 +213,7 @@ def main(args):
     'urmap' : 'tab:grey',
     'snap' : 'pink'
     }
-    tools =["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"]
+    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2",  "strobealign", "snap"] # "urmap",
 
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
