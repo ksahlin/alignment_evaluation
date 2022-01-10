@@ -348,7 +348,10 @@ rule summary_time_and_mem:
             string = f.split("/")
             tool = string[-4]
             dataset = string[-2]
-            read_length = 250
+            if wildcards.dataset == "BIO150":
+                read_length = 150
+            elif wildcards.dataset == "BIO250":
+                read_length = 250
             shell("/usr/bin/time -v  python summarize_time_and_memory.py {tool} {dataset} {read_length} {f}  >> {output.out} ")
 
 
