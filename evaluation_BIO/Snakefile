@@ -308,17 +308,17 @@ rule urmap_align:
 rule overlap:
     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam",
            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/MOTHER/{dataset}.sam",
-           mm2 =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam",
+           snap =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam",
            aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/MOTHER/{dataset}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result"
     run:
         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map": 
             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --paf  {input.aln} --tool {wildcards.tool} > {output.out} ")
-            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.mm2} --paf  {input.aln} --tool {wildcards.tool} >> {output.out} ")
+            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.snap} --paf  {input.aln} --tool {wildcards.tool} >> {output.out} ")
 
         else:
             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --sam3  {input.aln} --tool {wildcards.tool} > {output.out} ")
-            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.mm2} --sam3  {input.aln} --tool {wildcards.tool} >> {output.out} ")
+            shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.snap} --sam3  {input.aln} --tool {wildcards.tool} >> {output.out} ")
 
  
 
@@ -346,7 +346,7 @@ rule summary_time_and_mem:
 
         for f in input.time_and_mem_files:
             string = f.split("/")
-            tool = string[-3]
+            tool = string[-4]
             dataset = string[-2]
             read_length = 250
             shell("/usr/bin/time -v  python summarize_time_and_memory.py {tool} {dataset} {read_length} {f}  >> {output.out} ")
