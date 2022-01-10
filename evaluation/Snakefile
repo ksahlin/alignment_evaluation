@@ -257,7 +257,7 @@ rule urmap_align:
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
         # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
         # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
-        shell("/usr/bin/time -v  urmap -map2 {tmp_fq} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  urmap -map {tmp_fq} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -287,7 +287,7 @@ rule snap_align:
         # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
         # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
         tmp_index = config["HG38"] + "_snap_index"
-        shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq} {tmp_fq_R} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  snap-aligner single {tmp_index} {tmp_fq} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
