@@ -1,7 +1,7 @@
 import random
 import sys
 
-if len(sys.argv) != 4:
+if len(sys.argv) != 6:
     print("Usage: python generate_similar_seqs.py <nr_seqs> <length> <SNV_rate> <SV_rate> <outfile> ") 
 
 n = int(sys.argv[1])
