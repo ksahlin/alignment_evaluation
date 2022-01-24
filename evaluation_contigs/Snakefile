@@ -42,7 +42,7 @@ rule simulate_contigs:
     output: sim_contigs =  config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa",
     run:
       #python generate_similar_seqs.py <nr_seqs> <length> <SNV_rate> <SV_rate> <outfile> 
-        shell("pyhon generate_similar_seqs.py 20 100000 0.01 0.001 {output.sim_contigs}")
+        shell("python generate_similar_seqs.py 20 100000 0.01 0.001 {output.sim_contigs}")
 
 
 rule mason_simulate_reads:
