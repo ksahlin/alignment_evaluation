@@ -286,7 +286,7 @@ rule snap_align:
         ref = config["HG38"]
         tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
         shell("mkdir {tmp_index}")
-        shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index}") 
+        shell("/usr/bin/time -v  snap-aligner index -t 1 {ref}  {tmp_index}") 
         # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
         # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
         shell("echo Copied index to: $SLURM_JOB_ID")
