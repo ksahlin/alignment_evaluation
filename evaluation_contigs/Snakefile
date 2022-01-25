@@ -238,7 +238,7 @@ rule accelalign_align:
         shell("echo Copied reads to: $SLURM_JOB_ID")
         ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
         tmp_index = "/scratch/$SLURM_JOB_ID/accalign_index/"
-        shell("mkdir {tmp_index}")
+        shell("mkdir -p {tmp_index}")
         shell("/usr/bin/time -v  accindex -t 1 {ref}") #  2> {output.time_and_mem}
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
@@ -262,7 +262,7 @@ rule accelalign_map:
         shell("echo Copied reads to: $SLURM_JOB_ID")
         ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
         tmp_index = "/scratch/$SLURM_JOB_ID/accalign_map_index/"
-        shell("mkdir {tmp_index}")
+        shell("mkdir -p {tmp_index}")
         shell("/usr/bin/time -v  accindex -t 1 {ref}") #  2> {output.time_and_mem}
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
@@ -326,8 +326,8 @@ rule urmap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
-        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index/"
-        shell("mkdir {tmp_index}")
+        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index.ufi"
+        shell("mkdir -p /scratch/$SLURM_JOB_ID/")
         shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"

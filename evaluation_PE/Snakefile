@@ -320,13 +320,12 @@ rule urmap_align:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}/{read_length}.sam"
     run:
-        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         ref = config["HG38"]
-        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index/"
-        shell("mkdir {tmp_index}")
+        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index.ufi"
+        shell("mkdir -p /scratch/$SLURM_JOB_ID/")
         shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
@@ -336,6 +335,7 @@ rule urmap_align:
         # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
         shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {tmp_index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
         shell("mv {tmp_sam} {output.sam}")
 
 

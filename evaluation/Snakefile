@@ -251,8 +251,8 @@ rule urmap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         ref = config["HG38"]
-        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index/"
-        shell("mkdir {tmp_index}")
+        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index.ufi"
+        shell("mkdir -p /scratch/$SLURM_JOB_ID/")
         shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
