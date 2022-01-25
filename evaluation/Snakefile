@@ -250,14 +250,16 @@ rule urmap_align:
         mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
         shell("echo Copied reads to: $SLURM_JOB_ID")
-        # shell("cp {0} /scratch/$SLURM_JOB_ID/index.ufi".format(input.index))
-        # shell("echo Copied index to: $SLURM_JOB_ID")
+        ref = config["HG38"]
+        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index/"
+        shell("mkdir {tmp_index}")
+        shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
         # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
         # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
-        shell("/usr/bin/time -v  urmap -map {tmp_fq} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  urmap -map {tmp_fq} -ufi {tmp_index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -278,9 +280,11 @@ rule snap_align:
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
         shell("echo Copied reads to: $SLURM_JOB_ID")
-        # shell("mkdir /scratch/$SLURM_JOB_ID/snap_index")
-        # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
-        # shell("echo Copied index to: $SLURM_JOB_ID")
+        ref = config["HG38"]
+        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+        shell("mkdir {tmp_index}")
+        shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t1") 
+        shell("echo Copied index to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
@@ -290,6 +294,7 @@ rule snap_align:
         shell("/usr/bin/time -v  snap-aligner single {tmp_index} {tmp_fq} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
+
 
 rule accuracy:
     input: aln =  config["ROOT_OUT"] + "/alignments/{tool}/{dataset}/{read_length}.sam",

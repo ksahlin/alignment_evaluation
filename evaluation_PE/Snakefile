@@ -324,15 +324,17 @@ rule urmap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
-        # shell("cp {0} /scratch/$SLURM_JOB_ID/index.ufi".format(input.index))
-        # shell("echo Copied index to: $SLURM_JOB_ID")
+        ref = config["HG38"]
+        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index/"
+        shell("mkdir {tmp_index}")
+        shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
         # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
-        shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {tmp_index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -355,16 +357,20 @@ rule snap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
-        # shell("mkdir /scratch/$SLURM_JOB_ID/snap_index")
+        ref = config["HG38"]
+        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+        shell("mkdir {tmp_index}")
+        shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t1") 
         # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
-        # shell("echo Copied index to: $SLURM_JOB_ID")
+        # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
+        shell("echo Copied index to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
         # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
-        tmp_index = config["HG38"] + "_snap_index"
+        # tmp_index = config["HG38"] + "_snap_index"
         shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
