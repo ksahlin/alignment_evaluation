@@ -151,7 +151,7 @@ rule strobealign:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign -M 30 -t 1 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 1 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -170,7 +170,7 @@ rule strobealign_map:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign -t 1 -M 30 -x -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 1 -x -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
