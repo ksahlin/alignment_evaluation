@@ -175,8 +175,9 @@ def get_stats(truth, predicted):
     # print(nr_aligned)
     aligned_percentage = 100*(nr_aligned/nr_total)
     accuracy = 0.0
-    if nr_aligned > 0:
-        accuracy = 100*correct/nr_aligned
+    # if nr_aligned > 0:
+    #     accuracy = 100*correct/nr_aligned
+    accuracy = 100*correct/nr_total
     return aligned_percentage, accuracy, over_mapped
 
 

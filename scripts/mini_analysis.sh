@@ -124,16 +124,24 @@ echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 
 for read_length in 100 150 200 250 300 # 
 do 
-    for chr_id in sim_20contigs # hg38_chr18 hg38_chrX hg38_chr21 hg38_chr1 hg38_chr15 # sim_50contigs # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
+    for chr_id in sim_repeat_genome20 # hg38_chr18 hg38_chrX hg38_chr21 hg38_chr1 hg38_chr15 # sim_50contigs # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
     do
 
-        # if [[ ! -f $outroot/$chr_id/high_error.$read_length.sam ]]
+        # if [[ ! -f $outroot/$chr_id/$read_length.sam ]]
         # then
-        #     echo "SIMULATING VARIANTS"
-        #     mkdir -p $outroot/$chr_id/
-        #     mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0002 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/high_error.$chr_id.vcf &> /dev/null
-        #     echo "SIMULATING READS"
-        #     mason_simulator -ir $refs/$chr_id.fa -iv $refs/high_error.$chr_id.vcf --illumina-prob-mismatch-scale 2.0 -n 200000 --illumina-read-length $read_length --fragment-mean-size 700 -o $outroot/$chr_id/high_error.$read_length.L.fq -or $outroot/$chr_id/high_error.$read_length.R.fq -oa $outroot/$chr_id/high_error.$read_length.sam
+            echo "SIMULATING VARIANTS"
+            mkdir -p $outroot/$chr_id/
+            echo   mason_variator --sv-indel-rate 0.00005 --snp-rate 0.005 --small-indel-rate 0.005 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/$chr_id.vcf
+            mason_variator --sv-indel-rate 0.00005 --snp-rate 0.005 --small-indel-rate 0.005 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/$chr_id.vcf &> /dev/null
+            echo "SIMULATING READS"
+          if  ((read_length >= 250));
+            then  
+            echo mason_simulator -ir $refs/$chr_id.fa -n 100000 -iv $refs/$chr_id.vcf --illumina-read-length $read_length --fragment-mean-size 700 -o $outroot/$chr_id/$read_length.L.fq -or $outroot/$chr_id/$read_length.R.fq -oa $outroot/$chr_id/$read_length.sam
+            mason_simulator -ir $refs/$chr_id.fa -n 100000 -iv $refs/$chr_id.vcf --illumina-read-length $read_length --fragment-mean-size 700 -o $outroot/$chr_id/$read_length.L.fq -or $outroot/$chr_id/$read_length.R.fq -oa $outroot/$chr_id/$read_length.sam
+            else
+            echo mason_simulator -ir $refs/$chr_id.fa -n 100000 -iv $refs/$chr_id.vcf --illumina-read-length $read_length --fragment-mean-size 300 -o $outroot/$chr_id/$read_length.L.fq -or $outroot/$chr_id/$read_length.R.fq -oa $outroot/$chr_id/$read_length.sam
+            mason_simulator -ir $refs/$chr_id.fa -n 100000 -iv $refs/$chr_id.vcf --illumina-read-length $read_length --fragment-mean-size 300 -o $outroot/$chr_id/$read_length.L.fq -or $outroot/$chr_id/$read_length.R.fq -oa $outroot/$chr_id/$read_length.sam
+            fi
         # fi
 
         # HIGH ERROR
