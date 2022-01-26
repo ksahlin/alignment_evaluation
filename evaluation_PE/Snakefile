@@ -358,8 +358,8 @@ rule snap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         ref = config["HG38"]
-        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
-        shell("mkdir {tmp_index}")
+        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
+        shell("mkdir -p  /scratch/$SLURM_JOB_ID/")
         shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t1") 
         # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(config["HG38"] + "_snap_index"))
         # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
