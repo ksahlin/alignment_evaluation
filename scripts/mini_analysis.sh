@@ -124,14 +124,14 @@ echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 
 for read_length in 100 150 200 250 300 # 
 do 
-    for chr_id in sim_repeat_genome20 # hg38_chr18 hg38_chrX hg38_chr21 hg38_chr1 hg38_chr15 # sim_50contigs # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
+    for chr_id in sim_repeat_genome500 # hg38_chr18 hg38_chrX hg38_chr21 hg38_chr1 hg38_chr15 # sim_50contigs # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
     do
 
         # if [[ ! -f $outroot/$chr_id/$read_length.sam ]]
         # then
             echo "SIMULATING VARIANTS"
             mkdir -p $outroot/$chr_id/
-            echo   mason_variator --sv-indel-rate 0.00005 --snp-rate 0.005 --small-indel-rate 0.005 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/$chr_id.vcf
+            echo   mason_variator --sv-indel-rate 0.00005 --snp-rate 0.02 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/$chr_id.vcf
             mason_variator --sv-indel-rate 0.00005 --snp-rate 0.005 --small-indel-rate 0.005 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/$chr_id.vcf &> /dev/null
             echo "SIMULATING READS"
           if  ((read_length >= 250));

@@ -17,7 +17,7 @@ from matplotlib import pyplot
 
 
 def plot_runtime(input_csv, outfolder):
-    sns.set(rc={'figure.figsize':(12,6)})
+    sns.set(rc={'figure.figsize':(9,6)})
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.6)
     # tool,dataset,read_length,time,memory
