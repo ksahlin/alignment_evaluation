@@ -48,7 +48,7 @@ rule mason_simulate_variants:
     input:  ref = rules.simulate_contigs.output.sim_contigs
     output: sim_vcf =  config["ROOT_OUT"] + "/reads_PE/{dataset}/variations.vcf",
     run:
-        shell("mason_variator --sv-indel-rate 0.00005 --snp-rate 0.02 --small-indel-rate 0.001 --max-small-indel-size 50 -ir {input.ref} -ov {output.sim_vcf}")
+        shell("mason_variator --sv-indel-rate 0.00005 --snp-rate 0.005 --small-indel-rate 0.0005 --max-small-indel-size 50 -ir {input.ref} -ov {output.sim_vcf}")
 
 
 rule mason_simulate_reads:
