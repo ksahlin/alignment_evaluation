@@ -348,18 +348,18 @@ rule urmap_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
-rule snap_index:
-    input: ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
-    output: snp_index =  config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa" + "_snap_index/GenomeIndexHash",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
-    run:
-        # snap
-        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
+# rule snap_index:
+#     input: ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
+#     output: snp_index =  config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa" + "_snap_index/GenomeIndexHash",
+#             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
+#     run:
+#         # snap
+#         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.snap_index.output.snp_index
+            # index = rules.snap_index.output.snp_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam"
     run:
