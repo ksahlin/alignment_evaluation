@@ -146,7 +146,7 @@ def plot_memory_usage(input_csv, outfolder, tools, palette):
 
 def plot_runtime(input_csv, outfolder, tools, palette):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.4)
+    sns.set(font_scale=1.9)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 
@@ -168,7 +168,7 @@ def plot_runtime(input_csv, outfolder, tools, palette):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set(yscale="log")
-    g.set( yticks=[i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)]) #, ylim=(0, 5200))
+    g.set( yticks=[i for i in range(40,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,6999,1000)]) #, ylim=(0, 5200))
 
     # g.set( yticks=[0,250,500,1000,2000,3000, 4000,5000,6000], ylim=(0, 5200))
     g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),

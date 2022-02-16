@@ -89,7 +89,7 @@ def read_sam(sam_file):
 
 
     for read in SAM_file.fetch(until_eof=True):
-        if read.flag == 0 or read.flag == 16: # single end
+        if (read.flag == 0 or read.flag == 16) and (not read.is_secondary): # single end
             # print(read.query_name, len(read_positions))
             read_positions[read.query_name] = (read.reference_name, read.reference_start, read.reference_end)
         
@@ -112,12 +112,12 @@ def read_sam(sam_file):
                 else:
                     q_name = read.query_name
 
-            if read.is_unmapped: 
+            if not read.is_secondary and read.is_unmapped: 
                 read_positions[q_name] = False
-            else:
+            elif not read.is_secondary:
                 read_positions[q_name] = (read.reference_name, read.reference_start, read.reference_end)
         
-        elif (not read.is_paired) and read.is_unmapped: # single and unmapped
+        elif (not read.is_paired) and read.is_unmapped and (not read.is_secondary): # single and unmapped
             read_positions[read.query_name] = False
 
     return read_positions     
@@ -152,6 +152,7 @@ def get_stats(truth, predicted):
     nr_aligned = 0
     over_mapped = 0
     correct = 0
+    # print("MISSING:", set(truth).difference(set(predicted)))
     for read_acc in predicted:
         if not truth[read_acc]:
             over_mapped += 1

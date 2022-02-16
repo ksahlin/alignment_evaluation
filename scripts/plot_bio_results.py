@@ -17,7 +17,7 @@ from matplotlib import pyplot
 
 def plot_agreement(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
     g = sns.relplot(data=indata, x="read_length", y="agreement", hue="tool", linewidth = linewidth, kind="line", hue_order = tools,  palette=palette)
@@ -38,7 +38,7 @@ def plot_agreement(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
@@ -62,7 +62,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
 
 def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 
@@ -112,7 +112,7 @@ def add_column(infile):
 
 def plot_all(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
     g = sns.relplot(data=indata, x="read_length", y="data", hue="tool", linewidth = linewidth, kind="line", hue_order = tools,  palette=palette,
@@ -139,10 +139,10 @@ def plot_all2(input_csv, outfolder, palette, tools, linewidth = 2.5):
     indata = pd.read_csv(input_csv)
 
     fig, axs = plt.subplots(ncols=3, figsize=(20,8))
-    xx = sns.lineplot(x='read_length', y='time', hue="tool", markers = True, palette = palette,  linewidth = linewidth, data=indata, ax=axs[0])
-    yy = sns.lineplot(x='read_length', y='percent_aligned', markers = True,  palette = palette,  hue="tool", linewidth = linewidth, data=indata, ax=axs[1],legend=0)
-    zz = sns.lineplot(x='read_length', y='agreement', hue="tool", palette = palette, hue_order = ["minimap2", 'accelalign',  "strobealign", "snap", "urmap"],
-                         markers = True,  linewidth = linewidth, data=indata, ax=axs[2],legend=0)
+    xx = sns.lineplot(x='read_length', y='percent_aligned', hue="tool", markers = True, palette = palette,  linewidth = linewidth, data=indata, ax=axs[0],legend=0)
+    yy = sns.lineplot(x='read_length', y='agreement', hue_order = ["minimap2", 'accelalign',  "strobealign", "snap", "urmap"], markers = True,  palette = palette,  hue="tool", linewidth = linewidth, data=indata, ax=axs[1],legend=0)
+    zz = sns.lineplot(x='read_length', y='time', hue="tool", palette = palette, markers = True,  linewidth = linewidth, data=indata, ax=axs[2],legend=0)
+
     # # handles, labels = axs.get_legend_handles_labels()
     # handles, labels = [(a + b + c) for a, b, c in zip(axs[0].get_legend_handles_labels(), axs[1].get_legend_handles_labels(),axs[2].get_legend_handles_labels())]
     # fig.legend(handles, labels, loc='upper center')
@@ -152,25 +152,27 @@ def plot_all2(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # g.set_axis_labels("Read length", "Agreement with BWA and Bowtie2")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
-    # ax.set_xlabel("k")
+    axs[0].set_xlabel("Read length")
+    axs[1].set_xlabel("Read length")
+    axs[2].set_xlabel("Read length")
+
     axs[0].set_xticks([150,250] )
     # print(dir(axs[0]))
-    axs[0].set_yscale("log")
-    axs[0].set_yticks([i for i in range(500,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)])
+    axs[2].set_yscale("log")
+    axs[2].set_yticks([i for i in range(500,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)])
+    axs[2].set_ylabel("Time (log scale)")
 
-    axs[0].set_ylabel("Time (log scale)")
+    axs[0].set_xticks([150,250] )
+    axs[0].set_ylabel("Aligned (%)")
+    xt = (0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0)
+    axs[0].set_yticks(xt)
+    axs[0].set_yticklabels(([str(int(l*100)) for l in xt]))
 
     axs[1].set_xticks([150,250] )
-    axs[1].set_ylabel("Aligned (%)")
-    xt = (0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0)
-    axs[1].set_yticks(xt)
-    axs[1].set_yticklabels(([str(int(l*100)) for l in xt]))
-
-    axs[2].set_xticks([150,250] )
-    axs[2].set_ylabel("BWA & bowtie2 agreement (Million reads)")
-    axs[2].set_ylim((7100000, 7500000))
-    axs[2].set_yticks((7100000, 7200000, 7300000, 7400000, 7500000))
-    axs[2].set_yticklabels(("7.1", "7.2", "7,3", "7.4", "7.5"))
+    axs[1].set_ylabel("BWA & bowtie2 agreement (Million reads)")
+    axs[1].set_ylim((7100000, 7500000))
+    axs[1].set_yticks((7100000, 7200000, 7300000, 7400000, 7500000))
+    axs[1].set_yticklabels(("7.1", "7.2", "7,3", "7.4", "7.5"))
 
 
     # box1 = xx.get_position()
@@ -210,9 +212,9 @@ def main(args):
     # runtime_mem_csv = add_column(args.runtime_mem_csv)
     plot_all2(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
 
-    # plot_percentage_aligned(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
-    # plot_runtime(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
-    # plot_agreement(args.csv, args.outfolder, palette, tools_agree, linewidth = 2.5)
+    plot_percentage_aligned(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_runtime(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_agreement(args.csv, args.outfolder, palette, tools_agree, linewidth = 2.5)
 
 
 if __name__ == '__main__':

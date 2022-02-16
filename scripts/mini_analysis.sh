@@ -122,13 +122,13 @@ echo -n  "tool","ref","%-aligned","accuracy,time(sec),Mem(MB)"$'\n'
 # done
 
 
-for read_length in 100 150 200 250 300 # 
+for read_length in 100 150 200 250 300
 do 
-    for chr_id in sim_repeat_genome500 # hg38_chr18 hg38_chrX hg38_chr21 hg38_chr1 hg38_chr15 # sim_50contigs # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
+    for chr_id in  hg38_chr21 hg38_chr18 hg38_chrX hg38_chr1 hg38_chr15 sim_repeat_genome500 # sim_50contigs # hg38_chr1_2 hg38_chr6_15_18_X_Y  #  # hg38_chr1_2 hg38_chr6_15_18_X_Y  #
     do
 
-        # if [[ ! -f $outroot/$chr_id/$read_length.sam ]]
-        # then
+        if [[ ! -f $outroot/$chr_id/$read_length.sam ]]
+        then
             echo "SIMULATING VARIANTS"
             mkdir -p $outroot/$chr_id/
             echo   mason_variator --sv-indel-rate 0.00005 --snp-rate 0.02 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir $refs/$chr_id.fa -ov $refs/$chr_id.vcf
@@ -142,7 +142,7 @@ do
             echo mason_simulator -ir $refs/$chr_id.fa -n 100000 -iv $refs/$chr_id.vcf --illumina-read-length $read_length --fragment-mean-size 300 -o $outroot/$chr_id/$read_length.L.fq -or $outroot/$chr_id/$read_length.R.fq -oa $outroot/$chr_id/$read_length.sam
             mason_simulator -ir $refs/$chr_id.fa -n 100000 -iv $refs/$chr_id.vcf --illumina-read-length $read_length --fragment-mean-size 300 -o $outroot/$chr_id/$read_length.L.fq -or $outroot/$chr_id/$read_length.R.fq -oa $outroot/$chr_id/$read_length.sam
             fi
-        # fi
+        fi
 
         # HIGH ERROR
 
@@ -159,9 +159,10 @@ do
         # NORMAL ERROR
         # # minimap2 stats
         # /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/sim_500contigs.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.minimap2.sam 2>  $outroot/$chr_id/$read_length.minimap2.stderr
-        /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.minimap2.sam 2>  $outroot/$chr_id/$read_length.minimap2.stderr
-        echo -n $chr_id,$read_length,minimap2,align,
-        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.minimap2.sam --time_mem $outroot/$chr_id/$read_length.minimap2.stderr
+
+        # /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.minimap2.sam 2>  $outroot/$chr_id/$read_length.minimap2.stderr
+        # echo -n $chr_id,$read_length,minimap2,align,
+        # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.minimap2.sam --time_mem $outroot/$chr_id/$read_length.minimap2.stderr
 
         # /usr/bin/time   -l $strobealign_dev_dir/./strobealign3 -t 1 -r $read_length -o $outroot/$chr_id/$read_length.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq &>  $outroot/$chr_id/$read_length.strobealign.stderr
         # echo -n $chr_id,$read_length,strobealign-0.3,align,
@@ -169,9 +170,58 @@ do
         
 
         # /usr/bin/time   -l $strobealign_dev_dir/./strobealign -t 1 -r $read_length -o $outroot/$chr_id/$read_length.strobealign.sam $refs/sim_500contigs.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq &>  $outroot/$chr_id/$read_length.strobealign.stderr
-        /usr/bin/time  -l $strobealign_dev_dir/./strobealign -t 1 -r $read_length -o $outroot/$chr_id/$read_length.strobealign.sam $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq &>  $outroot/$chr_id/$read_length.strobealign.stderr
+
+        ################################
+        ######### PAIRED END ###########
+        /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.minimap2_PE.sam 2>  $outroot/$chr_id/$read_length.minimap2_PE.stderr
+        echo -n $chr_id,$read_length,minimap2_PE,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.minimap2_PE.sam --time_mem $outroot/$chr_id/$read_length.minimap2_PE.stderr
+
+        /usr/bin/time  -l $strobealign_dev_dir/./strobealign-0.4 -t 1 -r $read_length -o $outroot/$chr_id/$read_length.strobealign_PE.sam $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq &>  $outroot/$chr_id/$read_length.strobealign_PE.stderr
         echo -n $chr_id,$read_length,strobealign-0.4,align,
-        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign.sam --time_mem $outroot/$chr_id/$read_length.strobealign.stderr
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_PE.sam --time_mem $outroot/$chr_id/$read_length.strobealign_PE.stderr
+
+        /usr/bin/time  -l $strobealign_dev_dir/./strobealign -t 1 -r $read_length $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.strobealign_PE_PM.sam 2>  $outroot/$chr_id/$read_length.strobealign_PE_PM.stderr
+        echo -n $chr_id,$read_length,strobealign-0.5_PM,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_PE_PM.sam --time_mem $outroot/$chr_id/$read_length.strobealign_PE_PM.stderr
+
+
+        /usr/bin/time  -l $strobealign_dev_dir/./strobealign -t 1 -N 5 -r $read_length $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq 1> $outroot/$chr_id/$read_length.strobealign_PE_MM.sam 2>  $outroot/$chr_id/$read_length.strobealign_PE_MM.stderr
+        echo -n $chr_id,$read_length,strobealign-0.5_MM,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_PE_MM.sam --time_mem $outroot/$chr_id/$read_length.strobealign_PE_MM.stderr
+
+        ################################
+        ################################
+
+        echo 
+
+        # #####################################
+        # # ########### SINGLE END ###########
+
+        /usr/bin/time -l minimap2 -t 1 --eqx -ax sr $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq 1> $outroot/$chr_id/$read_length.minimap2_SE.sam 2>  $outroot/$chr_id/$read_length.minimap2_SE.stderr
+        echo -n $chr_id,$read_length,minimap2_SE,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.minimap2_SE.sam --time_mem $outroot/$chr_id/$read_length.minimap2_SE.stderr
+
+        /usr/bin/time  -l $strobealign_dev_dir/./strobealign-0.4 -t 1 -r $read_length -o $outroot/$chr_id/$read_length.strobealign_SE.sam $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq &>  $outroot/$chr_id/$read_length.strobealign_SE.stderr
+        echo -n $chr_id,$read_length,strobealign-0.4_SE,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_SE.sam --time_mem $outroot/$chr_id/$read_length.strobealign_SE.stderr
+
+        /usr/bin/time  -l $strobealign_dev_dir/./strobealign -t 1 -r $read_length $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq 1> $outroot/$chr_id/$read_length.strobealign_SE_PM.sam 2>  $outroot/$chr_id/$read_length.strobealign_SE_PM.stderr
+        echo -n $chr_id,$read_length,strobealign-0.5-SE_PM,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_SE_PM.sam --time_mem $outroot/$chr_id/$read_length.strobealign_SE_PM.stderr
+
+        /usr/bin/time  -l $strobealign_dev_dir/./strobealign -t 1 -N 5 -r $read_length $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq 1> $outroot/$chr_id/$read_length.strobealign_SE_MM.sam 2>  $outroot/$chr_id/$read_length.strobealign_SE_MM.stderr
+        echo -n $chr_id,$read_length,strobealign-0.5-SE_MM,align,
+        python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_SE_MM.sam --time_mem $outroot/$chr_id/$read_length.strobealign_SE_MM.stderr
+
+        # # /usr/bin/time  -l $strobealign_dev_dir/./strobealign -t 1 -N 5 -r $read_length $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq 1> $outroot/$chr_id/$read_length.strobealign_SE_MM.sam 2>  $outroot/$chr_id/$read_length.strobealign_SE_MM.stderr
+        # # echo -n $chr_id,$read_length,strobealign-0.4.1-SE_MM,align,
+        # # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_sam $outroot/$chr_id/$read_length.strobealign_SE_MM.sam --time_mem $outroot/$chr_id/$read_length.strobealign_SE_MM.stderr
+
+        # #################################
+        # #################################
+        
+        echo
 
         # /usr/bin/time   -l $strobealign_dev_dir/./strobealign -t 1 -x -r $read_length -o $outroot/$chr_id/$read_length.strobealign.paf $refs/$chr_id.fa $outroot/$chr_id/$read_length.L.fq $outroot/$chr_id/$read_length.R.fq &>  $outroot/$chr_id/$read_length.strobealign.stderr
         # echo -n $chr_id,$read_length,strobealign-0.4,map,
@@ -195,6 +245,7 @@ do
         # echo -n $chr_id,$read_length,strobealign,map_NO_RESC,
         # python $eval_script_dir/get_accuracy.py --truth $outroot/$chr_id/$read_length.sam --predicted_paf $outroot/$chr_id/$read_length.strobealign.paf --time_mem $outroot/$chr_id/$read_length.strobealign.stderr
     done
+    echo
     echo
 done
 
