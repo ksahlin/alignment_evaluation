@@ -54,6 +54,9 @@ def parse_gnu_time(stderr_file):
         tot_wallclock_secs = wallclocktime - index_time_aa
     elif index_time_strobemap:
         tot_wallclock_secs = wallclocktime - index_time_strobemap
+    else:
+        tot_wallclock_secs = wallclocktime
+
 
     return round(tot_wallclock_secs,2), round(memory_gb,2)
 
