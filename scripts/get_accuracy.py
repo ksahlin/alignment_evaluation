@@ -86,8 +86,11 @@ def parse_gnu_time(stderr_file):
     #     return "BUG","BUG"
 
 
-def read_sam(sam_file):
-    SAM_file = pysam.AlignmentFile(sam_file, "r", check_sq=False)
+def read_sam(sam_file, bam=True):
+    if bam:
+        SAM_file = pysam.AlignmentFile(sam_file, "rb", check_sq=False)
+    else:
+        SAM_file = pysam.AlignmentFile(sam_file, "r", check_sq=False)
     read_positions = {} # acc -> [ref_id, ref_start, refstop]
 
 
@@ -186,11 +189,13 @@ def get_stats(truth, predicted):
 
 
 def main(args):
+    is_bam = True if args.predicted_sam[-3:] == "bam" else False
+    truth = read_sam(args.truth, bam=is_bam)
 
-    truth = read_sam(args.truth)
+    is_bam = True if args.predicted_sam[-3:] == "bam" else False
 
     if args.predicted_sam:
-        predicted = read_sam(args.predicted_sam)
+        predicted = read_sam(args.predicted_sam, bam=is_bam)
     elif args.predicted_paf:
         predicted, mapped_to_multiple_pos = read_paf(args.predicted_paf)
         # print("Number of reads mapped to several positions (using first pos):", mapped_to_multiple_pos)
