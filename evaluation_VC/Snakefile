@@ -286,10 +286,46 @@ rule urmap_align:
 
 
 rule make_sorted_bam:
+    input: sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/MOTHER/{dataset}.sam"
+    output: sorted_bam =  config["ROOT_OUT"] + "/alignments_PE/urmap/MOTHER/{dataset}.sam"
+    run:
+            # sam to sorted indexed bam
+            samtools view -u $outroot/$chr_id/$read_length.$tool.sam | samtools sort -o $outroot/$chr_id/$read_length.$tool.bam &> /dev/null
+            rm $outroot/$chr_id/$read_length.$tool.sam
+            samtools index $outroot/$chr_id/$read_length.$tool.bam &> /dev/null
+
+
 
 rule bcftools_call:
+            # call variants
+            # echo bcftools mpileup -O v --fasta-ref $refs/$chr_id.fa $outroot/$chr_id/$read_length.$tool.bam > $outroot/$chr_id/$read_length.$tool.vcf
+            bcftools mpileup -O z --fasta-ref $refs/$chr_id.fa $outroot/$chr_id/$read_length.$tool.bam > $outroot/$chr_id/$read_length.$tool.vcf.gz 2> /dev/null
+            bcftools call --threads 3 -v -c -O v $outroot/$chr_id/$read_length.$tool.vcf.gz > $outroot/$chr_id/$read_length.$tool.variants.vcf 2> /dev/null
+
+            # Split into SNP and INDELS
+            grep -v -E -e "INDEL;"  $outroot/$chr_id/$read_length.$tool.variants.vcf > $outroot/$chr_id/$read_length.$tool.variants.SNV.vcf
+            touch $outroot/$chr_id/$read_length.$tool.variants.INDEL.vcf
+            grep "#"  $outroot/$chr_id/$read_length.$tool.variants.vcf > $outroot/$chr_id/$read_length.$tool.variants.INDEL.vcf
+            grep -E -e "INDEL;"  $outroot/$chr_id/$read_length.$tool.variants.vcf >> $outroot/$chr_id/$read_length.$tool.variants.INDEL.vcf
+
 
 rule bcftools_intersect:
+            # Get true SNV calls
+            bcftools sort -Oz $outroot/$chr_id/$read_length.$tool.variants.SNV.vcf -o $outroot/$chr_id/$read_length.$tool.variants.sorted.SNV.vcf.gz #&> /dev/null
+            bcftools index $outroot/$chr_id/$read_length.$tool.variants.sorted.SNV.vcf.gz #&> /dev/null
+            bcftools isec --nfiles 2  -O u $refs/$chr_id.sorted.SNV.vcf.gz  $outroot/$chr_id/$read_length.$tool.variants.sorted.SNV.vcf.gz -p $outroot/$chr_id/$read_length.$tool.variants.SNV.ovl #&> /dev/null
+
+            # Get true INDEL calls
+            bcftools sort -Oz $outroot/$chr_id/$read_length.$tool.variants.INDEL.vcf -o $outroot/$chr_id/$read_length.$tool.variants.sorted.INDEL.vcf.gz &> /dev/null
+            bcftools index $outroot/$chr_id/$read_length.$tool.variants.sorted.INDEL.vcf.gz &> /dev/null
+            bcftools isec --nfiles 2 -O u $refs/$chr_id.sorted.INDEL.vcf.gz  $outroot/$chr_id/$read_length.$tool.variants.sorted.INDEL.vcf.gz -p $outroot/$chr_id/$read_length.$tool.variants.INDEL.ovl &> /dev/null
+
+rule get_stats:
+            echo -n \| $read_length  \| $tool \|  
+            python $eval_script_dir/get_sv_prediction_stats.py -T $true_snv -A $tool -R $read_length -V SNV  $outroot/$chr_id/$read_length.$tool.variants.SNV.vcf $outroot/$chr_id/$read_length.$tool.variants.SNV.ovl/sites.txt 
+            python $eval_script_dir/get_sv_prediction_stats.py -T $true_indel -A $tool -R $read_length -V INDEL $outroot/$chr_id/$read_length.$tool.variants.INDEL.vcf $outroot/$chr_id/$read_length.$tool.variants.INDEL.ovl/sites.txt 
+
+
 
 # rule overlap:
 #     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam",
