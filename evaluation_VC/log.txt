@@ -1,0 +1,35 @@
+
+
+METHOD: minimap2
+nr_aligned:200000
+good_method:197047
+bad_method:2953
+unaligned_method:0
+to_improve:0
+TRUE REF, PRED REF, MISALIGNED
+chrX,chrX: 2953
+Total uniquely misaligned, originally from chrX: 2953
+
+
+METHOD: strobealign
+nr_aligned:200000
+good_method:194540
+bad_method:5460
+unaligned_method:0
+to_improve:0
+TRUE REF, PRED REF, MISALIGNED
+chrX,chrX: 5460
+Total uniquely misaligned, originally from chrX: 5460
+
+More misaligned strobealign, originally from chrX: 2507
+nr_aligned method1:200000
+good_method1:197047
+bad_method1:2953
+unaligned_method1:0
+nr_aligned method2:200000
+good_method2:194540
+bad_method2:5460
+unaligned_method2:0
+to_improve:5460
+TRUE REF, PRED REF, ONLY STROBEALIGN MISALIGNEDchrX,chrX: 3350
+Only misaligned by strobealign chrX: 3350

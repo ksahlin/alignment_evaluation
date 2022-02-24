@@ -1,0 +1,6 @@
+{
+
+    "ROOT_OUT" : "/proj/snic2022-6-31/nobackup/strobealign_eval/",
+    "ROOT_IN" : "/home/kris/source/alignment_evaluation",
+    "HG38" : "/proj/snic2022-6-31/nobackup/data/HG38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+}
