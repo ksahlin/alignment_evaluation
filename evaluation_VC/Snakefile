@@ -40,8 +40,8 @@ rule all:
 rule mason_simulate_variants:
     input:  ref = config["HG38"]
     output: sim_vcf =  config["ROOT_OUT"] + "/hg38_sim_variations.vcf",
-            sim_SNV_sorted = config["ROOT_OUT"] + "/hg38_sim_variations.sorted.SNV.vcf.gz",
-            sim_INDEL_sorted = config["ROOT_OUT"] + "/hg38_sim_variations.sorted.INDEL.vcf.gz"
+            true_vcf_SNV = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.SNV.vcf",
+            true_vcf_INDEL = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.INDEL.vcf"
     run:
         # "SIM3" variation rate
         shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
@@ -55,13 +55,11 @@ rule mason_simulate_variants:
         shell('grep "#" {output.sim_vcf}  > {sim_INDEL}')
         shell('grep -E -e "indel" {output.sim_vcf}  >> {sim_INDEL}')
 
-        sim_SNV_sorted  = config["ROOT_OUT"] + "/hg38_sim_variations.sorted.SNV.vcf.gz"
-        shell('bcftools sort -Oz {sim_SNV} -o {sim_SNV_sorted}')
-        shell('bcftools index {sim_SNV_sorted}')
+        shell('bcftools sort -Ov {sim_SNV} -o {true_vcf_SNV}')
+        shell('bcftools index {true_vcf_SNV}')
 
-        sim_INDEL_sorted  = config["ROOT_OUT"] + "/hg38_sim_variations.sorted.INDEL.vcf.gz"
-        shell('bcftools sort -Oz {sim_INDEL} -o {sim_INDEL_sorted}')
-        shell('bcftools index {sim_INDEL_sorted}')
+        shell('bcftools sort -Ov {sim_INDEL} -o {true_vcf_INDEL}')
+        shell('bcftools index {true_vcf_INDEL}')
 
 
 rule mason_simulate_reads:
@@ -319,12 +317,12 @@ rule bcftools_call:
 rule bcftools_intersect_sim:
     input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
            vcf_INDEL = rules.bcftools_call.output.vcf_INDEL,
-           vcf_SNV_true = rules.mason_simulate_variants.output.sim_SNV_sorted,
-           vcf_INDEL_true = rules.mason_simulate_variants.output.sim_INDEL_sorted,
+           vcf_SNV_true = rules.mason_simulate_variants.output.true_vcf_SNV,
+           vcf_INDEL_true = rules.mason_simulate_variants.output.true_vcf_INDEL,
     output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
             vcf_INDEL_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt"
     wildcard_constraints:
-        dataset="SIM*"
+        dataset="SIM\d+"
     run:
             # Get true SNV calls
             variants_SNV_sorted_vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.SNV.sorted.vcf.gz".format(wildcards.tool, wildcards.dataset)
@@ -343,10 +341,10 @@ rule bcftools_intersect_sim:
 
 rule bcftools_split_true:
     input: variants_vcf = "/proj/snic2022-6-31/nobackup/data/HG004/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz"
-    output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{dataset}.true.variants.SNV.vcf",
-            vcf_INDEL = config["ROOT_OUT"] + "/vcf/{dataset}.true.variants.INDEL.vcf"
-    wildcard_constraints:
-        dataset="BIO*"
+    output: vcf_SNV = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf",
+            vcf_INDEL = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
+    # wildcard_constraints:
+    #     dataset="BIO*"
     run:
             # Split into SNP and INDELS
             shell('grep -v -E -e "INDEL;" {variants_vcf} > {output.vcf_SNV}')
@@ -361,7 +359,7 @@ rule bcftools_intersect_bio:
     output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
             vcf_INDEL_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt"
     wildcard_constraints:
-        dataset="BIO*"
+        dataset="BIO\d+"
     run:
             # Get true SNV calls
             variants_SNV_sorted_vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.SNV.sorted.vcf.gz".format(wildcards.tool, wildcards.dataset)
@@ -378,11 +376,39 @@ rule bcftools_intersect_bio:
             shell('bcftools isec --threads 16 --nfiles 2 -O u {input.vcf_INDEL_true} {variants_INDEL_sorted_vcf_gz} -p {INDEL_ovl_output}')
 
 
-# rule get_stats:
-    
-#             echo -n \| $read_length  \| $tool \|  
-#             python $eval_script_dir/get_sv_prediction_stats.py -T $true_snv -A $tool -R $read_length -V SNV  $outroot/$chr_id/$read_length.$tool.variants.SNV.vcf $outroot/$chr_id/$read_length.$tool.variants.SNV.ovl/sites.txt 
-#             python $eval_script_dir/get_sv_prediction_stats.py -T $true_indel -A $tool -R $read_length -V INDEL $outroot/$chr_id/$read_length.$tool.variants.INDEL.vcf $outroot/$chr_id/$read_length.$tool.variants.INDEL.ovl/sites.txt 
+rule get_stats:
+    input: pred_SNV = rules.bcftools_call.output.vcf_SNV,
+           pred_INDEL = rules.bcftools_call.output.vcf_INDEL,
+           tp_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
+           tp_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt",
+    output: stats = config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt"
+    run:
+            script_dir = config["ROOT_IN"] + "/evaluation_VC"
+            if wildcards.dataset == "SIM150" or wildcards.dataset == "SIM250":
+                true_SNV = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.SNV.vcf",
+                true_INDEL = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.INDEL.vcf"
+            else:
+                true_SNV = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf",
+                true_INDEL = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
+
+            shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V SNV {true_SNV} {input.pred_SNV}  {input.tp_SNV} > {output.stats}')
+            shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V SNV {true_INDEL} {input.pred_INDEL}  {input.tp_INDEL} >> {output.stats}')
+
+
+
+rule summary_variant_call_stats:
+    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap"])
+    output: out = config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
+    run:
+        # summary_file = open(out, "w")
+        # args.R, args.A, args.V, round(100*precision, 1), round(100*recall, 1), round(100*f_score, 1)
+        shell('echo "dataset,tool,variant,recall,precision,f_score" > {output.out}')
+
+        for f in input.call_stats_files:
+            string = f.split("/")
+            tool = string[-3]
+            dataset = string[-2]
+            shell("cat {f} >> {output.out}")
 
 
 
@@ -427,16 +453,17 @@ rule summary_time_and_mem:
 
         for f in input.time_and_mem_files:
             string = f.split("/")
-            tool = string[-4]
+            tool = string[-3]
             dataset = string[-2]
             if dataset == "BIO150":
                 read_length = 150
             elif dataset == "BIO250":
                 read_length = 250
+            elif dataset == "SIM250":
+                read_length = 250
+            elif dataset == "SIM150":
+                read_length = 150
             shell("/usr/bin/time -v  python summarize_time_and_memory.py {tool} {dataset} {read_length} {f}  >> {output.out} ")
-
-
-
 
 
 
