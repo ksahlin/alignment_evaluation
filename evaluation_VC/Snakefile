@@ -34,6 +34,7 @@ def mkdir_p(path):
 
 rule all:
    input:  config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result",
+           config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
            # config["ROOT_OUT"] + "/evaluation_SV/overlap.result"
 
 
