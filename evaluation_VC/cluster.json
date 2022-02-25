@@ -184,6 +184,30 @@
         "runtime" : "2-00:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
+    },
+
+    "bcftools_call": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "call",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "2-00:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+        "bcftools_intersect": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "isec",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "2-00:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
     }
 
 }
