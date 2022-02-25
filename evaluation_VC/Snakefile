@@ -93,8 +93,8 @@ rule minimap2_align:
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -119,8 +119,8 @@ rule bwa_mem_align:
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -138,8 +138,8 @@ rule strobealign:
             fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/{dataset}.sam"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -168,8 +168,8 @@ rule accelalign_align:
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}.sam"
     run:
         ref = config["HG38"]
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -196,8 +196,8 @@ rule bowtie2_align:
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam"
     run:
         ref = config["HG38"]
         bt2_index = config["HG38"] + "-bt2"
@@ -225,8 +225,8 @@ rule snap_align:
     input: fastq_L =   "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             index = rules.snap_index.output.snp_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -264,10 +264,10 @@ rule urmap_align:
     input: fastq_L =   "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq",
             index = rules.urmap_index.output.ufi_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/MOTHER/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/MOTHER/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}.sam"
     run:
-        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/MOTHER/{0}/".format(wildcards.dataset))
+        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
@@ -286,8 +286,8 @@ rule urmap_align:
 
 
 rule make_sorted_bam:
-    input: sam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/MOTHER/{dataset}.sam"
-    output: sorted_bam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/MOTHER/{dataset}.sam"
+    input: sam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
+    output: sorted_bam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
     run:
             # sam to sorted indexed bam
             shell('samtools view -u {input.sam} | samtools sort -o {ouput.sorted_bam}')
@@ -299,7 +299,7 @@ rule make_sorted_bam:
 rule bcftools_call:
     input: bam = rules.make_sorted_bam.output.sorted_bam,
             ref = config["HG38"]
-    output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.vcf"
+    output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.vcf",
             vcf_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.vcf"
     run:
             # call variants
@@ -316,15 +316,16 @@ rule bcftools_call:
             shell('grep -E -e "INDEL;"  {variants_vcf} >> {output.vcf_INDEL}')
 
 
-rule bcftools_intersect:
+rule bcftools_intersect_sim:
     input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
            vcf_INDEL = rules.bcftools_call.output.vcf_INDEL,
            vcf_SNV_true = rules.mason_simulate_variants.output.sim_SNV_sorted,
            vcf_INDEL_true = rules.mason_simulate_variants.output.sim_INDEL_sorted,
     output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
             vcf_INDEL_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt"
+    wildcard_constraints:
+        dataset="SIM*"
     run:
-
             # Get true SNV calls
             variants_SNV_sorted_vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.SNV.sorted.vcf.gz".format(wildcards.tool, wildcards.dataset)
             shell('bcftools sort -Oz {input.vcf_SNV} -o {variants_SNV_sorted_vcf_gz}')
@@ -339,6 +340,44 @@ rule bcftools_intersect:
             INDEL_ovl_output = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.INDEL.ovl".format(wildcards.tool, wildcards.dataset)
             shell('bcftools isec --threads 16 --nfiles 2 -O u {input.vcf_INDEL_true} {variants_INDEL_sorted_vcf_gz} -p {INDEL_ovl_output}')
 
+
+rule bcftools_split_true:
+    input: variants_vcf = "/proj/snic2022-6-31/nobackup/data/HG004/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz"
+    output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{dataset}.true.variants.SNV.vcf",
+            vcf_INDEL = config["ROOT_OUT"] + "/vcf/{dataset}.true.variants.INDEL.vcf"
+    wildcard_constraints:
+        dataset="BIO*"
+    run:
+            # Split into SNP and INDELS
+            shell('grep -v -E -e "INDEL;" {variants_vcf} > {output.vcf_SNV}')
+            shell('grep "#"  {variants_vcf} > {output.vcf_INDEL}')
+            shell('grep -E -e "INDEL;"  {variants_vcf} >> {output.vcf_INDEL}')
+
+rule bcftools_intersect_bio:
+    input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
+           vcf_INDEL = rules.bcftools_call.output.vcf_INDEL,
+           vcf_SNV_true = rules.bcftools_split_true.output.vcf_SNV,
+           vcf_INDEL_true = rules.bcftools_split_true.output.vcf_INDEL
+    output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
+            vcf_INDEL_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt"
+    wildcard_constraints:
+        dataset="BIO*"
+    run:
+            # Get true SNV calls
+            variants_SNV_sorted_vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.SNV.sorted.vcf.gz".format(wildcards.tool, wildcards.dataset)
+            shell('bcftools sort -Oz {input.vcf_SNV} -o {variants_SNV_sorted_vcf_gz}')
+            shell('bcftools index {variants_SNV_sorted_vcf_gz}')
+            SNV_ovl_output = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.SNV.ovl".format(wildcards.tool, wildcards.dataset)
+            shell('bcftools isec --threads 16 --nfiles 2 -O u {input.vcf_SNV_true} {variants_SNV_sorted_vcf_gz} -p {SNV_ovl_output}')
+
+            # Get true INDEL calls
+            variants_INDEL_sorted_vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.INDEL.sorted.vcf.gz".format(wildcards.tool, wildcards.dataset)
+            shell('bcftools sort -Oz {input.vcf_INDEL} -o {variants_INDEL_sorted_vcf_gz}')
+            shell('bcftools index {variants_INDEL_sorted_vcf_gz}')
+            INDEL_ovl_output = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.INDEL.ovl".format(wildcards.tool, wildcards.dataset)
+            shell('bcftools isec --threads 16 --nfiles 2 -O u {input.vcf_INDEL_true} {variants_INDEL_sorted_vcf_gz} -p {INDEL_ovl_output}')
+
+
 # rule get_stats:
     
 #             echo -n \| $read_length  \| $tool \|  
@@ -348,11 +387,11 @@ rule bcftools_intersect:
 
 
 # rule overlap:
-#     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/MOTHER/{dataset}.sam",
-#            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/MOTHER/{dataset}.sam",
-#            snap =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam",
-#            aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/MOTHER/{dataset}.sam"
-#     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result"
+#     input: bwa =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}.sam",
+#            bowtie2 =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}.sam",
+#            snap =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}.sam",
+#            aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
+#     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result"
 #     run:
 #         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map": 
 #             shell("/usr/bin/time -v  python get_overlap.py --sam1 {input.bwa} --sam2 {input.bowtie2} --paf  {input.aln} --tool {wildcards.tool} > {output.out} ")
@@ -365,7 +404,7 @@ rule bcftools_intersect:
  
 
 # rule summary_alignment_stats:
-#     input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap"])
+#     input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap"])
 #     output: out = config["ROOT_OUT"] + "/evaluation_SV/overlap.result"
 #     run:
 #         shell('echo "tool,dataset,read_length,aligned,overlap,overaligned" > {output.out}')
@@ -380,7 +419,7 @@ rule bcftools_intersect:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
