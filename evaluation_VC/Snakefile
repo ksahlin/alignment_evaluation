@@ -34,7 +34,7 @@ def mkdir_p(path):
 
 rule all:
    input:  config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result",
-            config["ROOT_OUT"] + "/evaluation_SV/overlap.result"
+           # config["ROOT_OUT"] + "/evaluation_SV/overlap.result"
 
 
 rule mason_simulate_variants:
@@ -67,11 +67,11 @@ rule mason_simulate_variants:
 rule mason_simulate_reads:
     input:  ref = config["HG38"],
              sim_vcf = rules.mason_simulate_variants.output.sim_vcf
-    output: sim_fq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM*}/reads_R1.fastq",
-            sim_fq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM*}/reads_R2.fastq",
-            sim_sam =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM*}.sam"
-    wildcard_constraints:
-        dataset="SIM*"
+    output: sim_fq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM\d+}/reads_R1.fastq",
+            sim_fq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM\d+}/reads_R2.fastq",
+            sim_sam =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM\d+}.sam"
+    # wildcard_constraints:
+    #    dataset="SIM*"
     run:
         if wildcards.dataset == "SIM250": # to not give abort trap in simulator due to too low fragment size
             # simulate roughly 30x coverage 3000000000*30/(2*250) =  180000000
