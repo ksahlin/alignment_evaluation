@@ -208,6 +208,18 @@
         "runtime" : "05:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
+    },
+
+    "make_sorted_bam": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "sort_bam",
+        "cpus-per-task" : "2",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "10:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
     }
 
 }
