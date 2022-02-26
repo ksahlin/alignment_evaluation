@@ -74,10 +74,10 @@ rule mason_simulate_reads:
     run:
         if wildcards.dataset == "SIM250": # to not give abort trap in simulator due to too low fragment size
             # simulate roughly 30x coverage 3000000000*30/(2*250) =  180000000
-            shell("mason_simulator -ir {input.ref} -n 180000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
+            shell("mason_simulator -ir {input.ref} -n 180000000 -iv {input.sim_vcf} --illumina-read-length 250 -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
         else:
             # simulate roughly 30x coverage 3000000000*30/(2*150) =  300000000
-            shell("mason_simulator -ir {input.ref} -n 300000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam}")
+            shell("mason_simulator -ir {input.ref} -n 300000000 -iv {input.sim_vcf} --illumina-read-length 150 -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam}")
 
 
 rule minimap2_index:
@@ -348,9 +348,10 @@ rule bcftools_split_true:
     #     dataset="BIO*"
     run:
             # Split into SNP and INDELS
-            shell('grep -v -E -e "INDEL;" {input.variants_vcf} > {output.vcf_SNV_true}')
-            shell('grep "#"  {input.variants_vcf} > {output.vcf_INDEL_true}')
-            shell('grep -E -e "INDEL;"  {input.variants_vcf} >> {output.vcf_INDEL_true}')
+            mkdir_p(config["ROOT_OUT"] + "/vcf/")
+            shell('zgrep "#" {input.variants_vcf} > {output.vcf_SNV_true}')
+            shell('zgrep -P  "\t[ACGT]\t[ACGT]\t" {input.variants_vcf} >> {output.vcf_SNV_true}')
+            shell('zgrep -v -P  "\t[ACGT]\t[ACGT]\t"  > {output.vcf_INDEL_true}')
 
 rule bcftools_intersect_bio:
     input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
