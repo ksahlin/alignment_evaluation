@@ -41,8 +41,8 @@ rule all:
 rule mason_simulate_variants:
     input:  ref = config["HG38"]
     output: sim_vcf =  config["ROOT_OUT"] + "/hg38_sim_variations.vcf",
-            true_vcf_SNV = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.SNV.vcf",
-            true_vcf_INDEL = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.INDEL.vcf"
+            true_vcf_SNV = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.SNV.vcf.gz",
+            true_vcf_INDEL = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.INDEL.vcf.gz"
     run:
         # "SIM3" variation rate
         shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
@@ -56,10 +56,10 @@ rule mason_simulate_variants:
         shell('grep "#" {output.sim_vcf}  > {sim_INDEL}')
         shell('grep -E -e "indel" {output.sim_vcf}  >> {sim_INDEL}')
 
-        shell('bcftools sort -Ov {sim_SNV} -o {output.true_vcf_SNV}')
+        shell('bcftools sort -Oz {sim_SNV} -o {output.true_vcf_SNV}')
         shell('bcftools index {output.true_vcf_SNV}')
 
-        shell('bcftools sort -Ov {sim_INDEL} -o {output.true_vcf_INDEL}')
+        shell('bcftools sort -Oz {sim_INDEL} -o {output.true_vcf_INDEL}')
         shell('bcftools index {output.true_vcf_INDEL}')
 
 
@@ -342,21 +342,21 @@ rule bcftools_intersect_sim:
 
 rule bcftools_split_true:
     input: variants_vcf = "/proj/snic2022-6-31/nobackup/data/HG004/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz"
-    output: vcf_SNV = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf",
-            vcf_INDEL = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
+    output: vcf_SNV_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf",
+            vcf_INDEL_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
     # wildcard_constraints:
     #     dataset="BIO*"
     run:
             # Split into SNP and INDELS
-            shell('grep -v -E -e "INDEL;" {variants_vcf} > {output.vcf_SNV}')
-            shell('grep "#"  {variants_vcf} > {output.vcf_INDEL}')
-            shell('grep -E -e "INDEL;"  {variants_vcf} >> {output.vcf_INDEL}')
+            shell('grep -v -E -e "INDEL;" {input.variants_vcf} > {output.vcf_SNV_true}')
+            shell('grep "#"  {input.variants_vcf} > {output.vcf_INDEL_true}')
+            shell('grep -E -e "INDEL;"  {input.variants_vcf} >> {output.vcf_INDEL_true}')
 
 rule bcftools_intersect_bio:
     input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
            vcf_INDEL = rules.bcftools_call.output.vcf_INDEL,
-           vcf_SNV_true = rules.bcftools_split_true.output.vcf_SNV,
-           vcf_INDEL_true = rules.bcftools_split_true.output.vcf_INDEL
+           vcf_SNV_true = rules.bcftools_split_true.output.vcf_SNV_true,
+           vcf_INDEL_true = rules.bcftools_split_true.output.vcf_INDEL_true
     output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
             vcf_INDEL_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt"
     wildcard_constraints:
