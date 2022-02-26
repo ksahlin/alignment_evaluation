@@ -56,11 +56,11 @@ rule mason_simulate_variants:
         shell('grep "#" {output.sim_vcf}  > {sim_INDEL}')
         shell('grep -E -e "indel" {output.sim_vcf}  >> {sim_INDEL}')
 
-        shell('bcftools sort -Ov {sim_SNV} -o {true_vcf_SNV}')
-        shell('bcftools index {true_vcf_SNV}')
+        shell('bcftools sort -Ov {sim_SNV} -o {output.true_vcf_SNV}')
+        shell('bcftools index {output.true_vcf_SNV}')
 
-        shell('bcftools sort -Ov {sim_INDEL} -o {true_vcf_INDEL}')
-        shell('bcftools index {true_vcf_INDEL}')
+        shell('bcftools sort -Ov {sim_INDEL} -o {output.true_vcf_INDEL}')
+        shell('bcftools index {output.true_vcf_INDEL}')
 
 
 rule mason_simulate_reads:
