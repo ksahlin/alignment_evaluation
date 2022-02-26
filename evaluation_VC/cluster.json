@@ -220,6 +220,18 @@
         "runtime" : "10:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
+    },
+
+    "mason_simulate_reads": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "sim_reads",
+        "cpus-per-task" : "3",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "10:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
     }
 
 }
