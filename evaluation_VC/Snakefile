@@ -288,10 +288,10 @@ rule make_sorted_bam:
     input: sam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.sam"
     output: sorted_bam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.bam"
     run:
-            # sam to sorted indexed bam
-            shell('samtools view -u {input.sam} | samtools sort -o {ouput.sorted_bam}')
-            shell('samtools index {ouput.sorted_bam}')
-            shell('rm {input.sam}')
+        # sam to sorted indexed bam
+        shell('samtools view -u {input.sam} | samtools sort -o {output.sorted_bam}')
+        shell('samtools index {output.sorted_bam}')
+        shell('rm {input.sam}')
 
 
 
