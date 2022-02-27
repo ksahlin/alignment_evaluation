@@ -289,7 +289,7 @@ rule make_sorted_bam:
     output: sorted_bam =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}.bam"
     run:
         # sam to sorted indexed bam
-        shell('samtools view -u {input.sam} | samtools sort -o {output.sorted_bam}')
+        shell('samtools view -@ 16 -u {input.sam} | samtools sort -@ 16 -o {output.sorted_bam}')
         shell('samtools index {output.sorted_bam}')
         shell('rm {input.sam}')
 
@@ -304,7 +304,7 @@ rule bcftools_call:
             # call variants
             mkdir_p(config["ROOT_OUT"] + "/vcf/{0}/".format(wildcards.tool))
             vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.vcf.gz".format(wildcards.tool, wildcards.dataset)
-            shell('bcftools mpileup -O z --fasta-ref {input.ref} {input.bam} > {vcf_gz}')
+            shell('bcftools mpileup --threads 16 -O z --fasta-ref {input.ref} {input.bam} > {vcf_gz}')
 
             variants_vcf = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.vcf".format(wildcards.tool, wildcards.dataset)
             shell('bcftools call --threads 16 -v -c -O v {vcf_gz} > {variants_vcf}')

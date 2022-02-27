@@ -193,7 +193,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "05:00:00",
+        "runtime" : "20:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -214,7 +214,7 @@
     {
         "account" : "snic2021-5-572",
         "jobname" : "sort_bam",
-        "cpus-per-task" : "2",
+        "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
         "runtime" : "10:00:00",
