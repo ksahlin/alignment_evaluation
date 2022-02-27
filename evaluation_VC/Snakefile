@@ -74,10 +74,10 @@ rule mason_simulate_reads:
     run:
         if wildcards.dataset == "SIM250": # to not give abort trap in simulator due to too low fragment size
             # simulate roughly 30x coverage 3000000000*30/(2*250) =  180000000
-            shell("mason_simulator -ir {input.ref} -n 180000000 -iv {input.sim_vcf} --illumina-read-length 250 -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
+            shell("mason_simulator --num-threads 16 -ir {input.ref} -n 180000000 -iv {input.sim_vcf} --illumina-read-length 250 -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
         else:
             # simulate roughly 30x coverage 3000000000*30/(2*150) =  300000000
-            shell("mason_simulator -ir {input.ref} -n 300000000 -iv {input.sim_vcf} --illumina-read-length 150 -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam}")
+            shell("mason_simulator --num-threads 16 -ir {input.ref} -n 300000000 -iv {input.sim_vcf} --illumina-read-length 150 -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam}")
 
 
 rule minimap2_index:
