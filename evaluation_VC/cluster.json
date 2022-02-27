@@ -198,7 +198,7 @@
         "mail_type" : "FAIL"
     },
 
-        "bcftools_intersect": 
+     "bcftools_intersect": 
     {
         "account" : "snic2021-5-572",
         "jobname" : "isec",
@@ -226,7 +226,7 @@
     {
         "account" : "snic2021-5-572",
         "jobname" : "sim_reads",
-        "cpus-per-task" : "3",
+        "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
         "runtime" : "10:00:00",
