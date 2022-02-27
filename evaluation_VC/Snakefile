@@ -342,16 +342,25 @@ rule bcftools_intersect_sim:
 
 rule bcftools_split_true:
     input: variants_vcf = "/proj/snic2022-6-31/nobackup/data/HG004/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz"
-    output: vcf_SNV_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf",
-            vcf_INDEL_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
+    output: vcf_SNV_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf.gz",
+            vcf_INDEL_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf.gz"
     # wildcard_constraints:
     #     dataset="BIO*"
     run:
-            # Split into SNP and INDELS
-            mkdir_p(config["ROOT_OUT"] + "/vcf/")
-            shell('zgrep "#" {input.variants_vcf} > {output.vcf_SNV_true}')
-            shell('zgrep -P  "\t[ACGT]\t[ACGT]\t" {input.variants_vcf} >> {output.vcf_SNV_true}')
-            shell('zgrep -v -P  "\t[ACGT]\t[ACGT]\t"  > {output.vcf_INDEL_true}')
+        # Split into SNP and INDELS
+        mkdir_p(config["ROOT_OUT"] + "/vcf/")
+        tmp_vcf_SNV_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf"
+        shell('zgrep "#" {input.variants_vcf} > {tmp_vcf_SNV_true}')
+        shell('zgrep -P  "\t[ACGT]\t[ACGT]\t" {input.variants_vcf} >> {tmp_vcf_SNV_true}')
+
+        tmp_vcf_INDEL_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
+        shell('zgrep -v -P  "\t[ACGT]\t[ACGT]\t" {input.variants_vcf} > {tmp_vcf_INDEL_true}')
+
+        shell('bcftools sort -Oz {tmp_vcf_SNV_true} -o {output.vcf_SNV_true}')
+        shell('bcftools index {output.vcf_SNV_true}')
+
+        shell('bcftools sort -Oz {tmp_vcf_INDEL_true} -o {output.vcf_INDEL_true}')
+        shell('bcftools index {output.vcf_INDEL_true}')
 
 rule bcftools_intersect_bio:
     input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
