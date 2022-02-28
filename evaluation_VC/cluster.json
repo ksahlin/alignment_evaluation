@@ -186,6 +186,18 @@
         "mail_type" : "FAIL"
     },
 
+    "bcftools_mpileup": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "call",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "15:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
     "bcftools_call": 
     {
         "account" : "snic2021-5-572",
@@ -193,7 +205,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "20:00:00",
+        "runtime" : "10:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
