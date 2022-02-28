@@ -294,20 +294,23 @@ rule make_sorted_bam:
         shell('rm {input.sam}')
 
 
-
-rule bcftools_call:
+rule bcftools_mpileup:
     input: bam = rules.make_sorted_bam.output.sorted_bam,
             ref = config["HG38"]
+    output: vcf_gz = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.vcf.gz"
+    run:
+            mkdir_p(config["ROOT_OUT"] + "/vcf/{0}/".format(wildcards.tool))
+            shell('bcftools mpileup --threads 16 -O z --fasta-ref {input.ref} {input.bam} > {output.vcf_gz}')
+
+
+rule bcftools_call:
+    input: vzf_gz = rules.bcftools_mpileup.output.vcf_gz
     output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.vcf",
             vcf_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.vcf"
     run:
             # call variants
-            mkdir_p(config["ROOT_OUT"] + "/vcf/{0}/".format(wildcards.tool))
-            vcf_gz = config["ROOT_OUT"] + "/vcf/{0}/{1}.vcf.gz".format(wildcards.tool, wildcards.dataset)
-            shell('bcftools mpileup --threads 16 -O z --fasta-ref {input.ref} {input.bam} > {vcf_gz}')
-
             variants_vcf = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.vcf".format(wildcards.tool, wildcards.dataset)
-            shell('bcftools call --threads 16 -v -c -O v {vcf_gz} > {variants_vcf}')
+            shell('bcftools call --threads 16 -v -c -O v {input.vcf_gz} > {variants_vcf}')
 
             # Split into SNP and INDELS
             shell('grep -v -E -e "INDEL;" {variants_vcf} > {output.vcf_SNV}')
