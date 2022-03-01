@@ -399,11 +399,11 @@ rule get_stats:
     run:
             script_dir = config["ROOT_IN"] + "/evaluation_VC"
             if wildcards.dataset == "SIM150" or wildcards.dataset == "SIM250":
-                true_SNV = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.SNV.vcf",
-                true_INDEL = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.INDEL.vcf"
+                true_SNV = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.SNV.vcf.gz",
+                true_INDEL = config["ROOT_OUT"] + "/vcf/SIM3.true.variants.INDEL.vcf.gz"
             else:
-                true_SNV = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf",
-                true_INDEL = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
+                true_SNV = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf.gz",
+                true_INDEL = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf.gz"
 
             shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V SNV {true_SNV} {input.pred_SNV}  {input.tp_SNV} > {output.stats}')
             shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V INDEL {true_INDEL} {input.pred_INDEL}  {input.tp_INDEL} >> {output.stats}')

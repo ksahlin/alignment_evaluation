@@ -1,14 +1,14 @@
 import os,sys
 import argparse
 
-
+import gzip
 
 
 def main(args):
 
 
     nr_true = 0
-    for line in open(args.vcf_true, "r"):
+    for line in gzip.open(args.vcf_true,'r'):
         if line[0] != '#':
             nr_true += 1
 
