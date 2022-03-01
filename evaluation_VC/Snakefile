@@ -304,7 +304,7 @@ rule bcftools_mpileup:
 
 
 rule bcftools_call:
-    input: vzf_gz = rules.bcftools_mpileup.output.vcf_gz
+    input: vcf_gz = rules.bcftools_mpileup.output.vcf_gz
     output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.vcf",
             vcf_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.vcf"
     run:
@@ -406,7 +406,7 @@ rule get_stats:
                 true_INDEL = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf"
 
             shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V SNV {true_SNV} {input.pred_SNV}  {input.tp_SNV} > {output.stats}')
-            shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V SNV {true_INDEL} {input.pred_INDEL}  {input.tp_INDEL} >> {output.stats}')
+            shell('python {script_dir}/get_sv_prediction_stats.py -A {wildcards.tool} -R {wildcards.dataset} -V INDEL {true_INDEL} {input.pred_INDEL}  {input.tp_INDEL} >> {output.stats}')
 
 
 

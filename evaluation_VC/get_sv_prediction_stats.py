@@ -41,7 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('vcf_pred', type=str, default=False, help='VCF file')
     parser.add_argument('vcf_tp', type=str, default=False, help='VCF file')
     parser.add_argument('-A', type=str, default="", help='aligner')
-    parser.add_argument('-R', type=int, default="", help='Read length')
+    parser.add_argument('-R', type=str, default="", help='Read length')
     parser.add_argument('-V', type=str, default="", help='Variant type')
     # parser.add_argument('--outfile', type=str, default=None, help='Path to file.')
     # parser.set_defaults(which='main')
