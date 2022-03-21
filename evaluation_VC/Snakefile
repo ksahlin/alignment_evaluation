@@ -133,7 +133,7 @@ rule bwa_mem_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule strobealign:
-    input:  ref = config["HG38"],
+    input:  ref = "/proj/snic2022-6-31/nobackup/data/HG38/GCA_000001405.15_GRCh38_no_alt_analysis_set_chr1and2.fa", #config["HG38"],
             fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
