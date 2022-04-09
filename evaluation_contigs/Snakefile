@@ -234,7 +234,7 @@ rule accelalign_index:
 rule accelalign_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.accelalign_index.output.accelalign_index
+            # index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}/{read_length}.sam"

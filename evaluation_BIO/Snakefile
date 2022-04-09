@@ -46,8 +46,8 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
-    input: fastq_L =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input: fastq_L =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/MOTHER/{dataset}/aligning_time_and_mem.txt",
@@ -65,8 +65,8 @@ rule minimap2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
-    input: fastq_L = "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input: fastq_L = "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/MOTHER/{dataset}/aligning_time_and_mem.txt",
@@ -92,8 +92,8 @@ rule bwa_mem_index:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem_align:
-    input: fastq_L = "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input: fastq_L = "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/MOTHER/{dataset}/aligning_time_and_mem.txt",
@@ -112,8 +112,8 @@ rule bwa_mem_align:
 
 rule strobealign:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/MOTHER/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/MOTHER/{dataset}.sam"
@@ -134,8 +134,8 @@ rule strobealign:
 
 rule strobealign_map:
     input:  ref = config["HG38"],
-            fastq_L = "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+            fastq_L = "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/MOTHER/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/MOTHER/{dataset}.sam"
@@ -162,8 +162,8 @@ rule accelalign_index:
         shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
-    input:  fastq_L =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input:  fastq_L =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/MOTHER/{dataset}/aligning_time_and_mem.txt",
@@ -182,8 +182,8 @@ rule accelalign_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_map:
-    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input:  fastq_L =   "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign_map/MOTHER/{dataset}/aligning_time_and_mem.txt",
@@ -210,8 +210,8 @@ rule bowtie2_index:
         shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
-    input:  fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input:  fastq_L =   "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/MOTHER/{dataset}/aligning_time_and_mem.txt",
@@ -240,8 +240,8 @@ rule snap_index:
         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
-    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
+    input: fastq_L =   "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = rules.snap_index.output.snp_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/MOTHER/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/snap/MOTHER/{dataset}.sam"
@@ -279,8 +279,8 @@ rule urmap_index:
         shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule urmap_align:
-    input: fastq_L =   "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
-            fastq_R =  "/proj/snic2020-16-138/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq",
+    input: fastq_L =   "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq",
             index = rules.urmap_index.output.ufi_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/MOTHER/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/MOTHER/{dataset}.sam"
