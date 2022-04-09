@@ -132,6 +132,33 @@ rule bwa_mem_align:
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
+rule bwa_mem2_index:
+    input: ref = config["HG38"]
+    output: bwa_mem2_index =  config["HG38"] + ".bwa_mem2.bwt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/indexing_time_and_mem.txt",
+    run:
+        shell("/usr/bin/time -v  bwa-mem2 index -p {output.bwa_mem2_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+
+rule bwa_mem2_align:
+    input: fastq_L = "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            index = config["HG38"] + ".bwa_mem2.bwt",
+            ref = config["HG38"]
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}.sam"
+    run:
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        idxbase = config["HG38"] + ".bwa_mem2"
+        shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t 16 {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
 rule strobealign:
     input:  ref = config["HG38"],
             fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
@@ -159,6 +186,21 @@ rule strobealign:
         # shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         # shell("mv {tmp_sam} {output.sam}")
 
+
+rule strobealign_mixed:
+    input:  ref = config["HG38"],
+            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_mixed/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mixed/{dataset}.sam"
+    run: 
+
+        if wildcards.dataset == "BIO150" or wildcards.dataset == "SIM150":
+            shell("/usr/bin/time -v  strobealign-mixed -t 16 -r 150 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") # 2>&1 | tee {tmp_time_and_mem}
+        elif  wildcards.dataset == "BIO250" or wildcards.dataset == "SIM250":
+            shell("/usr/bin/time -v  strobealign-mixed -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
+        
 
 rule accelalign_index:
     input: ref = config["HG38"]
@@ -464,7 +506,7 @@ rule summary_variant_call_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_mixed"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
