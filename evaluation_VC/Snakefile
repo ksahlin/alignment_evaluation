@@ -143,7 +143,7 @@ rule bwa_mem2_index:
 rule bwa_mem2_align:
     input: fastq_L = "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
-            index = config["HG38"] + ".bwa_mem2.bwt",
+            index = config["HG38"] + ".bwa_mem2.bwt.ann",
             ref = config["HG38"]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}.sam"
