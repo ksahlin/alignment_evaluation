@@ -134,10 +134,11 @@ rule bwa_mem_align:
 
 rule bwa_mem2_index:
     input: ref = config["HG38"]
-    output: bwa_mem2_index =  config["HG38"] + ".bwa_mem2.bwt",
+    output: bwa_mem2_index =  config["HG38"] + ".bwa_mem2.bwt.ann", # just one of the files as marker for completion
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/indexing_time_and_mem.txt",
     run:
-        shell("/usr/bin/time -v  bwa-mem2 index -p {output.bwa_mem2_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        idxbase = config["HG38"] + ".bwa_mem2"
+        shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem2_align:
     input: fastq_L = "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",

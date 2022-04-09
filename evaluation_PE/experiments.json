@@ -6,4 +6,6 @@
     "HG38" : "/proj/snic2022-6-31/nobackup/ultra_eval/genomes/Homo_sapiens.GRCh38.dna.primary_assembly_modified_headers.fa",
     "CHM13" : "/proj/snic2022-6-31/nobackup/ultra_eval/genomes/CHM13.fasta",
     "drosophila97" : "/proj/snic2022-6-31/nobackup/ultra_eval/genomes/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa",
+    "maize" : "/proj/snic2022-6-31/nobackup/ultra_eval/genomes/Zm-B73-REFERENCE-NAM-5.0.fa",
+    "picea_abies" : "/proj/snic2022-6-31/nobackup/ultra_eval/genomes/GCA_900067695.1_Pabies01_genomic.fna"
 }

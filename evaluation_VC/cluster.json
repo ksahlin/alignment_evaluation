@@ -65,7 +65,7 @@
     "bwa_mem2_index" : 
     {
         "account" : "snic2021-5-572",
-        "jobname" : "bwa_index",
+        "jobname" : "bwamem2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
