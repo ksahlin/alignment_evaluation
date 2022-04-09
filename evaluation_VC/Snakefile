@@ -458,7 +458,7 @@ rule get_stats:
 
 
 rule summary_variant_call_stats:
-    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap"])
+    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_mixed"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
     run:
         # summary_file = open(out, "w")
