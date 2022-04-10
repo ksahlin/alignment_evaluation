@@ -46,7 +46,7 @@ rule mason_simulate_variants:
 
 
 rule mason_simulate_reads:
-    input:  ref = config["HG38"],
+    input:  ref = lambda wildcards: config[wildcards.dataset],
             sim_vcf = rules.mason_simulate_variants.output.sim_vcf
     output: sim_fq_L =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}_L.fq",
             sim_fq_R =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}_R.fq",
@@ -66,11 +66,11 @@ rule mason_simulate_reads:
 
 
 rule minimap2_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: mm_index =  config["HG38"] + ".mmi",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/indexing_time_and_mem.txt",
     run:
-        shell("/usr/bin/time -v  minimap2 -t 16 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -112,9 +112,9 @@ rule minimap2_map:
 
 
 rule bwa_mem_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: bwa_index =  config["HG38"] + ".bwt",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/indexing_time_and_mem.txt",
     run:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
@@ -138,9 +138,9 @@ rule bwa_mem_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule bwa_mem2_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: bwa_mem2_index =  config["HG38"] + ".bwa_mem2.ann", # just one of the files as marker for completion
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/indexing_time_and_mem.txt",
     run:
         idxbase = config["HG38"] + ".bwa_mem2"
         shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
@@ -167,7 +167,7 @@ rule bwa_mem2_align:
 
 
 rule strobealign:
-    input:  ref = config["HG38"],
+    input:  ref = lambda wildcards: config[wildcards.dataset],
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
             # index = rules.minimap2_index.output.mm_index
@@ -186,7 +186,7 @@ rule strobealign:
         shell("mv {tmp_sam} {output.sam}")
 
 rule strobealign_map:
-    input:  ref = config["HG38"],
+    input:  ref = lambda wildcards: config[wildcards.dataset],
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
             # index = rules.minimap2_index.output.mm_index
@@ -206,7 +206,7 @@ rule strobealign_map:
 
 
 rule strobealign_mixed:
-    input:  ref = config["HG38"],
+    input:  ref = lambda wildcards: config[wildcards.dataset],
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
             # index = rules.minimap2_index.output.mm_index
@@ -224,54 +224,13 @@ rule strobealign_mixed:
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
-# rule strobealign_skylake:
-#     input:  ref = config["HG38"],
-#             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-#             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
-#             # index = rules.minimap2_index.output.mm_index
-#     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_skylake/{dataset}/{read_length}/aligning_time_and_mem.txt",
-#             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_skylake/{dataset}/{read_length}.sam"
-#     run: 
-#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-#         shell("echo Copied reads to: $SLURM_JOB_ID")
-#         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-#         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-#         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-#         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-#         shell("/usr/bin/time -v  strobealign_skylake -t 1 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-#         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-#         shell("mv {tmp_sam} {output.sam}")
-
-
-# rule strobealign_skylake_map:
-#     input:  ref = config["HG38"],
-#             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-#             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
-#             # index = rules.minimap2_index.output.mm_index
-#     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_skylake_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-#             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_skylake_map/{dataset}/{read_length}.sam"
-#     run: 
-#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-#         shell("echo Copied reads to: $SLURM_JOB_ID")
-#         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-#         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-#         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-#         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-#         shell("/usr/bin/time -v  strobealign_skylake -t 1 -x -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-#         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-#         shell("mv {tmp_sam} {output.sam}")
-
-
-
 
 rule accelalign_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: accelalign_index =  config["HG38"] + ".hash",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/indexing_time_and_mem.txt"
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/indexing_time_and_mem.txt"
     run:
-        shell("/usr/bin/time -v  accindex -t 16 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -314,12 +273,12 @@ rule accelalign_map:
         shell("mv {tmp_sam} {output.sam}")
 
 rule bowtie2_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: index =  config["HG38"] + "-bt2.1.bt2",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/indexing_time_and_mem.txt"
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/indexing_time_and_mem.txt"
     run:
         index =  config["HG38"] + "-bt2"
-        shell("/usr/bin/time -v  bowtie2-build --threads 16 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -349,9 +308,9 @@ rule bowtie2_align:
 
 
 rule urmap_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: ufi_index =  config["HG38"] + ".ufi",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/indexing_time_and_mem.txt",
     run:
         # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
         shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
@@ -383,9 +342,9 @@ rule urmap_align:
 
 
 rule snap_index:
-    input: ref = config["HG38"]
+    input: ref = lambda wildcards: config[wildcards.dataset]
     output: snp_index =  config["HG38"] + "_snap_index/GenomeIndexHash",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/indexing_time_and_mem.txt",
     run:
         # snap
         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
