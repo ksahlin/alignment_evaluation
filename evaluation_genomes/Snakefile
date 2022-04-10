@@ -149,8 +149,8 @@ rule bwa_mem2_align:
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
             index = lambda wildcards: config[wildcards.dataset] + ".bwa_mem2.ann",
             ref = lambda wildcards: config[wildcards.dataset]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}/{read_length}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
