@@ -33,8 +33,8 @@ def mkdir_p(path):
             raise
 
 rule all:
-   input:  config["ROOT_OUT"] + "/evaluation_PE/accuracy.result",
-           config["ROOT_OUT"] + "/evaluation_PE/time_and_mem.result"
+   input:  config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result",
+           config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
             # expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3"], read_length =  ["100", "150", "200", "250", "300"], tool=["minimap2", "bwa_mem", "strobealign"]) #"strobealign", 'bwa', 'bowtie', 'accelalign',
 
 
