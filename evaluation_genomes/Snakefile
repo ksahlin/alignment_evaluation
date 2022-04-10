@@ -272,7 +272,7 @@ rule accelalign_map:
 
 rule bowtie2_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: index =  config[wildcards.dataset] + "-bt2.1.bt2",
+    output: index =   "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/indexing_time_and_mem.txt"
     run:
         index = config[wildcards.dataset] + "-bt2"
