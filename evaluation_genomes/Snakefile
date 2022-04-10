@@ -145,8 +145,8 @@ rule bwa_mem2_index:
         shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem2_align:
-    input: fastq_L = "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
+           fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
             index = lambda wildcards: config[wildcards.dataset] + ".bwa_mem2.ann",
             ref = lambda wildcards: config[wildcards.dataset]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/aligning_time_and_mem.txt",
