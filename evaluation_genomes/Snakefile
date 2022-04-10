@@ -67,7 +67,7 @@ rule mason_simulate_reads:
 
 rule minimap2_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: mm_index = lambda wildcards: config[wildcards.dataset] + ".mmi",
+    output: mm_index = config[wildcards.dataset] + ".mmi",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/indexing_time_and_mem.txt",
     run:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
@@ -75,7 +75,6 @@ rule minimap2_index:
 rule minimap2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            # ref = lambda wildcards: config[wildcards.dataset],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
@@ -94,7 +93,6 @@ rule minimap2_align:
 rule minimap2_map:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            # ref = lambda wildcards: config[wildcards.dataset],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
@@ -113,7 +111,7 @@ rule minimap2_map:
 
 rule bwa_mem_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: bwa_index =  lambda wildcards: config[wildcards.dataset] + ".bwt",
+    output: bwa_index = config[wildcards.dataset] + ".bwt",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/indexing_time_and_mem.txt",
     run:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
@@ -139,7 +137,7 @@ rule bwa_mem_align:
 
 rule bwa_mem2_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: bwa_mem2_index =  lambda wildcards: config[wildcards.dataset] + ".bwa_mem2.ann", # just one of the files as marker for completion
+    output: bwa_mem2_index = config[wildcards.dataset] + ".bwa_mem2.ann", # just one of the files as marker for completion
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/indexing_time_and_mem.txt",
     run:
         idxbase = lambda wildcards: config[wildcards.dataset] + ".bwa_mem2"
@@ -227,7 +225,7 @@ rule strobealign_mixed:
 
 rule accelalign_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: accelalign_index =  lambda wildcards: config[wildcards.dataset] + ".hash",
+    output: accelalign_index = config[wildcards.dataset] + ".hash",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/indexing_time_and_mem.txt"
     run:
         shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
@@ -274,7 +272,7 @@ rule accelalign_map:
 
 rule bowtie2_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: index =  lambda wildcards: config[wildcards.dataset] + "-bt2.1.bt2",
+    output: index =  config[wildcards.dataset] + "-bt2.1.bt2",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/indexing_time_and_mem.txt"
     run:
         index =  lambda wildcards: config[wildcards.dataset] + "-bt2"
@@ -309,7 +307,7 @@ rule bowtie2_align:
 
 rule urmap_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: ufi_index =  lambda wildcards: config[wildcards.dataset] + ".ufi",
+    output: ufi_index = config[wildcards.dataset] + ".ufi",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/indexing_time_and_mem.txt",
     run:
         # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
@@ -343,7 +341,7 @@ rule urmap_align:
 
 rule snap_index:
     input: ref = lambda wildcards: config[wildcards.dataset]
-    output: snp_index =  lambda wildcards: config[wildcards.dataset] + "_snap_index/GenomeIndexHash",
+    output: snp_index = config[wildcards.dataset] + "_snap_index/GenomeIndexHash",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/indexing_time_and_mem.txt",
     run:
         # snap
