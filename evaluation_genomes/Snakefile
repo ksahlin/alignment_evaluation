@@ -40,20 +40,22 @@ rule all:
 
 
 rule mason_simulate_variants:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: sim_vcf =  config["ROOT_OUT"] + "/reads/{dataset}/variations.vcf",
     run:
         shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
 
 
 rule mason_simulate_reads:
-    input:  ref = lambda wildcards: config[wildcards.dataset],
+    input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             sim_vcf = rules.mason_simulate_variants.output.sim_vcf
     output: sim_fq_L =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}_L.fq",
             sim_fq_R =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}_R.fq",
             sim_sam =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam",
     run:
 
+        # if wildcards.read_length == "500": 
+        #     shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 900")
         if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
             shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
         else:
@@ -67,7 +69,7 @@ rule mason_simulate_reads:
 
 
 rule minimap2_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: mm_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".mmi",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/indexing_time_and_mem.txt",
     run:
@@ -111,7 +113,7 @@ rule minimap2_map:
 
 
 rule bwa_mem_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: bwa_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwt",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/indexing_time_and_mem.txt",
     run:
@@ -120,8 +122,8 @@ rule bwa_mem_index:
 rule bwa_mem_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = lambda wildcards: config[wildcards.dataset] + ".bwt",
-            ref = lambda wildcards: config[wildcards.dataset]
+            index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwt",
+            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}/{read_length}.sam"
     run:
@@ -137,18 +139,18 @@ rule bwa_mem_align:
         shell("mv {tmp_sam} {output.sam}")
 
 rule bwa_mem2_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: bwa_mem2_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwa_mem2.ann", # just one of the files as marker for completion
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/indexing_time_and_mem.txt",
     run:
-        idxbase = lambda wildcards: config[wildcards.dataset] + ".bwa_mem2"
+        idxbase = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwa_mem2"
         shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = lambda wildcards: config[wildcards.dataset] + ".bwa_mem2.ann",
-            ref = lambda wildcards: config[wildcards.dataset]
+            index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwa_mem2.ann",
+            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}/{read_length}.sam"
     run:
@@ -159,14 +161,14 @@ rule bwa_mem2_align:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        idxbase = lambda wildcards: config[wildcards.dataset] + ".bwa_mem2"
+        idxbase = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{0}.fa.bwa_mem2".format(wildcards.dataset)
         shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t 16 {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
 
 rule strobealign:
-    input:  ref = lambda wildcards: config[wildcards.dataset],
+    input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
             # index = rules.minimap2_index.output.mm_index
@@ -185,7 +187,7 @@ rule strobealign:
         shell("mv {tmp_sam} {output.sam}")
 
 rule strobealign_map:
-    input:  ref = lambda wildcards: config[wildcards.dataset],
+    input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
             # index = rules.minimap2_index.output.mm_index
@@ -205,7 +207,7 @@ rule strobealign_map:
 
 
 rule strobealign_mixed:
-    input:  ref = lambda wildcards: config[wildcards.dataset],
+    input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
             # index = rules.minimap2_index.output.mm_index
@@ -225,7 +227,7 @@ rule strobealign_mixed:
 
 
 rule accelalign_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: accelalign_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"  + ".hash",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/indexing_time_and_mem.txt"
     run:
@@ -271,7 +273,7 @@ rule accelalign_map:
         shell("mv {tmp_sam} {output.sam}")
 
 rule bowtie2_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: index =   "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/indexing_time_and_mem.txt"
     run:
@@ -306,7 +308,7 @@ rule bowtie2_align:
 
 
 rule urmap_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: ufi_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"  + ".ufi",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/indexing_time_and_mem.txt",
     run:
@@ -323,7 +325,7 @@ rule urmap_align:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
-        ref = lambda wildcards: config[wildcards.dataset]
+        ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{0}.fa".format(wildcards.dataset)
         tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index.ufi"
         shell("mkdir -p /scratch/$SLURM_JOB_ID/")
         shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
@@ -340,12 +342,16 @@ rule urmap_align:
 
 
 rule snap_index:
-    input: ref = lambda wildcards: config[wildcards.dataset]
-    output: snp_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"  + "_snap_index/GenomeIndexHash",
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
+    output: snp_index = directory("/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"  + "_snap_index/GenomeIndexHash"),
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/indexing_time_and_mem.txt",
     run:
-        # snap
-        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
+        # snap -locationSize
+        if wildcards.dataset == "picea_abies":
+            shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -locationSize 5 2>&1 | tee {output.time_and_mem}") 
+
+        else:
+            shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -360,8 +366,11 @@ rule snap_align:
         ref = config[wildcards.dataset]
         tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
         shell("mkdir -p  /scratch/$SLURM_JOB_ID/")
-        shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16") 
-        # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format(lambda wildcards: config[wildcards.dataset] + "_snap_index"))
+        if wildcards.dataset == "picea_abies":
+            shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16 -locationSize 5")
+        else:
+            shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16") 
+        # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format("/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"))
         # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
         shell("echo Copied index to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
@@ -370,7 +379,7 @@ rule snap_align:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
         # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
-        # tmp_index = lambda wildcards: config[wildcards.dataset] + "_snap_index"
+        # tmp_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"
         shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
@@ -388,7 +397,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila97", "maize", "picea_abies"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila", "maize", "picea_abies"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -403,7 +412,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila97", "maize", "picea_abies"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "picea_abies"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
     run:
         # summary_file = open(out, "w")
