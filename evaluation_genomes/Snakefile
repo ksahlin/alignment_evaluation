@@ -394,6 +394,7 @@ rule accuracy:
         else:
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
+        shell("rm {input.aln}")
 
 
 rule summary_alignment_stats:
