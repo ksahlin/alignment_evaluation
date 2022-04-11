@@ -24,6 +24,17 @@
         "mail_type" : "FAIL"
     },
 
+    "mason_simulate_variants" : 
+    {
+        "account" : "snic2021-5-572",
+        "cpus-per-task" : "20",
+        "C" : "mem128GB",
+        "Nodes" : 1,
+        "runtime" : "03:00:00",
+        "jobname" : "simulate",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
 
     "minimap2_index" : 
     {
