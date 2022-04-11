@@ -140,10 +140,10 @@ rule bwa_mem_align:
 
 rule bwa_mem2_index:
     input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
-    output: bwa_mem2_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwa_mem2.ann", # just one of the files as marker for completion
+    output: bwa_mem2_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa.bwa_mem2.ann", # just one of the files as marker for completion
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/indexing_time_and_mem.txt",
     run:
-        idxbase = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwa_mem2"
+        idxbase = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{0}.fa.bwa_mem2".format(wildcards.dataset)
         shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem2_align:
