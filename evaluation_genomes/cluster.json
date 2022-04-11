@@ -104,7 +104,7 @@
         "jobname" : "bwamem2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
-        "C" : "mem128GB",
+        "C" : "mem256GB",
         "runtime" : "20:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
@@ -251,7 +251,7 @@
         "jobname" : "snap_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
-        "C" : "mem128GB",
+        "C" : "mem256GB",
         "runtime" : "01:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
