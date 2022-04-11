@@ -381,7 +381,7 @@ rule snap_index:
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/indexing_time_and_mem.txt",
     run:
         # snap -locationSize
-        if wildcards.dataset == "picea_abies":
+        if wildcards.dataset == "rye":
             shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -locationSize 5 2>&1 | tee {output.time_and_mem}") 
 
         else:
@@ -402,7 +402,7 @@ rule snap_align:
         ref = config[wildcards.dataset]
         tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
         shell("mkdir -p  /scratch/$SLURM_JOB_ID/")
-        if wildcards.dataset == "picea_abies":
+        if wildcards.dataset == "rye":
             shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16 -locationSize 5")
         else:
             shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16") 
@@ -435,7 +435,7 @@ rule snap_align:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila", "maize", "picea_abies"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -450,7 +450,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "picea_abies"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
     run:
         # summary_file = open(out, "w")

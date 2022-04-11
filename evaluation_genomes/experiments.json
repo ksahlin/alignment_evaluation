@@ -7,5 +7,5 @@
     "CHM13" : "/proj/snic2022-6-31/nobackup/ultra_eval/genomes/CHM13.fasta",
     "drosophila" : "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/drosophila.fa",
     "maize" : "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/maize.fa",
-    "picea_abies" : "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/picea_abies.fa"
+    "rye" : "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/rye.fa"
 }
