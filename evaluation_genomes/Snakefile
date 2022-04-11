@@ -78,9 +78,12 @@ rule minimap2_index:
 rule minimap2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.minimap2_index.output.mm_index
+            index = rules.minimap2_index.output.mm_index,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/minimap2/{dataset}/{read_length}.result"
+
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -91,14 +94,17 @@ rule minimap2_align:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.minimap2_index.output.mm_index
+            index = rules.minimap2_index.output.mm_index,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/minimap2_map/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -109,7 +115,8 @@ rule minimap2_map:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule bwa_mem_index:
@@ -123,9 +130,11 @@ rule bwa_mem_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
             index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwt",
-            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
+            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/bwa_mem/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -136,7 +145,8 @@ rule bwa_mem_align:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  bwa mem -o {tmp_sam} -t 16 {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 rule bwa_mem2_index:
     input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
@@ -150,9 +160,11 @@ rule bwa_mem2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
             index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + ".bwa_mem2.ann",
-            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
+            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/bwa_mem2/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -164,16 +176,19 @@ rule bwa_mem2_align:
         idxbase = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{0}.fa.bwa_mem2".format(wildcards.dataset)
         shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t 16 {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule strobealign:
     input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -184,15 +199,18 @@ rule strobealign:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  strobealign -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 rule strobealign_map:
     input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_map/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -203,16 +221,19 @@ rule strobealign_map:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  strobealign -t 16 -x -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule strobealign_mixed:
     input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
-            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R
+            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_mixed/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mixed/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mixed/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_mixed/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -223,7 +244,8 @@ rule strobealign_mixed:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  strobealign-mixed -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule accelalign_index:
@@ -236,10 +258,12 @@ rule accelalign_index:
 rule accelalign_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.accelalign_index.output.accelalign_index
+            index = rules.accelalign_index.output.accelalign_index,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/accelalign/{dataset}/{read_length}.result"
     run:
         ref = config[wildcards.dataset]
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -251,14 +275,17 @@ rule accelalign_align:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  accalign -t 16 -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 rule accelalign_map:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
-            index = rules.accelalign_index.output.accelalign_index
+            index = rules.accelalign_index.output.accelalign_index,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign_map/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/accelalign_map/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/accelalign_map/{dataset}/{read_length}.result"
     run:
         ref = config[wildcards.dataset]
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -270,7 +297,8 @@ rule accelalign_map:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  accalign -t 16 -x -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 rule bowtie2_index:
     input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
@@ -284,9 +312,11 @@ rule bowtie2_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             bt2_index =  "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/bowtie2/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/bowtie2/{dataset}/{read_length}.result"
     run:
         ref = config[wildcards.dataset]
         bt2_index = config[wildcards.dataset] + "-bt2"
@@ -303,7 +333,8 @@ rule bowtie2_align:
         else:
             shell("/usr/bin/time -v  bowtie2 -p 16 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 
@@ -318,9 +349,11 @@ rule urmap_index:
 rule urmap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.urmap_index.output.ufi_index
+            index = rules.urmap_index.output.ufi_index,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/urmap/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -337,8 +370,9 @@ rule urmap_align:
         # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
         shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {tmp_index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule snap_index:
@@ -356,9 +390,11 @@ rule snap_index:
 rule snap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = rules.snap_index.output.snp_index
+            index = rules.snap_index.output.snp_index,
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam",
+            out = config["ROOT_OUT"] + "/evaluation_PE/snap/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -382,19 +418,20 @@ rule snap_align:
         # tmp_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"
         shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
-rule accuracy:
-    input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
-            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
-    output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result"
-    run:
-        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
-        else:
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+# rule accuracy:
+#     input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
+#             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
+#     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result"
+#     run:
+#         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
+#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
+#         else:
+#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
-        shell("rm {input.aln}")
+#         shell("rm {input.aln}")
 
 
 rule summary_alignment_stats:
