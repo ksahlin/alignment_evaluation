@@ -93,7 +93,7 @@
         "jobname" : "bwamem2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
-        "C" : "mem256GB",
+        "C" : "mem128GB",
         "runtime" : "20:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
