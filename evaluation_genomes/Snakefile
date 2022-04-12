@@ -350,6 +350,7 @@ rule urmap_index:
         # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
         if wildcards.dataset == "rye": # cannot index rye, gives error
             shell("touch {output.time_and_mem}") 
+            shell("touch {output.ufi_index}")
         else:
             shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
 
@@ -393,8 +394,9 @@ rule snap_index:
     run:
         # snap -locationSize
         if wildcards.dataset == "rye":
-            shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -locationSize 5 2>&1 | tee {output.time_and_mem}") 
-
+            shell("touch {output.time_and_mem}") 
+            shell("touch {output.snp_index}")
+            # shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -locationSize 5 2>&1 | tee {output.time_and_mem}") 
         else:
             shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
 
@@ -407,7 +409,7 @@ rule snap_align:
             # sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam",
             out = config["ROOT_OUT"] + "/evaluation_PE/snap/{dataset}/{read_length}.result"
     run:
-        if wildcards.read_length == "500": # cannot align longer than 400nt reads
+        if  wildcards.dataset == "rye" or wildcards.read_length == "500": # cannot align longer than 400nt reads
             shell("touch {output.time_and_mem}") 
             shell('echo "-,-,-" > {output.out}')
         else:
