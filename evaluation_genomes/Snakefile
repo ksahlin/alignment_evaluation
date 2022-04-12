@@ -323,7 +323,11 @@ rule bowtie2_align:
             out = config["ROOT_OUT"] + "/evaluation_PE/bowtie2/{dataset}/{read_length}.result"
     run:
         ref = config[wildcards.dataset]
-        bt2_index = config[wildcards.dataset] + "-bt2"
+        if wildcards.dataset == "rye": 
+            bt2_index = config[wildcards.dataset] + "-bt21"
+        else:
+            bt2_index = config[wildcards.dataset] + "-bt2"
+
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
         shell("echo Copied reads to: $SLURM_JOB_ID")
