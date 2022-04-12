@@ -150,7 +150,7 @@
     "strobealign_mixed": 
     {
         "account" : "snic2021-5-572",
-        "jobname" : "sm_mixed_map",
+        "jobname" : "sm_mixed",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",

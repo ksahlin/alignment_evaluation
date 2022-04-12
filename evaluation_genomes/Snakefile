@@ -235,17 +235,21 @@ rule strobealign_mixed:
             # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mixed/{dataset}/{read_length}.sam"
             out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_mixed/{dataset}/{read_length}.result"
     run: 
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-        shell("echo Copied reads to: $SLURM_JOB_ID")
-        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign-mixed -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        # shell("mv {tmp_sam} {output.sam}")
+        if wildcards.read_length == "500": # cannot align longer than 400nt reads
+            shell("touch {output.time_and_mem}") 
+            shell('echo "-,-,-" > {output.out}')
+        else:
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+            shell("echo Copied reads to: $SLURM_JOB_ID")
+            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+            shell("/usr/bin/time -v  strobealign-mixed -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+            # shell("mv {tmp_sam} {output.sam}")
 
 
 rule accelalign_index:
@@ -344,7 +348,10 @@ rule urmap_index:
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/indexing_time_and_mem.txt",
     run:
         # urmap -make_ufi hg38.fa -veryfast -output hg38.ufi
-        shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
+        if wildcards.dataset == "rye": # cannot index rye, gives error
+            shell("touch {output.time_and_mem}") 
+        else:
+            shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule urmap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -355,24 +362,28 @@ rule urmap_align:
             # sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}/{read_length}.sam"
             out = config["ROOT_OUT"] + "/evaluation_PE/urmap/{dataset}/{read_length}.result"
     run:
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-        shell("echo Copied reads to: $SLURM_JOB_ID")
-        ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{0}.fa".format(wildcards.dataset)
-        tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index.ufi"
-        shell("mkdir -p /scratch/$SLURM_JOB_ID/")
-        shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
-        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
-        # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
-        shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {tmp_index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
-        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        # mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
-        # shell("mv {tmp_sam} {output.sam}")
+        if wildcards.dataset == "rye" or wildcards.read_length == "300": # cannot index rye, gives error. and cannot align the 300nt reads
+            shell("touch {output.time_and_mem}") 
+            shell('echo "-,-,-" > {output.out}')
+        else:
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+            shell("echo Copied reads to: $SLURM_JOB_ID")
+            ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{0}.fa".format(wildcards.dataset)
+            tmp_index = "/scratch/$SLURM_JOB_ID/urmap_index.ufi"
+            shell("mkdir -p /scratch/$SLURM_JOB_ID/")
+            shell("/usr/bin/time -v  urmap -make_ufi {ref} -output {tmp_index}") 
+            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+            # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
+            # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
+            shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {tmp_index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
+            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+            # mkdir_p(config["ROOT_OUT"] + "/alignments_PE/urmap/{0}/".format(wildcards.dataset))
+            # shell("mv {tmp_sam} {output.sam}")
 
 
 rule snap_index:
@@ -396,30 +407,34 @@ rule snap_align:
             # sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}/{read_length}.sam",
             out = config["ROOT_OUT"] + "/evaluation_PE/snap/{dataset}/{read_length}.result"
     run:
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-        shell("echo Copied reads to: $SLURM_JOB_ID")
-        ref = config[wildcards.dataset]
-        tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
-        shell("mkdir -p  /scratch/$SLURM_JOB_ID/")
-        if wildcards.dataset == "rye":
-            shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16 -locationSize 5")
+        if wildcards.read_length == "500": # cannot align longer than 400nt reads
+            shell("touch {output.time_and_mem}") 
+            shell('echo "-,-,-" > {output.out}')
         else:
-            shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16") 
-        # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format("/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"))
-        # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
-        shell("echo Copied index to: $SLURM_JOB_ID")
-        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
-        # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
-        # tmp_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"
-        shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
-        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        # shell("mv {tmp_sam} {output.sam}")
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+            shell("echo Copied reads to: $SLURM_JOB_ID")
+            ref = config[wildcards.dataset]
+            tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
+            shell("mkdir -p  /scratch/$SLURM_JOB_ID/")
+            if wildcards.dataset == "rye":
+                shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16 -locationSize 5")
+            else:
+                shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t16") 
+            # shell("cp -r {0} /scratch/$SLURM_JOB_ID/snap_index".format("/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"))
+            # shell("chmod +x /scratch/$SLURM_JOB_ID/snap_index")
+            shell("echo Copied index to: $SLURM_JOB_ID")
+            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+            # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
+            # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+            # tmp_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "_snap_index"
+            shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
+            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+            # shell("mv {tmp_sam} {output.sam}")
 
 # rule accuracy:
 #     input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
@@ -435,7 +450,7 @@ rule snap_align:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"]) #"accelalign_map", 
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -450,7 +465,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "urmap", "snap", "bwa_mem2", "strobealign_mixed"]) # "accelalign_map",
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
     run:
         # summary_file = open(out, "w")

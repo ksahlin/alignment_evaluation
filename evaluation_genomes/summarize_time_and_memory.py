@@ -6,6 +6,9 @@ import re
 
 def parse_gnu_time(stderr_file):
     lines = open(stderr_file, 'r').readlines()
+    if len(lines) == 0:
+        return "-", "-", "-"
+
     index_time_mm2 = False
     index_time_aa = False
     index_time_strobemap = False
