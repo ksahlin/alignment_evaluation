@@ -102,7 +102,7 @@
         "partition" : "core",
         "C" : "mem256GB",
         "max_memory" : "100",
-        "runtime" : "20:00:00",
+        "runtime" : "03:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
