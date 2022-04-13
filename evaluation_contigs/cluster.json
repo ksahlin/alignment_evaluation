@@ -191,7 +191,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "03:00:00",
+        "runtime" : "07:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -203,7 +203,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "03:00:00",
+        "runtime" : "07:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
