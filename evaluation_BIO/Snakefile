@@ -193,19 +193,23 @@ rule strobealign_mixed:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_mixed/MOTHER/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mixed/MOTHER/{dataset}.sam"
     run: 
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-        shell("echo Copied reads to: $SLURM_JOB_ID")
-        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        if wildcards.dataset == "BIO150":
-            shell("/usr/bin/time -v  strobealign-mixed -t 1 -r 150 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-        elif  wildcards.dataset == "BIO250":
-            shell("/usr/bin/time -v  strobealign-mixed -t 1 -r 250 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        if wildcards.read_length == "500": # old commit cannot handle this 
+            shell("touch {output.time_and_mem}") 
+            shell('> {output.sam}')
+        else:
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+            shell("echo Copied reads to: $SLURM_JOB_ID")
+            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+            if wildcards.dataset == "BIO150":
+                shell("/usr/bin/time -v  strobealign-mixed -t 1 -r 150 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+            elif  wildcards.dataset == "BIO250":
+                shell("/usr/bin/time -v  strobealign-mixed -t 1 -r 250 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+            shell("mv {tmp_sam} {output.sam}")
 
 
 rule accelalign_index:

@@ -219,16 +219,20 @@ rule strobealign_mixed:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_mixed/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mixed/{dataset}/{read_length}.sam"
     run: 
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-        shell("echo Copied reads to: $SLURM_JOB_ID")
-        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign-mixed -t 1 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("mv {tmp_sam} {output.sam}")
+        if wildcards.read_length == "500": # old commit cannot handle this 
+            shell("touch {output.time_and_mem}") 
+            shell('> {output.sam}')
+        else:
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+            shell("echo Copied reads to: $SLURM_JOB_ID")
+            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+            shell("/usr/bin/time -v  strobealign-mixed -t 1 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+            shell("mv {tmp_sam} {output.sam}")
 
 # rule strobealign_skylake:
 #     input:  ref = config["HG38"],
@@ -440,6 +444,8 @@ rule accuracy:
         if wildcards.tool == "urmap" and wildcards.read_length == "300":
             shell('echo "-,-,-" > {output.out}')
         elif wildcards.tool == "snap" and wildcards.read_length == "500":
+            shell('echo "-,-,-" > {output.out}')
+        elif wildcards.tool == "strobealign_mixed" and wildcards.read_length == "500":
             shell('echo "-,-,-" > {output.out}')
         elif wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
