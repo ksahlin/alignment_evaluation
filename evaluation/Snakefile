@@ -353,9 +353,9 @@ rule accuracy:
             truth =  config["ROOT_OUT"] + "/reads/{dataset}/{read_length}.sam"
     output: out = config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result"
     run:
-        if wildcards.tool == "urmap_align" and wildcards.read_length == "300":
+        if wildcards.tool == "urmap" and wildcards.read_length == "300":
             shell('echo "-,-,-" > {output.out}')
-        elif wildcards.tool == "snap_align" and wildcards.read_length == "500":
+        elif wildcards.tool == "snap" and wildcards.read_length == "500":
             shell('echo "-,-,-" > {output.out}')
         elif wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
