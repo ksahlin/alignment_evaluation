@@ -457,7 +457,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "strobealign_mixed", "bwa_mem2"])
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map",  "snap", "strobealign_mixed", "bwa_mem2"]) # "urmap",
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -472,7 +472,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "urmap", "snap", "strobealign_mixed", "bwa_mem2"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "strobealign_mixed", "bwa_mem2"]) # "urmap",
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem.result"
     run:
         # summary_file = open(out, "w")

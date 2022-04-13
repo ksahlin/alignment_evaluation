@@ -45,7 +45,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "03:00:00",
+        "runtime" : "02:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -57,7 +57,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "03:00:00",
+        "runtime" : "02:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -87,6 +87,31 @@
         "mail_type" : "FAIL"
     },
 
+    "bwa_mem2_index" : 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "bwa2_index",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "bwa_mem2_align": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "bwa2_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
     "strobealign": 
     {
         "account" : "snic2021-5-572",
@@ -111,6 +136,17 @@
         "mail_type" : "FAIL"
     },
 
+    "strobealign_mixed": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "sm_mixed_aln",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "00:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
 
     "accelalign_index" : 
     {
@@ -132,7 +168,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "01:00:00",
+        "runtime" : "02:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -144,7 +180,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "03:00:00",
+        "runtime" : "02:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -168,7 +204,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "20:00:00",
+        "runtime" : "10:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
@@ -218,7 +254,7 @@
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
-        "runtime" : "10:00:00",
+        "runtime" : "03:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     }
