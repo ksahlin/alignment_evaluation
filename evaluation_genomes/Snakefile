@@ -81,8 +81,8 @@ rule minimap2_align:
             index = rules.minimap2_index.output.mm_index,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            # sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
-            out = config["ROOT_OUT"] + "/evaluation_PE/minimap2/{dataset}/{read_length}.result"
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
+            # out = config["ROOT_OUT"] + "/evaluation_PE/minimap2/{dataset}/{read_length}.result"
 
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -94,8 +94,8 @@ rule minimap2_align:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        # shell("mv {tmp_sam} {output.sam}")
+        # shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -103,8 +103,8 @@ rule minimap2_map:
             index = rules.minimap2_index.output.mm_index,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            # sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
-            out = config["ROOT_OUT"] + "/evaluation_PE/minimap2_map/{dataset}/{read_length}.result"
+            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
+            # out = config["ROOT_OUT"] + "/evaluation_PE/minimap2_map/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -115,8 +115,8 @@ rule minimap2_map:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf {tmp_sam} > {output.out} ")
-        # shell("mv {tmp_sam} {output.sam}")
+        # shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf {tmp_sam} > {output.out} ")
+        shell("mv {tmp_sam} {output.sam}")
 
 
 rule bwa_mem_index:
@@ -314,7 +314,7 @@ rule accelalign_map:
 
 rule bowtie2_index:
     input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
-    output: index =   "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
+    output: #index =   "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/indexing_time_and_mem.txt"
     run:
         index = config[wildcards.dataset] + "-bt2"
@@ -323,7 +323,8 @@ rule bowtie2_index:
 rule bowtie2_align:
     input:  fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
-            bt2_index =  "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
+            # bt2_index =  "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa" + "-bt2.1.bt2",
+            index =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/indexing_time_and_mem.txt",
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/{read_length}/aligning_time_and_mem.txt",
@@ -445,17 +446,17 @@ rule snap_align:
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
             # shell("mv {tmp_sam} {output.sam}")
 
-# rule accuracy:
-#     input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
-#             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
-#     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result"
-#     run:
-#         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
-#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
-#         else:
-#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+rule accuracy:
+    input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
+            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
+    output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result"
+    run:
+        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
+        else:
+            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
-#         shell("rm {input.aln}")
+        # shell("rm {input.aln}")
 
 
 rule summary_alignment_stats:
