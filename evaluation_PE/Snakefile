@@ -434,7 +434,7 @@ rule snap_align:
             # tmp_index = config["HG38"] + "_snap_index"
             shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
             shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-            mkdir_p(config["ROOT_OUT"] + "/alignments_PE/snap/{0}/{1}.sam".format(wildcards.dataset, wildcards.read_length))
+            mkdir_p(config["ROOT_OUT"] + "/alignments_PE/snap/{0}".format(wildcards.dataset))
             shell("mv {tmp_sam} {output.sam}")
 
 rule accuracy:
