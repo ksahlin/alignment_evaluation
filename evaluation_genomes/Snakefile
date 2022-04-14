@@ -403,7 +403,7 @@ rule snap_index:
         # snap -locationSize
         if wildcards.dataset == "rye":
             shell("touch {output.time_and_mem}") 
-            shell("touch {output.snp_index}")
+            shell("mkdir -p {output.snp_index}")
             # shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -locationSize 5 2>&1 | tee {output.time_and_mem}") 
         else:
             shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
