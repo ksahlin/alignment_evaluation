@@ -29,21 +29,22 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", linewidth = linewidth, kind="line", #dashes = dashes,
         col="dataset", hue_order = tools, # hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3", "SIM4"], palette=palette)
+        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    g.set_titles("SIM3")
+    # g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Accuracy")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(95, 99), xticks=[100,150,200,250,300])
+    g.set(ylim=(90, 99), xticks=[50,75, 100,150,200,250,300, 500])
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "accuracy_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "accuracy_plot.eps"))
     plt.savefig(os.path.join(outfolder, "accuracy_plot.pdf"))
     plt.close()
 
@@ -68,21 +69,22 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
     g = sns.relplot(
         data=indata, x="read_length", y="aligned", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line",  hue_order = tools, #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3", "SIM4"], palette=palette)
+        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    g.set_titles("SIM3")
+    # g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Percentage aligned")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(98, 100), xticks=[100,150,200,250,300])
+    g.set(ylim=(95, 100), xticks=[50,75, 100,150,200,250,300, 500])
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.eps"))
     plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.pdf"))
     plt.close()
 
@@ -107,21 +109,22 @@ def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="overaligned", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3", "SIM4"], palette=palette)
+        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    g.set_titles("SIM3")
+    # g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Overaligned")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "overaligned_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "overaligned_plot.eps"))
     plt.savefig(os.path.join(outfolder, "overaligned_plot.pdf"))
     plt.close()
 
@@ -138,21 +141,22 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type", linewidth = linewidth, 
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3", "SIM4"], palette=palette)
+        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    g.set_titles("SIM3")
+    # g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Memory usage (Gb)")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
     plt.savefig(os.path.join(outfolder, "memory_plot.pdf"))
     plt.close()
 
@@ -167,11 +171,11 @@ def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM3", "SIM4"], palette=palette)
+        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette) # for main SIM3
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    g.set_titles("SIM3")
+    # g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Time (sec)")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -182,12 +186,13 @@ def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g.set( yticks= [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)]) #, ylim=(0, 5200))
     # g.set_yticklabels( ["100"] + ["" for i in range(200,999,100)] + ["1000"] +  ["" for i in range(2000,9999,1000)] + ["10000"] +  [i for i in range(1000,2999,1000)]])
 
-    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
     # g.set( yticks=[0,1000,2000,4000,6000,12000,18000,24000]) #ylim=(40, 100),
 
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "time_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "time_plot.eps"))
     plt.savefig(os.path.join(outfolder, "time_plot.pdf"))
     plt.close()
 
@@ -226,9 +231,11 @@ def main(args):
     'accelalign': 'tab:red',
     'bowtie2' : 'tab:purple',
     'urmap' : 'tab:grey',
-    'snap' : 'pink'
+    'snap' : 'tab:pink',
+    "bwa_mem2" : 'black',
+    "strobealign_mixed" : 'magenta'
     }
-    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2",  "strobealign", "snap", "urmap"]
+    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2",  "strobealign", "snap", "urmap", "bwa_mem2", "strobealign_mixed"]
 
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
