@@ -17,7 +17,7 @@ from matplotlib import pyplot
 
 def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.8)
     # sns.set(font_scale=1.6) # for main SIM3
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
@@ -40,8 +40,9 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(90, 99), xticks=[50,75, 100,150,200,250,300, 500])
+    g.set(ylim=(80, 98), xticks=[50,75, 100,150,200,250,300, 500])
     g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     # plt.savefig(os.path.join(outfolder, "accuracy_plot.eps"))
@@ -50,7 +51,7 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.8)
     # sns.set(font_scale=1.6) # for main SIM3
     sns.set_style("whitegrid")
 
@@ -82,6 +83,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
     # ax.set_ylim((75, 100))
     g.set(ylim=(95, 100), xticks=[50,75, 100,150,200,250,300, 500])
     g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     # plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.eps"))
@@ -90,7 +92,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
 
 def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.8)
     # sns.set(font_scale=1.6) # for main SIM3
     sns.set_style("whitegrid")
 
@@ -122,6 +124,7 @@ def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # ax.set_ylim((75, 100))
     g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
     g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     # plt.savefig(os.path.join(outfolder, "overaligned_plot.eps"))
@@ -131,7 +134,7 @@ def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.8)
     # sns.set(font_scale=1.6) # for main SIM3
     # tool,dataset,read_length,time,memory
     indata = pd.read_csv(input_csv)
@@ -154,6 +157,7 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # ax.set_ylim((75, 100))
     g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
     g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     # plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
@@ -162,7 +166,7 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.8)
     # sns.set(font_scale=1.6) # for main SIM3
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
@@ -183,11 +187,12 @@ def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set(yscale="log")
-    g.set( yticks= [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)]) #, ylim=(0, 5200))
+    g.set( yticks= [i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)]) #, ylim=(0, 5200))
     # g.set_yticklabels( ["100"] + ["" for i in range(200,999,100)] + ["1000"] +  ["" for i in range(2000,9999,1000)] + ["10000"] +  [i for i in range(1000,2999,1000)]])
 
     g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
     g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set( yticks=[0,1000,2000,4000,6000,12000,18000,24000]) #ylim=(40, 100),
 
     # g.set(ylim=(95, 100))
@@ -235,7 +240,7 @@ def main(args):
     "bwa_mem2" : 'black',
     "strobealign_mixed" : 'magenta'
     }
-    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2",  "strobealign", "snap", "urmap", "bwa_mem2", "strobealign_mixed"]
+    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2", "strobealign"] #, "strobealign_mixed"] "urmap",
 
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
