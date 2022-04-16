@@ -155,8 +155,8 @@ rule bwa_mem2_index:
 rule bwa_mem2_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
            fastq_R =   rules.mason_simulate_reads.output.sim_fq_R, 
-            index = config["HG38"] + ".bwa_mem2.ann",
-            ref = config["HG38"]
+            index = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa" + ".bwa_mem2.ann",
+            ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}/{read_length}.sam"
     run:
