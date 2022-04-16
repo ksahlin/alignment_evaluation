@@ -124,8 +124,8 @@ rule bwa_mem2_align:
             fastq_R =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R2.fastq", 
             index = config["HG38"] + ".bwa_mem2.ann",
             ref = config["HG38"]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/MOTHER/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/bwa_mem2/MOTHER/{dataset}.sam"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
