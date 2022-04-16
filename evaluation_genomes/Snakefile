@@ -43,7 +43,8 @@ rule mason_simulate_variants:
     input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
     output: sim_vcf =  config["ROOT_OUT"] + "/reads/{dataset}/variations.vcf",
     run:
-        shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}")
+        # shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}") #SIM3
+        shell("mason_variator --sv-indel-rate 0.00001 --snp-rate 0.005 --small-indel-rate 0.0005 --max-small-indel-size 50  -ir {input.ref} -ov {output.sim_vcf}") # SIM4
 
 
 rule mason_simulate_reads:
@@ -460,8 +461,8 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_mixed"]) #"accelalign_map", "urmap",
-    output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result"
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset = ["drosophila_SIM4", "maize_SIM4", "rye_SIM4"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["bwa_mem", "strobealign", "bwa_mem2"]) # tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_mixed"] #"accelalign_map", "urmap",
+    output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes_SIM4.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
         for f in input.accuracy_files:
@@ -475,8 +476,8 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_mixed"]) # "accelalign_map", "urmap",
-    output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila_SIM4", "maize_SIM4", "rye_SIM4"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["bwa_mem", "strobealign", "bwa_mem2"]) # tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_mixed"]) # "accelalign_map", "urmap",
+    output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes_SIM4.result"
     run:
         # summary_file = open(out, "w")
         shell('echo "tool,dataset,read_length,time,memory" > {output.out}')
