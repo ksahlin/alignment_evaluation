@@ -60,7 +60,7 @@ rule minimap2_align:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 1 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -79,7 +79,7 @@ rule minimap2_map:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 1 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -106,7 +106,7 @@ rule bwa_mem_align:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  bwa mem -o {tmp_sam} -t 1 {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
+        shell("/usr/bin/time -v  bwa mem -o {tmp_sam} -t 16 {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -135,7 +135,7 @@ rule bwa_mem2_align:
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         idxbase = config["HG38"] + ".bwa_mem2"
-        shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t 1 {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
+        shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t 16 {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -155,10 +155,7 @@ rule strobealign:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        if wildcards.dataset == "BIO150":
-            shell("/usr/bin/time -v  strobealign -t 1 -r 150 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-        elif  wildcards.dataset == "BIO250":
-            shell("/usr/bin/time -v  strobealign -t 1 -r 250 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -177,10 +174,7 @@ rule strobealign_map:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        if wildcards.dataset == "BIO150":
-            shell("/usr/bin/time -v  strobealign -t 1 -x -r 150 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-        elif  wildcards.dataset == "BIO250":
-            shell("/usr/bin/time -v  strobealign -t 1 -x -r 250 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 16 -x -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -204,10 +198,8 @@ rule strobealign_mixed:
             tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
             tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
             tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-            if wildcards.dataset == "BIO150":
-                shell("/usr/bin/time -v  strobealign-mixed -t 1 -r 150 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-            elif  wildcards.dataset == "BIO250":
-                shell("/usr/bin/time -v  strobealign-mixed -t 1 -r 250 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+            shell("/usr/bin/time -v  strobealign-mixed -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+
             shell("mv {tmp_time_and_mem} {output.time_and_mem}")
             shell("mv {tmp_sam} {output.sam}")
 
@@ -217,7 +209,7 @@ rule accelalign_index:
     output: accelalign_index =  config["HG38"] + ".hash",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/indexing_time_and_mem.txt"
     run:
-        shell("/usr/bin/time -v  accindex -t 1 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
+        shell("/usr/bin/time -v  accindex -t 16 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
     input:  fastq_L =  "/proj/snic2022-6-31/nobackup/strobemap_eval/reads/MOTHER/{dataset}_R1.fastq",
@@ -235,7 +227,7 @@ rule accelalign_align:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  accalign -t 1 -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t 16 -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -255,7 +247,7 @@ rule accelalign_map:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  accalign -t 1 -x -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
+        shell("/usr/bin/time -v  accalign -t 16 -x -o {tmp_sam} {ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -284,7 +276,7 @@ rule bowtie2_align:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  bowtie2 -X 1000 --local -p 1 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
+        shell("/usr/bin/time -v  bowtie2 -X 1000 --local -p 16 -x {bt2_index} -1 {tmp_fq_L} -2 {tmp_fq_R}  -S {tmp_sam}  2>&1 | tee {tmp_time_and_mem}")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -321,7 +313,7 @@ rule snap_align:
         # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
         # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
         # tmp_index = config["HG38"] + "_snap_index"
-        shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 1  2>&1 | tee {tmp_time_and_mem}  ")
+        shell("/usr/bin/time -v  snap-aligner paired {tmp_index} {tmp_fq_L} {tmp_fq_R} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
@@ -354,7 +346,7 @@ rule urmap_align:
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         # tmp_index = "/scratch/$SLURM_JOB_ID/index.ufi"
-        # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 1 -ax sr
+        # urmap -map2 sample_R1.fastq.gz -reverse sample_R2.fastq.gz -ufi hg38.ufi -samout sample.sam -o {tmp_sam} -t 16 -ax sr
         shell("/usr/bin/time -v  urmap -map2 {tmp_fq_L} -reverse {tmp_fq_R} -ufi {input.index} -samout {tmp_sam} -threads 1 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
@@ -381,7 +373,7 @@ rule overlap:
  
 
 rule summary_alignment_stats:
-    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap", "strobealign_mixed", "bwa_mem2"])
+    input: overlap_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/MOTHER/{dataset}.result",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap", "bwa_mem2"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/overlap.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,overlap,overaligned" > {output.out}')
@@ -396,7 +388,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap", "strobealign_mixed", "bwa_mem2"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/MOTHER/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", "snap", "urmap", "bwa_mem2"])
     output: out = config["ROOT_OUT"] + "/evaluation_BIO/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
