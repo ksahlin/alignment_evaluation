@@ -58,9 +58,9 @@ rule mason_simulate_reads:
         # if wildcards.read_length == "500": 
         #     shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 900")
         if wildcards.read_length == "250" or wildcards.read_length == "300" or wildcards.read_length == "500": # to not give abort trap in simulator due to too low fragmint size
-            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
+            shell("mason_simulator --num-threads 16 -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam} --fragment-mean-size 700")
         else:
-            shell("mason_simulator -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam}")
+            shell("mason_simulator --num-threads 16 -ir {input.ref} -n 10000000 -iv {input.sim_vcf} --illumina-read-length {wildcards.read_length} -o {output.sim_fq_L} -or {output.sim_fq_R} -oa {output.sim_sam}")
 
 # rule fasta_to_fastq:
 #     input: fasta = rules.mason_simulate_reads.output.sim_fa,
