@@ -44,7 +44,7 @@ rule mason_simulate_variants:
     output: sim_vcf =  config["ROOT_OUT"] + "/reads/{dataset}/variations.vcf",
     run:
         # shell("mason_variator --sv-indel-rate 0.000005 --snp-rate 0.001 --small-indel-rate 0.0001 --max-small-indel-size 50   -ir {input.ref} -ov {output.sim_vcf}") #SIM3
-        shell("mason_variator --sv-indel-rate 0.00001 --snp-rate 0.005 --small-indel-rate 0.0005 --max-small-indel-size 50  -ir {input.ref} -ov {output.sim_vcf}") # SIM4
+        shell("mason_variator --sv-indel-rate 0.000001 --snp-rate 0.005 --small-indel-rate 0.0005 --max-small-indel-size 50  -ir {input.ref} -ov {output.sim_vcf}") # SIM4
 
 
 rule mason_simulate_reads:
