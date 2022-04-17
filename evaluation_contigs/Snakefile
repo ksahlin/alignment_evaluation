@@ -147,7 +147,7 @@ rule bwa_mem_align:
 rule bwa_mem2_index:
     input: ref = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa"
     output: bwa_mem2_index = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa" + ".bwa_mem2.ann", # just one of the files as marker for completion
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem2/indexing_time_and_mem.txt",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/indexing_time_and_mem.txt",
     run:
         idxbase = config["ROOT_OUT"] + "/reads_PE/CONTIGS20/contigs.fa.bwa_mem2"
         shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
