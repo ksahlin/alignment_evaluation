@@ -120,7 +120,7 @@ rule bwa_mem2_align:
            fastq_R = config["ROOT_OUT"] + "/reads_PE/SIM3/{read_length}_R.fq",
             index = config["HG38"] + ".bwa_mem2.ann",
             ref = config["HG38"]
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/{read_length}/aligning_time_and_mem.txt",
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/bwa_mem2/{n_threads}/{read_length}/aligning_time_and_mem.txt",
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -130,7 +130,7 @@ rule bwa_mem2_align:
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         idxbase = config["HG38"] + ".bwa_mem2"
-        shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t 16 {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
+        shell("/usr/bin/time -v  bwa-mem2 mem -o {tmp_sam} -t {wildcards.n_threads} {idxbase} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem} ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         # shell("mv {tmp_sam} {output.sam}")
 
