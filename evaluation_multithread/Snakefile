@@ -309,7 +309,6 @@ rule snap_align:
     run:
         if wildcards.read_length == "500": # cannot align longer than 400nt reads
             shell("touch {output.time_and_mem}") 
-            shell('> {output.sam}')
         else:
             shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
             shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
