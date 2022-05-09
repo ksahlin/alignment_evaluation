@@ -32,7 +32,7 @@ def plot_agreement(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g.set(xticks=[150,250])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "BIO_accuracy_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "BIO_accuracy_plot.eps"))
     plt.savefig(os.path.join(outfolder, "BIO_accuracy_plot.pdf"))
     plt.close()
 
@@ -55,7 +55,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
     g.set(ylim=(90, 100), xticks=[150,250])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "BIO_percentage_aligned_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "BIO_percentage_aligned_plot.eps"))
     plt.savefig(os.path.join(outfolder, "BIO_percentage_aligned_plot.pdf"))
     plt.close()
 
@@ -127,7 +127,7 @@ def plot_all(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g.set(xticks=[150,250])
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
-    plt.savefig(os.path.join(outfolder, "BIO_all_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "BIO_all_plot.eps"))
     plt.savefig(os.path.join(outfolder, "BIO_all_plot.pdf"))
     plt.close()
 
@@ -140,7 +140,7 @@ def plot_all2(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
     fig, axs = plt.subplots(ncols=3, figsize=(20,8))
     xx = sns.lineplot(x='read_length', y='percent_aligned', hue="tool", markers = True, palette = palette,  linewidth = linewidth, data=indata, ax=axs[0],legend=0)
-    yy = sns.lineplot(x='read_length', y='agreement', hue_order = ["minimap2", 'accelalign',  "strobealign", "snap", "urmap"], markers = True,  palette = palette,  hue="tool", linewidth = linewidth, data=indata, ax=axs[1],legend=0)
+    yy = sns.lineplot(x='read_length', y='agreement', hue_order = ["minimap2", 'accelalign',  "strobealign", "snap", "bwa_mem2"], markers = True,  palette = palette,  hue="tool", linewidth = linewidth, data=indata, ax=axs[1],legend=0)
     zz = sns.lineplot(x='read_length', y='time', hue="tool", palette = palette, markers = True,  linewidth = linewidth, data=indata, ax=axs[2],legend=0)
 
     # # handles, labels = axs.get_legend_handles_labels()
@@ -159,8 +159,9 @@ def plot_all2(input_csv, outfolder, palette, tools, linewidth = 2.5):
     axs[0].set_xticks([150,250] )
     # print(dir(axs[0]))
     axs[2].set_yscale("log")
-    axs[2].set_yticks([i for i in range(500,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)])
+    axs[2].set_yticks([i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,3999,1000)])
     axs[2].set_ylabel("Time (log scale)")
+    axs[2].set_xticks([150,250] )
 
     axs[0].set_xticks([150,250] )
     axs[0].set_ylabel("Aligned (%)")
@@ -173,7 +174,6 @@ def plot_all2(input_csv, outfolder, palette, tools, linewidth = 2.5):
     axs[1].set_ylim((7100000, 7500000))
     axs[1].set_yticks((7100000, 7200000, 7300000, 7400000, 7500000))
     axs[1].set_yticklabels(("7.1", "7.2", "7,3", "7.4", "7.5"))
-
 
     # box1 = xx.get_position()
     # xx.set_position([box1.x0, box1.y0, box1.width * 0.85, box1.height]) # resize position
@@ -189,7 +189,7 @@ def plot_all2(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # fig.legend(loc=7)
     fig.tight_layout()
     # fig.subplots_adjust(right=0.75)   
-    plt.savefig(os.path.join(outfolder, "BIO_all_plot.eps"))
+    # plt.savefig(os.path.join(outfolder, "BIO_all_plot.eps"))
     plt.savefig(os.path.join(outfolder, "BIO_all_plot.pdf"))
     plt.close()
 
@@ -202,19 +202,20 @@ def main(args):
     'bwa_mem': 'tab:orange',
     'accelalign': 'tab:red',
     'bowtie2' : 'tab:purple',
-    'urmap' : 'tab:grey',
-    'snap' : 'pink'
+    # 'urmap' : 'tab:grey',
+    'snap' : 'pink',
+    'bwa_mem2': 'black',
     }
-    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2",  "strobealign", "snap", "urmap"]
+    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2",  "strobealign", "snap", "bwa_mem2"]
     tools_agree =["minimap2", 'accelalign', "strobealign", "snap"] # "urmap",
 
     # accuracy_csv = add_column(args.accuracy_csv)
     # runtime_mem_csv = add_column(args.runtime_mem_csv)
     plot_all2(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
 
-    plot_percentage_aligned(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
-    plot_runtime(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
-    plot_agreement(args.csv, args.outfolder, palette, tools_agree, linewidth = 2.5)
+    # plot_percentage_aligned(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
+    # plot_runtime(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
+    # plot_agreement(args.csv, args.outfolder, palette, tools_agree, linewidth = 2.5)
 
 
 if __name__ == '__main__':

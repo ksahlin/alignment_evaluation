@@ -15,6 +15,22 @@ import pandas as pd
 from matplotlib import pyplot
 
 
+# def plot_sv_calling_results2(input_csv, outfolder, palette, tools, exp_type, linewidth = 2.5):
+#     matplotlib.rcParams.update({'font.size': 18})
+#     sns.set(font_scale=1.5)
+#     indata = pd.read_csv(input_csv)
+#     # snvs = indata[indata["variant"] == "SNV"]
+#     # indels = indata[indata["variant"] == "INDEL"]
+#     sns.set_style("whitegrid")
+#     g = sns.relplot(data=indata, x="dataset", y="recall", hue="tool", style="variant", linewidth = linewidth, kind="line", #dashes = dashes,
+#          hue_order = tools, palette=palette)
+
+#     g.set_axis_labels("Dataset", "Recall")
+#     g.set(ylim=(40, 100))
+#     g.tight_layout()
+#     plt.savefig(os.path.join(outfolder, "recall_plot.pdf"))
+#     plt.close()
+
 def plot_sv_calling_results(input_csv, outfolder, palette, tools, exp_type):
     sns.set(rc={'figure.figsize':(12,4)})
     matplotlib.rcParams.update({'font.size': 14})
@@ -44,9 +60,9 @@ def plot_sv_calling_results(input_csv, outfolder, palette, tools, exp_type):
         ax2.set_ylim(75, 100) # for BIO
         ax3.set_ylim(75, 100) # for BIO
     else:
-        ax1.set_ylim(92, 100) # for SIM
-        ax2.set_ylim(92, 100) # for SIM
-        ax3.set_ylim(92, 100) # for SIM
+        ax1.set_ylim(75, 100) # for SIM
+        ax2.set_ylim(75, 100) # for SIM
+        ax3.set_ylim(75, 100) # for SIM
 
     ax1.set_ylabel("Recall (%)")
     ax2.set_ylabel("Precision (%)")
@@ -76,9 +92,9 @@ def plot_sv_calling_results(input_csv, outfolder, palette, tools, exp_type):
         ax2.set_ylim(2, 8.5) # for BIO
         ax3.set_ylim(2, 8.5) # for BIO
     else:
-        ax1.set_ylim(34, 55) # for SIM
-        ax2.set_ylim(34, 55) # for SIM
-        ax3.set_ylim(34, 55) # for SIM
+        ax1.set_ylim(2, 55) # for SIM
+        ax2.set_ylim(2, 55) # for SIM
+        ax3.set_ylim(2, 55) # for SIM
     ax1.set_ylabel("Recall (%)")
     ax2.set_ylabel("Precision (%)")
     ax3.set_ylabel("F-score (%)")
@@ -152,6 +168,8 @@ def plot_runtime(input_csv, outfolder, palette, tools):
     indata = pd.read_csv(input_csv)
     # f, axes = plt.subplots(1, 1)
     ax1 = sns.lineplot(data=indata, x="dataset", y="time", hue="tool", hue_order = tools, palette=palette, linewidth = 2.0)
+    # Put the legend out of the figure
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     ax1.set_ylabel("Time (s)")
     ax1.set_yscale('log')
     ax1.set_yticks([i for i in range(1000,9999,1000)] + [i for i in range(10000,100001,10000)]) #, ylim=(0, 5200))
@@ -173,7 +191,8 @@ def main(args):
     }
     tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2", "strobealign"] # "urmap", remove from experiemtns because we get an error in multithreading mode - therefore not fair against urmap to compare runtime with only one core 
 
-    # plot_sv_calling_results(args.sv_csv, args.outfolder, palette, tools, args.type)
+    plot_sv_calling_results(args.sv_csv, args.outfolder, palette, tools, args.type)
+    # plot_sv_calling_results2(args.sv_csv, args.outfolder, palette, tools, args.type)
     plot_runtime(args.runtime_mem_csv, args.outfolder, palette, tools)
     # plot_memory_usage(args.runtime_mem_csv, args.outfolder, palette, tools)
 

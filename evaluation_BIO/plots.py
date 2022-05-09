@@ -17,7 +17,7 @@ from matplotlib import pyplot
 
 def plot_accuracy(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
     # "minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"
@@ -46,7 +46,7 @@ def plot_accuracy(input_csv, outfolder):
 
 def plot_percentage_aligned(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
@@ -82,7 +82,7 @@ def plot_percentage_aligned(input_csv, outfolder):
 
 def plot_overaligned(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
@@ -119,7 +119,7 @@ def plot_overaligned(input_csv, outfolder):
 
 def plot_memory_usage(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.9)
+    sns.set(font_scale=1.6)
     # tool,dataset,read_length,time,memory
     indata = pd.read_csv(input_csv)
 
@@ -146,7 +146,7 @@ def plot_memory_usage(input_csv, outfolder):
 
 def plot_runtime(input_csv, outfolder):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.4)
+    sns.set(font_scale=1.6)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 

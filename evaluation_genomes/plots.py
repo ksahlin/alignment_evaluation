@@ -29,7 +29,7 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", linewidth = linewidth, kind="line", #dashes = dashes,
         col="dataset", hue_order = tools, # hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
+        col_wrap=2, col_order=["drosophila", "maize", "CHM13", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -70,7 +70,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
     g = sns.relplot(
         data=indata, x="read_length", y="aligned", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line",  hue_order = tools, #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
+        col_wrap=2, col_order=["drosophila", "maize", "CHM13", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -111,7 +111,7 @@ def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="overaligned", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
+        col_wrap=2, col_order=["drosophila", "maize", "CHM13", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -144,7 +144,7 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type", linewidth = linewidth, 
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
+        col_wrap=2, col_order=["drosophila", "maize", "CHM13", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
@@ -175,7 +175,7 @@ def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["drosophila", "maize", "rye"], palette=palette)
+        col_wrap=2, col_order=["drosophila", "maize", "CHM13", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette) # for main SIM3
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes

@@ -128,7 +128,7 @@ def plot_memory_usage(input_csv, outfolder, tools, palette):
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type",
         col="threads", kind="line", hue_order = tools, #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=[4, 8, 16])
+        col_wrap=3, col_order=[4, 8, 16], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
     g.set_axis_labels("Read length", "Memory usage (Gb)")
@@ -137,7 +137,9 @@ def plot_memory_usage(input_csv, outfolder, tools, palette):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     # plt.savefig(os.path.join(outfolder, "memory_plot.eps"))
@@ -154,7 +156,7 @@ def plot_runtime(input_csv, outfolder, tools, palette):
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type",
         col="threads", kind="line", hue_order = tools, #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=[4, 8, 16], facet_kws={'sharey': False, 'sharex': True})
+        col_wrap=3, col_order=[4, 8, 16], facet_kws={'sharey': False, 'sharex': True}, palette=palette)
 
     # g = sns.relplot(
     #     data=indata, x="threads", y="time", hue="tool", style="type",
@@ -168,10 +170,12 @@ def plot_runtime(input_csv, outfolder, tools, palette):
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set(yscale="log")
-    g.set( yticks=[i for i in range(40,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,6999,1000)]) #, ylim=(0, 5200))
+    g.set( yticks=[i for i in range(40,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,1999,10000)]) #, ylim=(0, 5200))
 
     # g.set( yticks=[0,250,500,1000,2000,3000, 4000,5000,6000], ylim=(0, 5200))
-    g.set( xticks=[100,150,200,250,300]) #ylim=(40, 100),
+    g.set( xticks=[50,75,100,150,200,250,300,500]) #ylim=(40, 100),
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.tight_layout()
     # g.set( xticks=[4,8,16]) #ylim=(40, 100),
 
     # g.axes[0].set_ylim(0,6000)
@@ -223,9 +227,11 @@ def main(args):
     'accelalign': 'tab:red',
     'bowtie2' : 'tab:purple',
     'urmap' : 'tab:grey',
-    'snap' : 'pink'
+    'snap' : 'tab:pink',
+    "bwa_mem2" : 'black',
+    "strobealign_mixed" : 'magenta'
     }
-    tools =["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "urmap", "snap"]
+    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2", "strobealign"] #, "strobealign_mixed"] "urmap",
 
 
     plot_runtime(runtime_mem_csv, args.outfolder, tools, palette)
