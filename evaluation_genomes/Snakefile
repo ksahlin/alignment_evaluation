@@ -408,7 +408,7 @@ rule snap_index:
             shell("mkdir -p {output.snp_index}")
             # shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -locationSize 5 2>&1 | tee {output.time_and_mem}") 
         else:
-            shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -t 1 2>&1 | tee {output.time_and_mem}") 
+            shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -t1  2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
