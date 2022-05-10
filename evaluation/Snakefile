@@ -318,7 +318,7 @@ rule snap_index:
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/indexing_time_and_mem.txt",
     run:
         # snap
-        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
+        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -t1  2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
     input:  fastq =   rules.mason_simulate_reads.output.sim_fq,
