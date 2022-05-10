@@ -18,7 +18,7 @@ from matplotlib import pyplot
 
 def plot_runtime(input_csv, outfolder):
     sns.set(rc={'figure.figsize':(9,6)})
-    matplotlib.rcParams.update({'font.size': 18})
+    matplotlib.rcParams.update({'font.size': 20})
     sns.set(font_scale=1.6)
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
@@ -28,11 +28,15 @@ def plot_runtime(input_csv, outfolder):
     # One liner to create a stacked bar chart.
     ax = sns.histplot(indata, x='dataset', hue='stage', weights='time',
                  multiple='stack', palette='tab10', shrink=0.8)
-    ax.set_ylabel('time')
+    ax.set_ylabel('Time')
+    ax.set_xlabel('Dataset')
     # Fix the legend so it's not on top of the bars.
     legend = ax.get_legend()
     legend.set_bbox_to_anchor((1, 1))
+    degrees = 70
+    plt.xticks(rotation=degrees)
     plt.tight_layout()
+    plt.rc('axes', labelsize=30)    # fontsize of the x and y labels
     plt.savefig(os.path.join(outfolder, "time_stages_plot.pdf"))
     plt.close()
 
