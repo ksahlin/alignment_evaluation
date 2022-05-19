@@ -128,12 +128,17 @@ def syncmers_single_helper(arguments):
 
 def main(args):
 
-    genome = {acc: seq for (acc, (seq, _)) in readfq(open(args.fasta, 'r'))}
-
-    for acc,seq in genome.items():
+    genome = {acc: seq.upper() for (acc, (seq, _)) in readfq(open(args.fasta, 'r'))}
+    n = 10000000
+    for acc,seq in list(genome.items()):
         acc = acc.split()[0]
         # print(acc)
-        genome[acc] = seq.replace("N", "") # remove Ns
+        seq_tmp = seq.replace("N", "") # remove Ns
+        del genome[acc]
+        # make smaller chunks for multiprocessing
+        for i in range(0, len(seq_tmp), n):
+            genome[acc+ "_" + str(i)] = seq_tmp[i:i+n]
+
 
     # print(len(genome), sum([len(v) for k,v in genome.items()]))
 
