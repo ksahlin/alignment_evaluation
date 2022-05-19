@@ -118,7 +118,7 @@ def print_stats(method, k, results):
         if cnt <= 1000:
             total_seed_count_1000_lim += cnt
             total_seed_count_sq_1000_lim += cnt**2
-    fraq_masked = 1 - total_seed_count_1000_lim/total_seed_count
+    frac_masked = 1 - total_seed_count_1000_lim/total_seed_count
     print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count, int(round(total_seed_count_sq / total_seed_count,0)), round(100*frac_masked, 1) ))
     # print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count_1000_lim, int(round(total_seed_count_sq_1000_lim / total_seed_count_1000_lim,0)), 1000))
 
@@ -138,76 +138,75 @@ def main(args):
         # print(acc)
         genome[acc] = seq.replace("N", "") # remove Ns
 
-    print(len(genome), sum([len(v) for k,v in genome.items()]))
+    # print(len(genome), sum([len(v) for k,v in genome.items()]))
 
     tot_seeding = 0.0
     tot_dict_filling  = 0.0
     w = 10
-    for k in range(20, 101, 10):
+    k = args.k
+    # compute minimizer stats
+    start_seed = time()
+    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+    signal.signal(signal.SIGINT, original_sigint_handler)
+    pool = Pool(processes=int(args.n))
+    try:
+        res = pool.map_async(min_single_helper, [ (seq, k, w) for acc, seq in genome.items()] )
+        results =res.get(999999999) # Without the timeout this blocking call ignores all signals.
+    except KeyboardInterrupt:
+        print("Caught KeyboardInterrupt, terminating workers")
+        pool.terminate()
+        sys.exit()
+    else:
+        pool.close()
+    pool.join()
+    stop_seed = time()
+    tot_seeding += stop_seed - start_seed
+    # print("finished multi")
 
-        # compute minimizer stats
-        start_seed = time()
-        original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-        signal.signal(signal.SIGINT, original_sigint_handler)
-        pool = Pool(processes=int(args.n))
-        try:
-            res = pool.map_async(min_single_helper, [ (seq, k, w) for acc, seq in genome.items()] )
-            results =res.get(999999999) # Without the timeout this blocking call ignores all signals.
-        except KeyboardInterrupt:
-            print("Caught KeyboardInterrupt, terminating workers")
-            pool.terminate()
-            sys.exit()
-        else:
-            pool.close()
-        pool.join()
-        stop_seed = time()
-        tot_seeding += stop_seed - start_seed
-        # print("finished multi")
 
+    # for acc, seq in genome.items():
+    #     get_minimizers(seq, k, w, seed_counts)
+    # seed_counts = defaultdict(int)
+    start_fill = time()
+    print_stats("minimizers", k, results)
+    stop_fill = time()
+    tot_dict_filling += stop_fill - start_fill
 
-        # for acc, seq in genome.items():
-        #     get_minimizers(seq, k, w, seed_counts)
-        # seed_counts = defaultdict(int)
-        start_fill = time()
-        print_stats("minimizers", k, results)
-        stop_fill = time()
-        tot_dict_filling += stop_fill - start_fill
+    # compute syncmer stats
+    start_seed = time()
 
-        # compute syncmer stats
-        start_seed = time()
+    s = k-4
+    t = 2 # creates open syncmer with mid point with is used in strobealign
+    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+    signal.signal(signal.SIGINT, original_sigint_handler)
+    pool = Pool(processes=int(args.n))
+    try:
+        res = pool.map_async(syncmers_single_helper, [ (seq, k, s, t) for acc, seq in genome.items()] )
+        results =res.get(999999999) # Without the timeout this blocking call ignores all signals.
+    except KeyboardInterrupt:
+        print("Caught KeyboardInterrupt, terminating workers")
+        pool.terminate()
+        sys.exit()
+    else:
+        pool.close()
+    pool.join()
+    stop_seed = time()
+    tot_seeding += stop_seed - start_seed
+    # print("finished multi")
 
-        s = k-4
-        t = 2 # creates open syncmer with mid point with is used in strobealign
-        original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-        signal.signal(signal.SIGINT, original_sigint_handler)
-        pool = Pool(processes=int(args.n))
-        try:
-            res = pool.map_async(syncmers_single_helper, [ (seq, k, s, t) for acc, seq in genome.items()] )
-            results =res.get(999999999) # Without the timeout this blocking call ignores all signals.
-        except KeyboardInterrupt:
-            print("Caught KeyboardInterrupt, terminating workers")
-            pool.terminate()
-            sys.exit()
-        else:
-            pool.close()
-        pool.join()
-        stop_seed = time()
-        tot_seeding += stop_seed - start_seed
-        # print("finished multi")
+    start_fill = time()
+    print_stats("syncmers", k, results)
+    stop_fill = time()
+    tot_dict_filling += stop_fill - start_fill
 
-        start_fill = time()
-        print_stats("syncmers", k, results)
-        stop_fill = time()
-        tot_dict_filling += stop_fill - start_fill
+    # print("Total seeding:", tot_seeding)
+    # print("Total dict filling:", tot_dict_filling)
 
-        # print("Total seeding:", tot_seeding)
-        # print("Total dict filling:", tot_dict_filling)
-
-        # seed_counts = defaultdict(int)
-        # s = k-4
-        # t = 2 # creates open syncmer with mid point with is used in strobealign
-        # for acc, seq in genome.items():
-        #     syncmers(seq, k, s, t, seed_counts )
+    # seed_counts = defaultdict(int)
+    # s = k-4
+    # t = 2 # creates open syncmer with mid point with is used in strobealign
+    # for acc, seq in genome.items():
+    #     syncmers(seq, k, s, t, seed_counts )
 
 
 
@@ -216,7 +215,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('fasta', type=str,  default=False, help='Path to genome')
     parser.add_argument('n', type=int,  default=4, help='Nr cores')
-
+    parser.add_argument('k', type=int,  default=20, help='k-mer size')
     args = parser.parse_args()
 
 
