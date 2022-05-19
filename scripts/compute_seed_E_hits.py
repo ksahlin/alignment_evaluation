@@ -119,7 +119,7 @@ def print_stats(method, k, results):
             total_seed_count_1000_lim += cnt
             total_seed_count_sq_1000_lim += cnt**2
     fraq_masked = 1 - total_seed_count_1000_lim/total_seed_count
-    print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count, int(round(total_seed_count_sq / total_seed_count,0)), fraq_masked ))
+    print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count, int(round(total_seed_count_sq / total_seed_count,0)), round(100*frac_masked, 1) ))
     # print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count_1000_lim, int(round(total_seed_count_sq_1000_lim / total_seed_count_1000_lim,0)), 1000))
 
 
