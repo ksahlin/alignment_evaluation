@@ -96,7 +96,7 @@ def syncmers(seq, k, s, t, seed_counts ):
 
     # return syncmers
 
-def print_stats(k, seed_counts, method):
+def print_stats(method, k, seed_counts):
     total_seed_count_sq = 0
     total_seed_count = 0
     total_seed_count_sq_1000_lim = 0
