@@ -44,14 +44,14 @@ def readfq(fp): # this is a generator function
 
 def minimizers(seq, k_size, w, seed_counts):
     # kmers = [seq[i:i+k_size] for i in range(len(seq)-k_size) ]
-    window_kmers = deque([hash(seq[i:i+k_size]) for i in range(w +1)])
+    window_kmers = deque([seq[i:i+k_size] for i in range(w +1)])
     curr_min = min(window_kmers)
 
     seed_counts[curr_min] += 1
     # minimizers = [ (curr_min, list(window_kmers).index(curr_min)) ]
 
     for i in range(w+1,len(seq) - k_size):
-        new_kmer = hash(seq[i:i+k_size])
+        new_kmer = seq[i:i+k_size]
         # updateing window
         discarded_kmer = window_kmers.popleft()
         window_kmers.append(new_kmer)
@@ -77,6 +77,7 @@ def syncmers(seq, k, s, t, seed_counts ):
     pos_min =  window_smers.index(curr_min)
     syncmers = []
     if pos_min == t:
+        kmer = seq[0 : k]
         # syncmers = [ (curr_min, 0) ]
         seed_counts[curr_min] += 1
 
@@ -91,7 +92,7 @@ def syncmers(seq, k, s, t, seed_counts ):
         pos_min = window_smers.index(curr_min)
         if pos_min == t:
             kmer = seq[i - (k - s) : i - (k - s) + k]
-            seed_counts[curr_min] += 1
+            seed_counts[kmer] += 1
             # syncmers.append( (kmer,  i - (k - s) ) )
 
     # return syncmers
