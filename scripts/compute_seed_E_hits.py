@@ -48,16 +48,14 @@ def readfq(fp): # this is a generator function
 
 
 def get_minimizers(seq, k_size, w):
-    minimizers = []
     # kmers = [seq[i:i+k_size] for i in range(len(seq)-k_size) ]
-    window_kmers = deque([seq[i:i+k_size] for i in range(w)])
-    # print(len(window_kmers))
+    window_kmers = deque([hash(seq[i:i+k_size]) for i in range(w)])
     curr_min = min(window_kmers)
-    # seed_counts[curr_min] += 1
-    minimizers.append(curr_min)
+    j = list(window_kmers).index(curr_min)
+    minimizers = [ seq[j:j+k_size] ]
 
     for i in range(w+1,len(seq) - k_size):
-        new_kmer = seq[i:i+k_size]
+        new_kmer = hash(seq[i:i+k_size])
         # updateing window
         discarded_kmer = window_kmers.popleft()
         window_kmers.append(new_kmer)
@@ -65,14 +63,13 @@ def get_minimizers(seq, k_size, w):
         # we have discarded previous windows minimizer, look for new minimizer brute force
         if curr_min == discarded_kmer: 
             curr_min = min(window_kmers)
-            # seed_counts[curr_min] += 1
-            minimizers.append(curr_min)
+            j = list(window_kmers).index(curr_min) + i - w 
+            minimizers.append( seq[j:j+k_size]  )
 
         # Previous minimizer still in window, we only need to compare with the recently added kmer 
         elif new_kmer < curr_min:
             curr_min = new_kmer
-            # seed_counts[curr_min] += 1
-            minimizers.append(curr_min)
+            minimizers.append( seq[i:i+k_size] )
     return minimizers
 
 
@@ -142,7 +139,7 @@ def main(args):
 
     tot_seeding = 0.0
     tot_dict_filling  = 0.0
-    w = 10
+    w = 9 # to get 1/5 sampling density assyncmers below
     k = args.k
     # compute minimizer stats
     start_seed = time()
