@@ -118,9 +118,9 @@ def print_stats(method, k, results):
         if cnt <= 1000:
             total_seed_count_1000_lim += cnt
             total_seed_count_sq_1000_lim += cnt**2
-    
-    print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count, int(round(total_seed_count_sq / total_seed_count,0)), -1 ))
-    print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count_1000_lim, int(round(total_seed_count_sq_1000_lim / total_seed_count_1000_lim,0)), 1000))
+    fraq_masked = 1 - total_seed_count_1000_lim/total_seed_count
+    print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count, int(round(total_seed_count_sq / total_seed_count,0)), fraq_masked ))
+    # print("{0},{1},{2},{3},{4}".format(method, k, total_seed_count_1000_lim, int(round(total_seed_count_sq_1000_lim / total_seed_count_1000_lim,0)), 1000))
 
 
 def min_single_helper(arguments):
@@ -200,8 +200,8 @@ def main(args):
         stop_fill = time()
         tot_dict_filling += stop_fill - start_fill
 
-        print("Total seeding:", tot_seeding)
-        print("Total dict filling:", tot_dict_filling)
+        # print("Total seeding:", tot_seeding)
+        # print("Total dict filling:", tot_dict_filling)
 
         # seed_counts = defaultdict(int)
         # s = k-4
