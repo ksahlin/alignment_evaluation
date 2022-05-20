@@ -47,12 +47,13 @@ def readfq(fp): # this is a generator function
                 break
 
 
-def get_minimizers(seq, k_size, w):
+def get_minimizers(seq, k_size, w, seed_counts):
     # kmers = [seq[i:i+k_size] for i in range(len(seq)-k_size) ]
     window_kmers = deque([hash(seq[i:i+k_size]) for i in range(w)])
     curr_min = min(window_kmers)
     j = list(window_kmers).index(curr_min)
-    minimizers = [ seq[j:j+k_size] ]
+    # minimizers = [ seq[j:j+k_size] ]
+    seed_counts[seq[j:j+k_size]] += 1
 
     for i in range(w+1,len(seq) - k_size):
         new_kmer = hash(seq[i:i+k_size])
@@ -64,24 +65,26 @@ def get_minimizers(seq, k_size, w):
         if curr_min == discarded_kmer: 
             curr_min = min(window_kmers)
             j = list(window_kmers).index(curr_min) + i - w 
-            minimizers.append( seq[j:j+k_size]  )
+            # minimizers.append( seq[j:j+k_size]  )
+            seed_counts[seq[j:j+k_size]] += 1
 
         # Previous minimizer still in window, we only need to compare with the recently added kmer 
         elif new_kmer < curr_min:
             curr_min = new_kmer
-            minimizers.append( seq[i:i+k_size] )
-    return minimizers
+            # minimizers.append( seq[i:i+k_size] )
+            seed_counts[seq[i:i+k_size]] += 1
+    # return minimizers
 
 
-def get_syncmers(seq, k, s, t):
+def get_syncmers(seq, k, s, t, seed_counts):
     window_smers = deque([hash(seq[i:i+s]) for i in range(0, k - s + 1 )])
     curr_min = min(window_smers)
     pos_min =  window_smers.index(curr_min)
     syncmers = []
     if pos_min == t:
         kmer = seq[0 : k]
-        # seed_counts[kmer] += 1
-        syncmers.append(kmer)
+        seed_counts[kmer] += 1
+        # syncmers.append(kmer)
 
     for i in range(k - s + 1, len(seq) - s):
         new_smer = hash(seq[i:i+s])
@@ -94,16 +97,16 @@ def get_syncmers(seq, k, s, t):
         pos_min = window_smers.index(curr_min)
         if pos_min == t:
             kmer = seq[i - (k - s) : i - (k - s) + k]
-            # seed_counts[kmer] += 1
-            syncmers.append(kmer)
+            seed_counts[kmer] += 1
+            # syncmers.append(kmer)
 
-    return syncmers
+    # return syncmers
 
-def print_stats(method, k, results):
-    seed_counts = defaultdict(int)
-    for minm_list in results:
-        for m in minm_list:
-            seed_counts[m] += 1
+def print_stats(method, k, seed_counts):
+    # seed_counts = defaultdict(int)
+    # for minm_list in results:
+    #     for m in minm_list:
+    #         seed_counts[m] += 1
 
     total_seed_count_sq = 0
     total_seed_count = 0
@@ -133,82 +136,25 @@ def main(args):
     for acc,seq in list(genome.items()):
         acc = acc.split()[0]
         # print(acc)
-        seq_tmp = seq.replace("N", "") # remove Ns
-        del genome[acc]
-        # make smaller chunks for multiprocessing
-        for i in range(0, len(seq_tmp), n):
-            genome[acc+ "_" + str(i)] = seq_tmp[i:i+n]
+        genome[acc] = seq.replace("N", "") # remove Ns
 
-
-    # print(len(genome), sum([len(v) for k,v in genome.items()]))
-
-    tot_seeding = 0.0
-    tot_dict_filling  = 0.0
-    w = 9 # to get 1/5 sampling density assyncmers below
     k = args.k
-    # compute minimizer stats
-    start_seed = time()
-    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-    signal.signal(signal.SIGINT, original_sigint_handler)
-    pool = Pool(processes=int(args.n))
-    try:
-        res = pool.map_async(min_single_helper, [ (seq, k, w) for acc, seq in genome.items()] )
-        results =res.get(999999999) # Without the timeout this blocking call ignores all signals.
-    except KeyboardInterrupt:
-        print("Caught KeyboardInterrupt, terminating workers")
-        pool.terminate()
-        sys.exit()
-    else:
-        pool.close()
-    pool.join()
-    stop_seed = time()
-    tot_seeding += stop_seed - start_seed
-    # print("finished multi")
+    if args.type == "minimizers":
+        w = 9
+        seed_counts = defaultdict(int)
+        for acc, seq in genome.items():
+            M = get_minimizers(seq, k, w, seed_counts)
+        print_stats("minimizers", k, seed_counts)
+
+    elif args.type == "syncmers":
+        s = k-4 
+        t = 2 # creates open syncmer with mid point with is used in strobealign
+        seed_counts = defaultdict(int)
+        for acc, seq in genome.items():
+            get_syncmers(seq, k, s, t, seed_counts)
+        print_stats("syncmers", k, seed_counts)       
 
 
-    # for acc, seq in genome.items():
-    #     get_minimizers(seq, k, w, seed_counts)
-    # seed_counts = defaultdict(int)
-    start_fill = time()
-    print_stats("minimizers", k, results)
-    stop_fill = time()
-    tot_dict_filling += stop_fill - start_fill
-
-    # compute syncmer stats
-    start_seed = time()
-
-    s = k-4
-    t = 2 # creates open syncmer with mid point with is used in strobealign
-    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-    signal.signal(signal.SIGINT, original_sigint_handler)
-    pool = Pool(processes=int(args.n))
-    try:
-        res = pool.map_async(syncmers_single_helper, [ (seq, k, s, t) for acc, seq in genome.items()] )
-        results =res.get(999999999) # Without the timeout this blocking call ignores all signals.
-    except KeyboardInterrupt:
-        print("Caught KeyboardInterrupt, terminating workers")
-        pool.terminate()
-        sys.exit()
-    else:
-        pool.close()
-    pool.join()
-    stop_seed = time()
-    tot_seeding += stop_seed - start_seed
-    # print("finished multi")
-
-    start_fill = time()
-    print_stats("syncmers", k, results)
-    stop_fill = time()
-    tot_dict_filling += stop_fill - start_fill
-
-    # print("Total seeding:", tot_seeding)
-    # print("Total dict filling:", tot_dict_filling)
-
-    # seed_counts = defaultdict(int)
-    # s = k-4
-    # t = 2 # creates open syncmer with mid point with is used in strobealign
-    # for acc, seq in genome.items():
-    #     syncmers(seq, k, s, t, seed_counts )
 
 
 
@@ -216,8 +162,10 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calc identity", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('fasta', type=str,  default=False, help='Path to genome')
-    parser.add_argument('n', type=int,  default=4, help='Nr cores')
+    # parser.add_argument('n', type=int,  default=4, help='Nr cores')
     parser.add_argument('k', type=int,  default=20, help='k-mer size')
+    parser.add_argument('--type', type=str,  default=False, help='Either syncmenrs or minimizers')
+
     args = parser.parse_args()
 
 
