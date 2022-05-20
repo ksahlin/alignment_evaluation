@@ -46,6 +46,11 @@ def readfq(fp): # this is a generator function
                 yield name, (seq, None) # yield a fasta record instead
                 break
 
+def reverse_complement(string):
+    rev_nuc = {'A':'T', 'C':'G', 'G':'C', 'T':'A', 'U':'A', 'u':'a', 'a':'t', 'c':'g', 'g':'c', 't':'a', 'N':'N', 'X':'X', 'n':'n', 'Y':'R', 'R':'Y', 'K':'M', 'M':'K', 'S':'S', 'W':'W', 'B':'V', 'V':'B', 'H':'D', 'D':'H', 'y':'r', 'r':'y', 'k':'m', 'm':'k', 's':'s', 'w':'w', 'b':'v', 'v':'b', 'h':'d', 'd':'h'}
+
+    rev_comp = ''.join([rev_nuc[nucl] for nucl in reversed(string)])
+    return(rev_comp)
 
 def get_minimizers(seq, k_size, w, seed_counts):
     # kmers = [seq[i:i+k_size] for i in range(len(seq)-k_size) ]
@@ -53,7 +58,14 @@ def get_minimizers(seq, k_size, w, seed_counts):
     curr_min = min(window_kmers)
     j = list(window_kmers).index(curr_min)
     # minimizers = [ seq[j:j+k_size] ]
-    seed_counts[seq[j:j+k_size]] += 1
+
+    kmer = seq[j:j+k_size]
+    kmer_rc = reverse_complement(kmer)
+    if kmer < kmer_rc:
+        seed_counts[kmer] += 1
+    else:
+        seed_counts[kmer_rc] += 1
+
 
     for i in range(w+1,len(seq) - k_size):
         new_kmer = hash(seq[i:i+k_size])
@@ -66,13 +78,25 @@ def get_minimizers(seq, k_size, w, seed_counts):
             curr_min = min(window_kmers)
             j = list(window_kmers).index(curr_min) + i - w 
             # minimizers.append( seq[j:j+k_size]  )
-            seed_counts[seq[j:j+k_size]] += 1
+            # seed_counts[seq[j:j+k_size]] += 1
+            kmer = seq[j:j+k_size]
+            kmer_rc = reverse_complement(kmer)
+            if kmer < kmer_rc:
+                seed_counts[kmer] += 1
+            else:
+                seed_counts[kmer_rc] += 1
 
         # Previous minimizer still in window, we only need to compare with the recently added kmer 
         elif new_kmer < curr_min:
             curr_min = new_kmer
             # minimizers.append( seq[i:i+k_size] )
-            seed_counts[seq[i:i+k_size]] += 1
+            # seed_counts[seq[i:i+k_size]] += 1
+            kmer = seq[i:i+k_size]
+            kmer_rc = reverse_complement(kmer)
+            if kmer < kmer_rc:
+                seed_counts[kmer] += 1
+            else:
+                seed_counts[kmer_rc] += 1
     # return minimizers
 
 
@@ -83,8 +107,11 @@ def get_syncmers(seq, k, s, t, seed_counts):
     syncmers = []
     if pos_min == t:
         kmer = seq[0 : k]
-        seed_counts[kmer] += 1
-        # syncmers.append(kmer)
+        kmer_rc = reverse_complement(kmer)
+        if kmer < kmer_rc:
+            seed_counts[kmer] += 1
+        else:
+            seed_counts[kmer_rc] += 1
 
     for i in range(k - s + 1, len(seq) - s):
         new_smer = hash(seq[i:i+s])
@@ -97,8 +124,11 @@ def get_syncmers(seq, k, s, t, seed_counts):
         pos_min = window_smers.index(curr_min)
         if pos_min == t:
             kmer = seq[i - (k - s) : i - (k - s) + k]
-            seed_counts[kmer] += 1
-            # syncmers.append(kmer)
+            kmer_rc = reverse_complement(kmer)
+            if kmer < kmer_rc:
+                seed_counts[kmer] += 1
+            else:
+                seed_counts[kmer_rc] += 1
 
     # return syncmers
 
