@@ -20,8 +20,8 @@ def plot_e_hits(input_csv, outfolder, linewidth = 2.5):
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
-    g = sns.relplot(data=indata, x="median_seed_size", y="E_hits", hue="type", style="genome", linewidth = linewidth, kind="line", markers=True, markersize=10)
-    g.set_axis_labels("Seed size", "Expected matches in index")
+    g = sns.relplot(data=indata, x="median_seed_size", y="E_hits", hue="type", style="genome", linewidth = linewidth, kind="line", markers=True, markersize=8)
+    g.set_axis_labels("Seed size", "E-hits")
     g.set(yscale="log")
     g.set( yticks= [i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,2999,1000)]) #, ylim=(0, 5200))
 
@@ -43,8 +43,8 @@ def plot_frac_masked(input_csv, outfolder, linewidth = 2.5):
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
-    g = sns.relplot(data=indata, x="median_seed_size", y="fraction_masked_above_1000", hue="type", style="genome", linewidth = linewidth, kind="line", markers=True, markersize=10)
-    g.set_axis_labels("Seed size", "Seed locations hard masked (%)")
+    g = sns.relplot(data=indata, x="median_seed_size", y="fraction_masked_above_1000", hue="type", style="genome", linewidth = linewidth, kind="line", markers=True, markersize=8)
+    g.set_axis_labels("Seed size", "Hard masked (%)")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
     # ax.set_xlabel("k")
@@ -63,8 +63,8 @@ def plot_frac_masked(input_csv, outfolder, linewidth = 2.5):
 def main(args):
     sns.set_style("whitegrid")
 
-    plot_e_hits(args.csvfile, args.outfolder, linewidth = 2.5)
-    plot_frac_masked(args.csvfile, args.outfolder, linewidth = 2.5)
+    plot_e_hits(args.csvfile, args.outfolder, linewidth = 2)
+    plot_frac_masked(args.csvfile, args.outfolder, linewidth = 2)
 
 
 
