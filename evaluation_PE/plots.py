@@ -17,8 +17,8 @@ from matplotlib import pyplot
 
 def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.5)
-    # sns.set(font_scale=1.6) # for main SIM3
+    # sns.set(font_scale=1.5)
+    sns.set(font_scale=1.6) # for main SIM3
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
     # "minimap2",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map"
@@ -29,11 +29,11 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", linewidth = linewidth, kind="line", #dashes = dashes,
         col="dataset", hue_order = tools, # hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
-         # col_order=["SIM3"], palette=palette)
+        # col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
+         col_order=["SIM3"],  palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    # g.set_titles("SIM3")
+    g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Accuracy")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -50,8 +50,8 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.5)
-    # sns.set(font_scale=1.6) # for main SIM3
+    # sns.set(font_scale=1.5)
+    sns.set(font_scale=1.6) # for main SIM3
     sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
@@ -69,11 +69,11 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
     g = sns.relplot(
         data=indata, x="read_length", y="aligned", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line",  hue_order = tools, #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
-         # col_order=["SIM3"], palette=palette)
+        # col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
+         col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    # g.set_titles("SIM3")
+    g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Percentage aligned")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -90,8 +90,8 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, linewidth = 2.
 
 def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.5)
-    # sns.set(font_scale=1.6) # for main SIM3
+    # sns.set(font_scale=1.5)
+    sns.set(font_scale=1.6) # for main SIM3
     sns.set_style("whitegrid")
 
     indata = pd.read_csv(input_csv)
@@ -109,11 +109,11 @@ def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="overaligned", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
-         # col_order=["SIM3"], palette=palette)
+        # col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
+         col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    # g.set_titles("SIM3")
+    g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Overaligned")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -131,8 +131,8 @@ def plot_overaligned(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.5)
-    # sns.set(font_scale=1.6) # for main SIM3
+    # sns.set(font_scale=1.5)
+    sns.set(font_scale=1.6) # for main SIM3
     # tool,dataset,read_length,time,memory
     indata = pd.read_csv(input_csv)
 
@@ -141,8 +141,8 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="memory", hue="tool", style="type", linewidth = linewidth, 
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
-         # col_order=["SIM3"], palette=palette)
+        # col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
+         col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
     # g.set_titles("SIM3")
@@ -162,8 +162,8 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, linewidth = 2.5):
 
 def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     matplotlib.rcParams.update({'font.size': 18})
-    sns.set(font_scale=1.5)
-    # sns.set(font_scale=1.6) # for main SIM3
+    # sns.set(font_scale=1.5)
+    sns.set(font_scale=1.6) # for main SIM3
     # tool,dataset,read_length,time,memory
     sns.set_style("whitegrid")
 
@@ -171,11 +171,11 @@ def plot_runtime(input_csv, outfolder, palette, tools, linewidth = 2.5):
     g = sns.relplot(
         data=indata, x="read_length", y="time", hue="tool", style="type", linewidth = linewidth,
         col="dataset", kind="line", hue_order = tools,  #dashes = dashes, hue="datastructure", style="datastructure",
-        col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
-         # col_order=["SIM3"], palette=palette) # for main SIM3
+        # col_wrap=3, col_order=["SIM1", "SIM2", "SIM4"], palette=palette)
+         col_order=["SIM3"], palette=palette) # for main SIM3
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
     # axes = g.axes
-    # g.set_titles("SIM3")
+    g.set_titles("SIM3")
     g.set_axis_labels("Read length", "Time (sec)")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -227,14 +227,14 @@ def main(args):
     'minimap2': 'tab:blue',
     'strobealign': 'tab:green',
     'bwa_mem': 'tab:orange',
-    'accelalign': 'tab:red',
+    'accelalign': 'gold',
     'bowtie2' : 'tab:purple',
-    'urmap' : 'tab:grey',
+    # 'urmap' : 'tab:grey',
     'snap' : 'pink',
     "bwa_mem2" : 'black',
-    "strobealign_mixed" : 'magenta'
+    # "strobealign_mixed" : 'magenta'
     }
-
+    # palette =sns.color_palette('colorblind', n_colors = 7)
     tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2", "strobealign"] # "strobealign_mixed", "urmap",
 
     accuracy_csv = add_column(args.accuracy_csv)

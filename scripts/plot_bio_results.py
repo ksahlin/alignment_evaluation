@@ -200,7 +200,7 @@ def main(args):
     'minimap2': 'tab:blue',
     'strobealign': 'tab:green',
     'bwa_mem': 'tab:orange',
-    'accelalign': 'tab:red',
+    'accelalign': 'gold',
     'bowtie2' : 'tab:purple',
     # 'urmap' : 'tab:grey',
     'snap' : 'pink',
@@ -211,7 +211,7 @@ def main(args):
 
     # accuracy_csv = add_column(args.accuracy_csv)
     # runtime_mem_csv = add_column(args.runtime_mem_csv)
-    plot_all2(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
+    plot_all2(args.csv, args.outfolder, palette, tools, linewidth = 3.5)
 
     # plot_percentage_aligned(args.csv, args.outfolder, palette, tools, linewidth = 2.5)
     # plot_runtime(args.csv, args.outfolder, palette, tools, linewidth = 2.5)

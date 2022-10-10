@@ -20,7 +20,9 @@ def plot_e_hits(input_csv, outfolder, linewidth = 2.5):
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
-    g = sns.relplot(data=indata, x="median_seed_size", y="E_hits", hue="type", style="genome", linewidth = linewidth, kind="line", markers=True, markersize=8)
+    g = sns.relplot(data=indata, x="median_seed_size", y="E_hits", hue="type", 
+                    style="genome", linewidth = linewidth, kind="line", markers=True, markersize=8,
+                    palette=sns.color_palette('colorblind', n_colors = 9))
     g.set_axis_labels("Seed size", "E-hits")
     g.set(yscale="log")
     g.set( yticks= [i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,2999,1000)]) #, ylim=(0, 5200))
@@ -32,7 +34,7 @@ def plot_e_hits(input_csv, outfolder, linewidth = 2.5):
     # ax.set_ylim((75, 100))
     # g.set(ylim=(94, 99), xticks=[50,75,100,150,200,250,300,500])
     # g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
-    g.tight_layout()
+    # g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     plt.savefig(os.path.join(outfolder, "e_hits.pdf"))
@@ -43,7 +45,9 @@ def plot_frac_masked(input_csv, outfolder, linewidth = 2.5):
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     indata = pd.read_csv(input_csv)
-    g = sns.relplot(data=indata, x="median_seed_size", y="fraction_masked_above_1000", hue="type", style="genome", linewidth = linewidth, kind="line", markers=True, markersize=8)
+    g = sns.relplot(data=indata, x="median_seed_size", y="fraction_masked_above_1000", hue="type", 
+                    style="genome", linewidth = linewidth, kind="line", markers=True, markersize=8,
+                    palette=sns.color_palette('colorblind', n_colors = 9))
     g.set_axis_labels("Seed size", "Hard masked (%)")
     # g.set_xticklabels([18,24,30,36])
     # ax.set_ylabel("% unique")
@@ -52,7 +56,7 @@ def plot_frac_masked(input_csv, outfolder, linewidth = 2.5):
     # ax.set_ylim((75, 100))
     # g.set(ylim=(94, 99), xticks=[50,75,100,150,200,250,300,500])
     # g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
-    g.tight_layout()
+    # g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
     plt.savefig(os.path.join(outfolder, "frac_masked.pdf"))

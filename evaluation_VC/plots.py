@@ -183,7 +183,7 @@ def main(args):
     'minimap2': 'tab:blue',
     'strobealign': 'tab:green',
     'bwa_mem': 'tab:orange',
-    'accelalign': 'tab:red',
+    'accelalign': 'gold',
     'bowtie2' : 'tab:purple',
     'urmap' : 'tab:grey',
     'snap' : 'pink',    

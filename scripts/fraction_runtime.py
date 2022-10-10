@@ -27,7 +27,7 @@ def plot_runtime(input_csv, outfolder):
 
     # One liner to create a stacked bar chart.
     ax = sns.histplot(indata, x='dataset', hue='stage', weights='time',
-                 multiple='stack', palette='tab10', shrink=0.8)
+                 multiple='stack', palette=sns.color_palette('colorblind', n_colors = 6), shrink=0.8)
     ax.set_ylabel('Time')
     ax.set_xlabel('Dataset')
     # Fix the legend so it's not on top of the bars.
