@@ -1,4 +1,4 @@
-        #!/bin/bash
+#!/bin/bash
 
 
 # RUN scripts e.g. as: ./mini_analysis.sh /Users/kxs624/Documents/data/genomes/human/ /Users/kxs624/tmp/STROBEALIGN/
