@@ -263,7 +263,7 @@ rule strobealign_master_preindexed_index:
 
 
 rule strobealign_master_preindexed:
-    input:  ref_idx = rules.strobealign_master_preindexed_index.sa_index,
+    input:  ref_idx = rules.strobealign_master_preindexed_index.output.sa_index,
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
