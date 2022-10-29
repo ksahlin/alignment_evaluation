@@ -243,6 +243,7 @@ rule strobealign_master:
             shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
             shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
             shell("echo Copied reads to: $SLURM_JOB_ID")
+            shell("module load gcc")
             tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
             tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
             tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
@@ -269,6 +270,7 @@ rule strobealign_master_preindexed:
             shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
             shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
             shell("echo Copied reads to: $SLURM_JOB_ID")
+            shell("module load gcc")
             tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
             tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
             tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
