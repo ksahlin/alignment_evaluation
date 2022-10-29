@@ -235,8 +235,7 @@ rule strobealign_master:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master/{dataset}/{read_length}/aligning_time_and_mem.txt",
             # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_master/{dataset}/{read_length}.sam"
             out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master/{dataset}/{read_length}.result"
-    envmodules: 
-            "gcc"
+    # envmodules: "gcc"
     run: 
         if wildcards.read_length == "500": # cannot align longer than 400nt reads
             shell("touch {output.time_and_mem}") 
@@ -263,8 +262,7 @@ rule strobealign_master_preindexed:
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/aligning_time_and_mem.txt",
             # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_master_preindexed/{dataset}/{read_length}.sam"
             out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master_preindexed/{dataset}/{read_length}.result"
-    envmodules: 
-            "gcc"
+    # envmodules:  "gcc"
     run: 
         if wildcards.read_length == "500": # cannot align longer than 400nt reads
             shell("touch {output.time_and_mem}") 
