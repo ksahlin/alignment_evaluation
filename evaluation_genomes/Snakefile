@@ -253,8 +253,17 @@ rule strobealign_master:
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
             # shell("mv {tmp_sam} {output.sam}")
 
+
+rule strobealign_master_preindexed_index:
+    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
+    output: sa_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa.{read_length}.sti",
+            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/indexing_time_and_mem.txt",
+    run:
+        shell("/usr/bin/time -v  strobealign-master-38675ca -r {wildcards.read_length} -i {input.ref}.{wildcards.read_length}.sti {input.ref} 2>&1 | tee {output.time_and_mem} ")   
+
+
 rule strobealign_master_preindexed:
-    input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
+    input:  ref_idx = rules.strobealign_master_preindexed_index.sa_index,
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
@@ -277,7 +286,7 @@ rule strobealign_master_preindexed:
             tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
 
             shell("/usr/bin/time -v  strobealign-master-38675ca -r {wildcards.read_length} -i {input.ref}.sti {input.ref} ") #  
-            shell("/usr/bin/time -v  strobealign-master-38675ca -t 16 -o {tmp_sam} {input.ref}.sti {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+            shell("/usr/bin/time -v  strobealign-master-38675ca -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
             shell("mv {tmp_time_and_mem} {output.time_and_mem}")
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
             # shell("mv {tmp_sam} {output.sam}")
