@@ -21,9 +21,13 @@ def parse_gnu_time(stderr_file):
         # minimap2
         index_time_mm2_match = re.search('\[M::main::[\d.:]+\*[\d.:]+\] loaded/built the index for', l) 
         
-        # strobemap
+        # strobemap 0.7.1 / no pre-indexing
 
         index_time_strobemap_match = re.search('Total time indexing: [\d.:]+', l) 
+
+
+        # strobemap pre-indexing
+        index_time_strobemap_match = re.search('Total time reading index: [\d.:]+', l) 
 
         # accelalign
         index_time_accelalign_match = re.search('Setup reference in [\d.:]+ secs', l) 
