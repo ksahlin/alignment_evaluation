@@ -198,7 +198,7 @@ rule strobealign:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign -t 16 -M 40 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
         # shell("mv {tmp_sam} {output.sam}")
@@ -237,21 +237,17 @@ rule strobealign_master:
             out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master/{dataset}/{read_length}.result"
     # envmodules: "gcc"
     run: 
-        if wildcards.read_length == "500": # cannot align longer than 400nt reads
-            shell("touch {output.time_and_mem}") 
-            shell('echo "-,-,-" > {output.out}')
-        else:
-            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-            shell("echo Copied reads to: $SLURM_JOB_ID")
-            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-            shell("/usr/bin/time -v  strobealign-master-38675ca -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-            # shell("mv {tmp_sam} {output.sam}")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  strobealign-master-38675ca -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule strobealign_master_preindexed_index:
@@ -273,22 +269,17 @@ rule strobealign_master_preindexed:
             out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master_preindexed/{dataset}/{read_length}.result"
     # envmodules:  "gcc"
     run: 
-        if wildcards.read_length == "500": # cannot align longer than 400nt reads
-            shell("touch {output.time_and_mem}") 
-            shell('echo "-,-,-" > {output.out}')
-        else:
-            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
-            shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
-            shell("echo Copied reads to: $SLURM_JOB_ID")
-            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-            tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
-            tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-
-            shell("/usr/bin/time -v  strobealign-master-38675ca -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
-            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-            # shell("mv {tmp_sam} {output.sam}")
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+        tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+        shell("/usr/bin/time -v  strobealign-master-38675ca -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule accelalign_index:
