@@ -27,7 +27,7 @@ def parse_gnu_time(stderr_file):
 
 
         # strobemap pre-indexing
-        index_time_strobemap_match = re.search('Total time reading index: [\d.:]+', l) 
+        index_time_strobemap_match_preindex = re.search('Total time reading index: [\d.:]+', l) 
 
         # accelalign
         index_time_accelalign_match = re.search('Setup reference in [\d.:]+ secs', l) 
@@ -48,6 +48,9 @@ def parse_gnu_time(stderr_file):
         if index_time_strobemap_match:
             # print(index_time_strobemap_match)
             index_time_strobemap = float(index_time_strobemap_match.group().split(':')[1].strip())
+
+        if index_time_strobemap_match_preindex:
+            index_time_strobemap = float(index_time_strobemap_match_preindex.group().split(':')[1].strip())
         
         if index_time_accelalign_match:
             prefix_cut = index_time_accelalign_match.group().split('reference in ')[1]
