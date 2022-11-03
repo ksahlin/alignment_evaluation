@@ -244,7 +244,7 @@ rule strobealign_master:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign-master-ddf90e5 -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-master-464a852 -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
         # shell("mv {tmp_sam} {output.sam}")
@@ -255,7 +255,7 @@ rule strobealign_master_preindexed_index:
     output: sa_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa.{read_length}.sti",
             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/indexing_time_and_mem.txt",
     run:
-        shell("/usr/bin/time -v  strobealign-master-ddf90e5 -r {wildcards.read_length} -i {output.sa_index} {input.ref} 2>&1 | tee {output.time_and_mem} ")   
+        shell("/usr/bin/time -v  strobealign-master-464a852 -r {wildcards.read_length} -i {output.sa_index} {input.ref} 2>&1 | tee {output.time_and_mem} ")   
 
 
 rule strobealign_master_preindexed:
@@ -276,7 +276,7 @@ rule strobealign_master_preindexed:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign-master-ddf90e5 -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-master-464a852 -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
         # shell("mv {tmp_sam} {output.sam}")
