@@ -158,6 +158,17 @@
         "mail_type" : "FAIL"
     },
 
+    "strobealign_multistrobes": 
+    {
+        "account" : "snic2021-5-572",
+        "jobname" : "multi",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "02:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
 
     "strobealign_master_preindexed": 
     {
