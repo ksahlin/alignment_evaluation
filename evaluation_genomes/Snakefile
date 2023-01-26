@@ -268,7 +268,7 @@ rule strobealign_master_map:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  strobealign-8e53e41 -t 16 -x -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {tmp_sam} > {output.out} ")
 
 
 # rule strobealign_master_preindexed_index:
