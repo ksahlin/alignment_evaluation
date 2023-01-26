@@ -244,30 +244,20 @@ rule strobealign_master:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign-master-464a852 -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-8e53e41 -t 16 -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        # shell("mv {tmp_sam} {output.sam}")
 
-
-rule strobealign_master_preindexed_index:
-    input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
-    output: sa_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa.{read_length}.sti",
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/indexing_time_and_mem.txt",
-    run:
-        shell("/usr/bin/time -v  strobealign-master-464a852 -r {wildcards.read_length} -i {output.sa_index} {input.ref} 2>&1 | tee {output.time_and_mem} ")   
-
-
-rule strobealign_master_preindexed:
-    input:  ref_idx = rules.strobealign_master_preindexed_index.output.sa_index,
+rule strobealign_master_map:
+    input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_master_preindexed/{dataset}/{read_length}.sam"
-            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master_preindexed/{dataset}/{read_length}.result"
-    # envmodules:  "gcc"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_master_map/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master_map/{dataset}/{read_length}.result"
+    # envmodules: "gcc"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -276,10 +266,41 @@ rule strobealign_master_preindexed:
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
-        shell("/usr/bin/time -v  strobealign-master-464a852 -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-8e53e41 -t 16 -x -o {tmp_sam} {input.ref} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        # shell("mv {tmp_sam} {output.sam}")
+
+
+# rule strobealign_master_preindexed_index:
+#     input: ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa"
+#     output: sa_index = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa.{read_length}.sti",
+#             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/indexing_time_and_mem.txt",
+#     run:
+#         shell("/usr/bin/time -v  strobealign-8e53e41 -r {wildcards.read_length} -i {output.sa_index} {input.ref} 2>&1 | tee {output.time_and_mem} ")   
+
+
+# rule strobealign_master_preindexed:
+#     input:  ref_idx = rules.strobealign_master_preindexed_index.output.sa_index,
+#             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
+#             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
+#             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
+#             # index = rules.minimap2_index.output.mm_index
+#     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_master_preindexed/{dataset}/{read_length}/aligning_time_and_mem.txt",
+#             # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_master_preindexed/{dataset}/{read_length}.sam"
+#             out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_master_preindexed/{dataset}/{read_length}.result"
+#     # envmodules:  "gcc"
+#     run: 
+#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
+#         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
+#         shell("echo Copied reads to: $SLURM_JOB_ID")
+#         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+#         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+#         tmp_fq_L = "/scratch/$SLURM_JOB_ID/reads_L.fq"
+#         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
+#         shell("/usr/bin/time -v  strobealign-master-464a852 -t 16 -o {tmp_sam} {input.ref_idx} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}") #  
+#         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+#         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+
 
 rule strobealign_multistrobes:
     input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
@@ -512,7 +533,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset = ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_master", "strobealign_master_preindexed", "strobealign_multistrobes"]) #  tool=["bwa_mem", "strobealign", "bwa_mem2"]) #  #"accelalign_map", "urmap",
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset = ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "91", "100", "111", "125", "136", "150", "176", "200", "250", "300", "500"], tool=["strobealign", "strobealign_map", "strobealign_master", "strobealign_master_map"])  # tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_master", "strobealign_master_preindexed", "strobealign_multistrobes"]
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -527,7 +548,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_master", "strobealign_master_preindexed", "strobealign_multistrobes"]) #  tool=["bwa_mem", "strobealign", "bwa_mem2"]) # # "accelalign_map", "urmap",
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "91", "100", "111", "125", "136", "150", "176", "200", "250", "300", "500"], tool=["strobealign", "strobealign_map", "strobealign_master", "strobealign_master_map"]) # tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_master", "strobealign_master_preindexed", "strobealign_multistrobes"]
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
     run:
         # summary_file = open(out, "w")
