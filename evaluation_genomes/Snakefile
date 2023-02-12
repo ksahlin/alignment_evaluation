@@ -203,15 +203,15 @@ rule strobealign_v071:
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
         # shell("mv {tmp_sam} {output.sam}")
 
-rule strobealign_map_v071:
+rule strobealign_v071_map:
     input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_map_v071/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_map_v071/{dataset}/{read_length}.sam"
-            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_map_v071/{dataset}/{read_length}.result"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v071_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v071_map/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_v071_map/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
