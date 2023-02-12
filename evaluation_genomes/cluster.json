@@ -149,7 +149,7 @@
     "strobealign_v080_conda": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "v0.8.0_aln",
+        "jobname" : "conda_v0.8.0",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -161,7 +161,7 @@
     "strobealign_v080_conda_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "v0.8.0_map",
+        "jobname" : "conda_v0.8.0_map",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -174,7 +174,7 @@
     "strobealign_v080_cmake": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "v0.8.0_aln",
+        "jobname" : "cmake_v0.8.0_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -186,7 +186,7 @@
     "strobealign_v080_cmake_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "v0.8.0_map",
+        "jobname" : "cmake_v0.8.0_map",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",

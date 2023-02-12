@@ -245,10 +245,11 @@ def main(args):
 
     palette = {
     'strobealign_v071': 'tab:green',
-    "strobealign_v080" : 'lightsalmon'
+    "strobealign_v080_cmake" : 'lightsalmon',
+    "strobealign_v080_conda" : 'tab:blue'
     }
     read_lengths =  [50, 75, 91, 100, 111, 125, 136, 150, 176, 200, 250, 300, 500] 
-    tools = ["strobealign_v071", "strobealign_v080"]
+    tools = ["strobealign_v071", "strobealign_v080_cmake", "strobealign_v080_conda"]
     
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
