@@ -146,7 +146,7 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_v080": 
+    "strobealign_v080_conda": 
     {
         "account" : "snic2022-5-592",
         "jobname" : "v0.8.0_aln",
@@ -158,7 +158,7 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_v080_map": 
+    "strobealign_v080_conda_map": 
     {
         "account" : "snic2022-5-592",
         "jobname" : "v0.8.0_map",
