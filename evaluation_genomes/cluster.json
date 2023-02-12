@@ -122,10 +122,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign": 
+    "strobealign_v071": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sa_aln",
+        "jobname" : "v0.7.1_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -134,10 +134,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_master": 
+    "strobealign_v071_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sa_master",
+        "jobname" : "v0.7.1_map",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -146,46 +146,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_master_preindexed_index" : 
+    "strobealign_v080": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sa_index",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "02:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-    "strobealign_multistrobes": 
-    {
-        "account" : "snic2022-5-592",
-        "jobname" : "multi",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "02:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-    "strobealign_master_preindexed": 
-    {
-        "account" : "snic2022-5-592",
-        "jobname" : "ma_pre",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "02:00:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-    "strobealign_map": 
-    {
-        "account" : "snic2022-5-592",
-        "jobname" : "sa_map",
+        "jobname" : "v0.8.0_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -194,26 +158,14 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_master_map": 
+    "strobealign_v080_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sa_ma_map",
+        "jobname" : "v0.8.0_map",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
         "runtime" : "01:30:00",
-        "mail" : "ksahlin@kth.se",
-        "mail_type" : "FAIL"
-    },
-
-    "strobealign_mixed": 
-    {
-        "account" : "snic2022-5-592",
-        "jobname" : "sm_mixed",
-        "cpus-per-task" : "20",
-        "Nodes" : 1,
-        "C" : "mem128GB",
-        "runtime" : "03:00:00",
         "mail" : "ksahlin@kth.se",
         "mail_type" : "FAIL"
     },
