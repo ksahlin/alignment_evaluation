@@ -475,7 +475,7 @@ rule get_stats:
 
 
 rule summary_variant_call_stats:
-    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_eb7ef72"])
+    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_eb7ef72"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
     run:
         # summary_file = open(out, "w")
@@ -523,7 +523,7 @@ rule summary_variant_call_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_eb7ef72"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
