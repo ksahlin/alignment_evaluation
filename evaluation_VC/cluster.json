@@ -98,7 +98,7 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign": 
+    "strobealign_v071": 
     {
         "account" : "snic2022-5-592",
         "jobname" : "s_v0.7.1",
