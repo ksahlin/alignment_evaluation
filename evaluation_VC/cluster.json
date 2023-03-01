@@ -236,7 +236,7 @@
     "bcftools_mpileup": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "call",
+        "jobname" : "mpileup",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
