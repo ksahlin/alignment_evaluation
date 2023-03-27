@@ -384,7 +384,7 @@ rule bcftools_norm:
             vcf_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.vcf"
     run:
         variants_vcf_left_aligned = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants_left_aligned.vcf".format(wildcards.tool, wildcards.dataset)
-        shell('bcftools norm --threads 16 --fasta-ref {input.ref} {input.vcf_called} > {variants_vcf_left_aligned} ')
+        shell('bcftools norm -c s --threads 16 --fasta-ref {input.ref} {input.vcf_called} > {variants_vcf_left_aligned} ')
 
         # Split into SNP and INDELS
         shell('grep -v -E -e "INDEL;" {variants_vcf_left_aligned} > {output.vcf_SNV}')
