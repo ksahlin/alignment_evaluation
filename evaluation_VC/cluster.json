@@ -261,7 +261,7 @@
     "bcftools_norm": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "call",
+        "jobname" : "norm",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
