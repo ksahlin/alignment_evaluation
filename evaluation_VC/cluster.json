@@ -257,6 +257,19 @@
         "mail_type" : "FAIL"
     },
 
+
+    "bcftools_norm": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "call",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "5:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
      "bcftools_intersect": 
     {
         "account" : "snic2022-5-592",

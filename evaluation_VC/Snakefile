@@ -368,23 +368,33 @@ rule bcftools_mpileup:
 
 
 rule bcftools_call:
-    input: vcf_gz = rules.bcftools_mpileup.output.vcf_gz
+    input: vcf_gz = rules.bcftools_mpileup.output.vcf_gz,
+            ref = config["HG38"]
+    output: vcf_called = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.vcf"
+    run:
+        # call variants
+        #variants_vcf = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.vcf".format(wildcards.tool, wildcards.dataset)
+        shell('bcftools call --threads 16 -v -c -O v {input.vcf_gz} > {output.vcf_called}')
+
+
+rule bcftools_norm:
+    input: vcf_called = rules.bcftools_call.output.vcf_called,
+            ref = config["HG38"]
     output: vcf_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.vcf",
             vcf_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.vcf"
     run:
-            # call variants
-            variants_vcf = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants.vcf".format(wildcards.tool, wildcards.dataset)
-            shell('bcftools call --threads 16 -v -c -O v {input.vcf_gz} > {variants_vcf}')
+        variants_vcf_left_aligned = config["ROOT_OUT"] + "/vcf/{0}/{1}.variants_left_aligned.vcf".format(wildcards.tool, wildcards.dataset)
+        shell('bcftools norm --threads 16 --fasta-ref {input.ref} {input.vcf_called} > {variants_vcf_left_aligned} ')
 
-            # Split into SNP and INDELS
-            shell('grep -v -E -e "INDEL;" {variants_vcf} > {output.vcf_SNV}')
-            shell('grep "#"  {variants_vcf} > {output.vcf_INDEL}')
-            shell('grep -E -e "INDEL;"  {variants_vcf} >> {output.vcf_INDEL}')
+        # Split into SNP and INDELS
+        shell('grep -v -E -e "INDEL;" {variants_vcf_left_aligned} > {output.vcf_SNV}')
+        shell('grep "#"  {variants_vcf_left_aligned} > {output.vcf_INDEL}')
+        shell('grep -E -e "INDEL;"  {variants_vcf_left_aligned} >> {output.vcf_INDEL}')
 
 
 rule bcftools_intersect_sim:
-    input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
-           vcf_INDEL = rules.bcftools_call.output.vcf_INDEL,
+    input: vcf_SNV = rules.bcftools_norm.output.vcf_SNV,
+           vcf_INDEL = rules.bcftools_norm.output.vcf_INDEL,
            vcf_SNV_true = rules.mason_simulate_variants.output.true_vcf_SNV,
            vcf_INDEL_true = rules.mason_simulate_variants.output.true_vcf_INDEL,
     output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
@@ -430,8 +440,8 @@ rule bcftools_split_true:
         shell('bcftools index {output.vcf_INDEL_true}')
 
 rule bcftools_intersect_bio:
-    input: vcf_SNV = rules.bcftools_call.output.vcf_SNV,
-           vcf_INDEL = rules.bcftools_call.output.vcf_INDEL,
+    input: vcf_SNV = rules.bcftools_norm.output.vcf_SNV,
+           vcf_INDEL = rules.bcftools_norm.output.vcf_INDEL,
            vcf_SNV_true = rules.bcftools_split_true.output.vcf_SNV_true,
            vcf_INDEL_true = rules.bcftools_split_true.output.vcf_INDEL_true
     output: vcf_SNV_ovl = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
