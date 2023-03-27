@@ -465,8 +465,8 @@ rule bcftools_intersect_bio:
 
 
 rule get_stats:
-    input: pred_SNV = rules.bcftools_call.output.vcf_SNV,
-           pred_INDEL = rules.bcftools_call.output.vcf_INDEL,
+    input: pred_SNV = rules.bcftools_norm.output.vcf_SNV,
+           pred_INDEL = rules.bcftools_norm.output.vcf_INDEL,
            tp_SNV = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.SNV.ovl/sites.txt",
            tp_INDEL = config["ROOT_OUT"] + "/vcf/{tool}/{dataset}.variants.INDEL.ovl/sites.txt",
     output: stats = config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt"
