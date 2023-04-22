@@ -203,6 +203,20 @@ rule strobealign_wfa2:
             shell("/usr/bin/time -v  strobealign-8311650 -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
         
 
+rule strobealign_b5305a0:
+    input:  ref = config["HG38"],
+            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_b5305a0/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_b5305a0/{dataset}.sam"
+    run: 
+
+        if wildcards.dataset == "BIO150" or wildcards.dataset == "SIM150":
+            shell("/usr/bin/time -v  strobealign-b5305a0 -t 16 -r 150 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") # 2>&1 | tee {tmp_time_and_mem}
+        elif  wildcards.dataset == "BIO250" or wildcards.dataset == "SIM250":
+            shell("/usr/bin/time -v  strobealign-b5305a0 -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
+
 
 rule strobealign_v080_cmake:
     input:  ref = config["HG38"],
@@ -501,7 +515,7 @@ rule get_stats:
 
 
 rule summary_variant_call_stats:
-    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_wfa2"])
+    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_wfa2", "strobealign_b5305a0"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
     run:
         # summary_file = open(out, "w")
