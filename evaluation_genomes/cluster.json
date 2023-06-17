@@ -195,10 +195,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_lomem_cmake": 
+    "strobealign_v0110_cmake": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "lomem",
+        "jobname" : "v0110",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -207,10 +207,34 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_lomem_cmake_map": 
+    "strobealign_v0110_cmake_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "lomem",
+        "jobname" : "v0110",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_XXH_cmake": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "XXH",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "01:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_XXH_cmake_map": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "XXH",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
