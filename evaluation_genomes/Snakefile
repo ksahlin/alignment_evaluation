@@ -335,8 +335,8 @@ rule strobealign_XXH_cmake:
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0110_cmake/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_v0110_cmake/{dataset}/{read_length}.result"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_XXH_cmake/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_XXH_cmake/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -354,8 +354,8 @@ rule strobealign_XXH_cmake_map:
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0110_cmake_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_v0110_cmake_map/{dataset}/{read_length}.result"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_XXH_cmake_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_XXH_cmake_map/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
