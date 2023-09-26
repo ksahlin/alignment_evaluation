@@ -122,6 +122,19 @@
         "mail_type" : "FAIL"
     },
 
+    "strobealign_v0120": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "sm_v0120",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "03:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
     "strobealign_map": 
     {
         "account" : "snic2022-5-592",

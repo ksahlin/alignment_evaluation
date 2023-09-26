@@ -161,7 +161,7 @@
     "strobealign_v0120_cmake": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "s_v0.8.0",
+        "jobname" : "s_v0.12.0",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
