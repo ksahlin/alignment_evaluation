@@ -267,8 +267,8 @@ rule strobealign_ksw2_cmake:
             fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0120_cmake/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v0120_cmake/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_ksw2_cmake/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_ksw2_cmake/{dataset}.sam"
     run: 
 
         if wildcards.dataset == "BIO150" or wildcards.dataset == "SIM150":
