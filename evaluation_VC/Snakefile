@@ -276,13 +276,28 @@ rule strobealign_ksw2_cmake:
         elif  wildcards.dataset == "BIO250" or wildcards.dataset == "SIM250":
             shell("/usr/bin/time -v  strobealign-ksw2 -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
 
-rule strobealign_multicontext_cmake:
+rule strobealign_7d7b428:
     input:  ref = config["HG38"],
             fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
             fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_multicontext_cmake/{dataset}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_multicontext_cmake/{dataset}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_7d7b428/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_7d7b428/{dataset}.sam"
+    run: 
+
+        if wildcards.dataset == "BIO150" or wildcards.dataset == "SIM150":
+            shell("/usr/bin/time -v  strobealign-7d7b428 -t 16 -r 150 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") # 2>&1 | tee {tmp_time_and_mem}
+        elif  wildcards.dataset == "BIO250" or wildcards.dataset == "SIM250":
+            shell("/usr/bin/time -v  strobealign-7d7b428 -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
+
+
+rule strobealign_multicontext:
+    input:  ref = config["HG38"],
+            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_multicontext/{dataset}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_multicontext/{dataset}.sam"
     run: 
 
         if wildcards.dataset == "BIO150" or wildcards.dataset == "SIM150":
@@ -558,7 +573,7 @@ rule get_stats:
 
 
 rule summary_variant_call_stats:
-    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_v0120_cmake", "strobealign_wfa2", "strobealign_b5305a0", "strobealign_ksw2_cmake", "strobealign_multicontext_cmake"])
+    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_v0120_cmake", "strobealign_wfa2", "strobealign_b5305a0", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign-7d7b428"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
     run:
         # summary_file = open(out, "w")
@@ -606,7 +621,7 @@ rule summary_variant_call_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_v0120_cmake", "strobealign_wfa2", "strobealign_b5305a0", "strobealign_ksw2_cmake", "strobealign_multicontext_cmake"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_v0120_cmake", "strobealign_wfa2", "strobealign_b5305a0", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign-7d7b428"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result"
     run:
         # summary_file = open(out, "w")

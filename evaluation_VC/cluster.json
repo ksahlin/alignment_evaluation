@@ -158,10 +158,22 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_multicontext_cmake": 
+    "strobealign_multicontext": 
     {
         "account" : "snic2022-5-592",
         "jobname" : "s_multi",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "04:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_7d7b428": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "s_7d7b428",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
