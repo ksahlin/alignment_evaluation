@@ -170,10 +170,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_7d7b428": 
+    "strobealign_116d124": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "s_7d7b428",
+        "jobname" : "s_116d124",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
