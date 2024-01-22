@@ -255,10 +255,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_7d7b428": 
+    "strobealign_116d124": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "7d7b428",
+        "jobname" : "116d124",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -267,10 +267,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_7d7b428_map": 
+    "strobealign_116d124_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "7d7b428",
+        "jobname" : "116d124",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
