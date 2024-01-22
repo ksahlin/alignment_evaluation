@@ -409,13 +409,13 @@ rule strobealign_116d124:
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
 
-rule strobealign_7d7b428_map:
+rule strobealign_116d124_map:
     input:  ref = "/proj/snic2022-6-31/nobackup/strobemap_eval/genomes/{dataset}.fa",
             fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
             fastq_R =   rules.mason_simulate_reads.output.sim_fq_R,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_7d7b428_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_7d7b428_map/{dataset}/{read_length}.result"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_116d124_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            out = config["ROOT_OUT"] + "/evaluation_PE/strobealign_116d124_map/{dataset}/{read_length}.result"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
@@ -816,7 +816,7 @@ rule accuracy:
 
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset = ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "91", "100", "111", "125", "136", "150", "176", "200", "250", "300", "500"], tool=["strobealign_v071", "strobealign_v071_map", "strobealign_v080_conda", "strobealign_v080_cmake", "strobealign_v080_cmake_map", "strobealign_v090_cmake", "strobealign_v0110_cmake", "strobealign_v0110_cmake_map",  "strobealign_v0120_cmake", "strobealign_v0120_cmake_map", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_XXH_cmake", "strobealign_XXH_cmake_map", "strobealign_116d124", "strobealign_7d7b428_map"]) # "strobealign_v080_conda_map", # tool=["minimap2", "bwa_mem", "strobealign_v080_conda",'accelalign', "bowtie2", "strobealign_v071_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_v080_conda", "strobealign_master_preindexed", "strobealign_multistrobes"]
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result",  dataset = ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "91", "100", "111", "125", "136", "150", "176", "200", "250", "300", "500"], tool=["strobealign_v071", "strobealign_v071_map", "strobealign_v080_conda", "strobealign_v080_cmake", "strobealign_v080_cmake_map", "strobealign_v090_cmake", "strobealign_v0110_cmake", "strobealign_v0110_cmake_map",  "strobealign_v0120_cmake", "strobealign_v0120_cmake_map", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_XXH_cmake", "strobealign_XXH_cmake_map", "strobealign_116d124", "strobealign_116d124_map"]) # "strobealign_v080_conda_map", # tool=["minimap2", "bwa_mem", "strobealign_v080_conda",'accelalign', "bowtie2", "strobealign_v071_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_v080_conda", "strobealign_master_preindexed", "strobealign_multistrobes"]
     output: out = config["ROOT_OUT"] + "/evaluation_PE/accuracy_genomes.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -831,7 +831,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "91", "100", "111", "125", "136", "150", "176", "200", "250", "300", "500"], tool=["strobealign_v071", "strobealign_v071_map", "strobealign_v080_conda", "strobealign_v080_cmake", "strobealign_v080_cmake_map", "strobealign_v090_cmake", "strobealign_v0110_cmake", "strobealign_v0110_cmake_map",  "strobealign_v0120_cmake", "strobealign_v0120_cmake_map", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_XXH_cmake", "strobealign_XXH_cmake_map", "strobealign_116d124", "strobealign_7d7b428_map"]) # "strobealign_v080_conda_map", # tool=["minimap2", "bwa_mem", "strobealign_v080_conda",'accelalign', "bowtie2", "strobealign_v071_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_v080_conda", "strobealign_master_preindexed", "strobealign_multistrobes"]
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["drosophila", "maize", "rye", "CHM13"], read_length =  ["50", "75", "91", "100", "111", "125", "136", "150", "176", "200", "250", "300", "500"], tool=["strobealign_v071", "strobealign_v071_map", "strobealign_v080_conda", "strobealign_v080_cmake", "strobealign_v080_cmake_map", "strobealign_v090_cmake", "strobealign_v0110_cmake", "strobealign_v0110_cmake_map",  "strobealign_v0120_cmake", "strobealign_v0120_cmake_map", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_XXH_cmake", "strobealign_XXH_cmake_map", "strobealign_116d124", "strobealign_116d124_map"]) # "strobealign_v080_conda_map", # tool=["minimap2", "bwa_mem", "strobealign_v080_conda",'accelalign', "bowtie2", "strobealign_v071_map", "minimap2_map", "snap", "bwa_mem2", "strobealign_v080_conda", "strobealign_master_preindexed", "strobealign_multistrobes"]
     output: out = config["ROOT_OUT"] + "/evaluation_PE/time_and_mem_genomes.result"
     run:
         # summary_file = open(out, "w")
