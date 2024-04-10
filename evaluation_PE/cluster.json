@@ -38,7 +38,7 @@
     },
 
 
-    "minimap2_align": 
+    "minimap2": 
     {
         "account" : "snic2022-5-592",
         "jobname" : "mm2_aln",
@@ -112,10 +112,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign": 
+    "strobealign_v071": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sm_aln",
+        "jobname" : "v71",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -124,10 +124,10 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_map": 
+    "strobealign_v071_map": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sm_map",
+        "jobname" : "v71_map",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
@@ -136,10 +136,47 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_mixed": 
+    "strobealign_v0120_opt": 
     {
         "account" : "snic2022-5-592",
-        "jobname" : "sm_mixed_aln",
+        "jobname" : "v12",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "00:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_v0120_opt_map": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "v12_map",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "00:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
+    "strobealign_multicontext": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "mcs",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "00:30:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_multicontext_map": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "mcs_map",
         "cpus-per-task" : "20",
         "Nodes" : 1,
         "C" : "mem128GB",
