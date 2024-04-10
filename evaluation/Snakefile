@@ -412,7 +412,7 @@ rule accuracy:
             shell('echo "-,-,-" > {output.out}')
         elif wildcards.tool == "strobealign_mixed" and wildcards.read_length == "500":
             shell('echo "-,-,-" > {output.out}')
-        elif wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
+        elif wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_v071_map" or wildcards.tool == "strobealign_v0120_opt_map" or wildcards.tool == "strobealign_multicontext_map":
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
         else:
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
