@@ -365,40 +365,40 @@ rule urmap_align:
             shell("mv {tmp_sam} {output.sam}")
 
 
-rule snap_index:
-    input: ref = config["HG38"]
-    output: directory(snp_index =  config["HG38"] + "_snap_index/GenomeIndexHash"),
-            time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/indexing_time_and_mem.txt",
-    run:
-        # snap
-        shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -t1  2>&1 | tee {output.time_and_mem}") 
+# rule snap_index:
+#     input: ref = config["HG38"]
+#     output: directory(snp_index =  config["HG38"] + "_snap_index/GenomeIndexHash"),
+#             time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/indexing_time_and_mem.txt",
+#     run:
+#         # snap
+#         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} -t1  2>&1 | tee {output.time_and_mem}") 
 
-rule snap_align:
-    input:  fastq =   rules.mason_simulate_reads.output.sim_fq,
-            index = rules.snap_index.output.snp_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/snap/{dataset}/{read_length}.sam"
-    run:
-        if wildcards.read_length == "500": # cannot align longer than 400nt reads
-            shell("touch {output.time_and_mem}") 
-            shell('> {output.sam}')
-        else:
-            shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
-            shell("echo Copied reads to: $SLURM_JOB_ID")
-            ref = config["HG38"]
-            tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
-            shell("mkdir -p /scratch/$SLURM_JOB_ID/")
-            shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t1") 
-            shell("echo Copied index to: $SLURM_JOB_ID")
-            tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
-            tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
-            tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
-            # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
-            # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
-            # tmp_index = config["HG38"] + "_snap_index"
-            shell("/usr/bin/time -v  snap-aligner single {tmp_index} {tmp_fq} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
-            shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-            shell("mv {tmp_sam} {output.sam}")
+# rule snap_align:
+#     input:  fastq =   rules.mason_simulate_reads.output.sim_fq,
+#             index = rules.snap_index.output.snp_index
+#     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/snap/{dataset}/{read_length}/aligning_time_and_mem.txt",
+#             sam =  config["ROOT_OUT"] + "/alignments/snap/{dataset}/{read_length}.sam"
+#     run:
+#         if wildcards.read_length == "500": # cannot align longer than 400nt reads
+#             shell("touch {output.time_and_mem}") 
+#             shell('> {output.sam}')
+#         else:
+#             shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
+#             shell("echo Copied reads to: $SLURM_JOB_ID")
+#             ref = config["HG38"]
+#             tmp_index = "/scratch/$SLURM_JOB_ID/snap_index"
+#             shell("mkdir -p /scratch/$SLURM_JOB_ID/")
+#             shell("/usr/bin/time -v  snap-aligner index {ref}  {tmp_index} -t1") 
+#             shell("echo Copied index to: $SLURM_JOB_ID")
+#             tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+#             tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+#             tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
+#             # snap-aligner paired index-dir read1.fq read2.fq -o output.sam
+#             # tmp_index = "/scratch/$SLURM_JOB_ID/snap_index/"
+#             # tmp_index = config["HG38"] + "_snap_index"
+#             shell("/usr/bin/time -v  snap-aligner single {tmp_index} {tmp_fq} -o {tmp_sam} -t 16  2>&1 | tee {tmp_time_and_mem}  ")
+#             shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+#             shell("mv {tmp_sam} {output.sam}")
 
 
 rule accuracy:
