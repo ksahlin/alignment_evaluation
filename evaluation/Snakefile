@@ -73,7 +73,7 @@ rule minimap2_index:
     run:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
-rule minimap2_align:
+rule minimap2:
     input: fastq =   rules.mason_simulate_reads.output.sim_fq,
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
@@ -156,54 +156,107 @@ rule bwa_mem2_align:
         shell("mv {tmp_sam} {output.sam}")
 
 
-rule strobealign:
+rule strobealign_v071:
     input:  ref = config["HG38"],
             fastq =   rules.mason_simulate_reads.output.sim_fq
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/strobealign/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_v071/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_v071/{dataset}/{read_length}.sam"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
-        shell("/usr/bin/time -v  strobealign -t 16 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-v0.7.1 -t 16 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
 
-rule strobealign_map:
+rule strobealign_v071_map:
     input:  ref = config["HG38"],
             fastq =   rules.mason_simulate_reads.output.sim_fq
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments/strobealign_map/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_v071_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_v071_map/{dataset}/{read_length}.sam"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
-        shell("/usr/bin/time -v  strobealign -t 16 -r {wildcards.read_length} -x -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-v0.7.1 -t 16 -r {wildcards.read_length} -x -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
 
-rule strobealign_mixed:
+
+rule strobealign_v0120_opt:
     input:  ref = config["HG38"],
             fastq =   rules.mason_simulate_reads.output.sim_fq
             # index = rules.minimap2_index.output.mm_index
-    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_mixed/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/time_and_mem/strobealign_mixed/{dataset}/{read_length}.sam"
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_v0120_opt/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_v0120_opt/{dataset}/{read_length}.sam"
     run: 
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
         shell("echo Copied reads to: $SLURM_JOB_ID")
         tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
         tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
         tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
-        shell("/usr/bin/time -v  strobealign-mixed -t 16 -r {wildcards.read_length} -x -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("/usr/bin/time -v  strobealign-v0.12.0-opt -t 16 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
         shell("mv {tmp_sam} {output.sam}")
+
+
+rule strobealign_v0120_opt_map:
+    input:  ref = config["HG38"],
+            fastq =   rules.mason_simulate_reads.output.sim_fq
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_v0120_opt_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_v0120_opt_map/{dataset}/{read_length}.sam"
+    run: 
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
+        shell("/usr/bin/time -v  strobealign-v0.12.0-opt -t 16 -r {wildcards.read_length} -x -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+rule strobealign_multicontext:
+    input:  ref = config["HG38"],
+            fastq =   rules.mason_simulate_reads.output.sim_fq
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_multicontext/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_multicontext/{dataset}/{read_length}.sam"
+    run: 
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
+        shell("/usr/bin/time -v  strobealign-multicontext -t 16 -r {wildcards.read_length} -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
+rule strobealign_multicontext_map:
+    input:  ref = config["HG38"],
+            fastq =   rules.mason_simulate_reads.output.sim_fq
+            # index = rules.minimap2_index.output.mm_index
+    output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem/strobealign_multicontext_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
+            sam =  config["ROOT_OUT"] + "/alignments/strobealign_multicontext_map/{dataset}/{read_length}.sam"
+    run: 
+        shell("cp {0} /scratch/$SLURM_JOB_ID/reads.fq".format(input.fastq))
+        shell("echo Copied reads to: $SLURM_JOB_ID")
+        tmp_time_and_mem = "/scratch/$SLURM_JOB_ID/aligning_time_and_mem.txt"
+        tmp_sam = "/scratch/$SLURM_JOB_ID/aligned.sam"
+        tmp_fq = "/scratch/$SLURM_JOB_ID/reads.fq"
+        shell("/usr/bin/time -v  strobealign-multicontext -t 16 -r {wildcards.read_length} -x -o {tmp_sam} {input.ref} {tmp_fq} 2>&1 | tee {tmp_time_and_mem}") #  
+        shell("mv {tmp_time_and_mem} {output.time_and_mem}")
+        shell("mv {tmp_sam} {output.sam}")
+
+
 
 rule accelalign_index:
     input: ref = config["HG38"]
@@ -364,10 +417,10 @@ rule accuracy:
         else:
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
-
+# tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", 'snap', 'urmap',  "bwa_mem2"]) #"strobealign_mixed",
 
 rule summary_alignment_stats:
-    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75","100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign",'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", 'snap', 'urmap',  "bwa_mem2"]) #"strobealign_mixed",
+    input: accuracy_files = expand(config["ROOT_OUT"] + "/evaluation/{tool}/{dataset}/{read_length}.result",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75","100", "150", "200", "250", "300", "500"], tool= ["minimap2", "bwa_mem", "strobealign_v071", "strobealign_v071_map", "minimap2_map", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_v0120_opt", "strobealign_v0120_opt_map"])
     output: out = config["ROOT_OUT"] + "/evaluation/accuracy.result"
     run:
         shell('echo "tool,dataset,read_length,aligned,accuracy,overaligned" > {output.out}')
@@ -382,7 +435,7 @@ rule summary_alignment_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75","100", "150", "200", "250", "300", "500"], tool=["minimap2", "bwa_mem", "strobealign", 'accelalign', "bowtie2", "strobealign_map", "minimap2_map", "accelalign_map", 'snap', 'urmap',  "bwa_mem2"]) #"strobealign_mixed",
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem/{tool}/{dataset}/{read_length}/aligning_time_and_mem.txt",  dataset =  ["SIM1", "SIM2", "SIM3", "SIM4"], read_length =  ["50", "75","100", "150", "200", "250", "300", "500"], tool= ["minimap2", "bwa_mem", "strobealign_v071", "strobealign_v071_map", "minimap2_map", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_v0120_opt", "strobealign_v0120_opt_map"])
     output: out = config["ROOT_OUT"] + "/evaluation/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
