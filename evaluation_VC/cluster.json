@@ -110,6 +110,31 @@
         "mail_type" : "FAIL"
     },
 
+    "strobealign_v0120_opt": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "s_v0.12.0opt",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "04:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_multicontext": 
+    {
+        "account" : "snic2022-5-592",
+        "jobname" : "s_mcs",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "04:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+
     "strobealign_wfa2": 
     {
         "account" : "snic2022-5-592",
