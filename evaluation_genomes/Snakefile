@@ -841,17 +841,17 @@ rule snap_align:
             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
             # shell("mv {tmp_sam} {output.sam}")
 
-rule accuracy:
-    input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
-            truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
-    output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result"
-    run:
-        if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
-        else:
-            shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
+# rule accuracy:
+#     input: aln =  config["ROOT_OUT"] + "/alignments_PE/{tool}/{dataset}/{read_length}.sam",
+#             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
+#     output: out = config["ROOT_OUT"] + "/evaluation_PE/{tool}/{dataset}/{read_length}.result"
+#     run:
+#         if wildcards.tool == "minimap2_map" or wildcards.tool == "strobealign_map":
+#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {input.aln} > {output.out} ")
+#         else:
+#             shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {input.aln} > {output.out} ")
 
-        # shell("rm {input.aln}")
+#         # shell("rm {input.aln}")
 
 
 rule summary_alignment_stats: # tool=["strobealign_v071", "strobealign_v071_map", "strobealign_v080_conda", "strobealign_v080_cmake", "strobealign_v080_cmake_map", "strobealign_v090_cmake", "strobealign_v0110_cmake", "strobealign_v0110_cmake_map",  "strobealign_v0120_cmake", "strobealign_v0120_cmake_map", "strobealign_v0120_opt", "strobealign_v0120_opt_map", "strobealign_ksw2_cmake", "strobealign_multicontext", "strobealign_multicontext_map", "strobealign_XXH_cmake", "strobealign_XXH_cmake_map", "strobealign_116d124", "strobealign_116d124_map"]
