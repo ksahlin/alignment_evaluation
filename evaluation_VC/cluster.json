@@ -2,7 +2,7 @@
 
     "__default__" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "cpus-per-task" : "3",
         "C" : "mem128GB",
         "Nodes" : 1,
@@ -14,7 +14,7 @@
 
     "mason_simulate_reads" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "cpus-per-task" : "5",
         "C" : "mem128GB",
         "Nodes" : 1,
@@ -27,7 +27,7 @@
 
     "minimap2_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "mm2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -40,7 +40,7 @@
 
     "minimap2_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "mm2_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -52,7 +52,7 @@
 
     "bwa_mem_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "bwa_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -64,7 +64,7 @@
 
     "bwa_mem2_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "bwamem2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -76,7 +76,7 @@
 
     "bwa_mem_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "bwa_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -88,7 +88,7 @@
 
     "bwa_mem2_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "bwamem2_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -100,7 +100,7 @@
 
     "strobealign_v071": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_v0.7.1",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -112,7 +112,7 @@
 
     "strobealign_v0120_opt": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_v0.12.0opt",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -124,7 +124,7 @@
 
     "strobealign_multicontext": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_mcs",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -137,7 +137,7 @@
 
     "strobealign_wfa2": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_wfa",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -149,7 +149,7 @@
 
     "strobealign_b5305a0": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "b5305a0",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -161,7 +161,7 @@
 
     "strobealign_v080_cmake": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_v0.8.0",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -173,7 +173,7 @@
 
     "strobealign_ksw2_cmake": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_ksw2",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -185,7 +185,7 @@
 
     "strobealign_multicontext": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_multi",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -197,7 +197,7 @@
 
     "strobealign_116d124": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_116d124",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -209,7 +209,7 @@
 
     "strobealign_v090_cmake": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_v0.8.0",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -221,7 +221,7 @@
 
     "strobealign_v0120_cmake": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "s_v0.12.0",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -233,7 +233,7 @@
 
     "accelalign_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "aa_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -246,7 +246,7 @@
 
     "accelalign_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "aa_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -258,7 +258,7 @@
 
     "bowtie2_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "bowtie2_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -270,7 +270,7 @@
 
     "bowtie2_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "bowtie2_align",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -282,7 +282,7 @@
     
         "urmap_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "urmap_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -295,7 +295,7 @@
 
     "urmap_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "urmap_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -307,7 +307,7 @@
 
     "snap_index" : 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "snap_index",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -320,7 +320,7 @@
 
     "snap_align": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "snap_aln",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -332,7 +332,7 @@
 
     "bcftools_mpileup": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "mpileup",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -344,7 +344,7 @@
 
     "bcftools_call": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "call",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -357,7 +357,7 @@
 
     "bcftools_norm": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "norm",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -369,7 +369,7 @@
 
      "bcftools_intersect": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "isec",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -381,7 +381,7 @@
 
     "make_sorted_bam": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "sort_bam",
         "cpus-per-task" : "20",
         "Nodes" : 1,
@@ -393,7 +393,7 @@
 
     "mason_simulate_reads": 
     {
-        "account" : "snic2022-5-592",
+        "account" : "naiss2024-5-55",
         "jobname" : "sim_reads",
         "cpus-per-task" : "20",
         "Nodes" : 1,
