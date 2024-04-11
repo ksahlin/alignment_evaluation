@@ -82,8 +82,8 @@ rule minimap2:
             index = rules.minimap2_index.output.mm_index,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
-            # out = config["ROOT_OUT"] + "/evaluation_PE/minimap2/{dataset}/{read_length}.result"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/minimap2/{dataset}/{read_length}.result"
 
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -95,8 +95,8 @@ rule minimap2:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -ax sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        # shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_sam  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 rule minimap2_map:
     input: fastq_L =   rules.mason_simulate_reads.output.sim_fq_L,
@@ -105,6 +105,7 @@ rule minimap2_map:
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
+
             # out = config["ROOT_OUT"] + "/evaluation_PE/minimap2_map/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
@@ -116,8 +117,8 @@ rule minimap2_map:
         tmp_fq_R = "/scratch/$SLURM_JOB_ID/reads_R.fq"
         shell("/usr/bin/time -v  minimap2 -o {tmp_sam} -t 16 -x sr {input.index} {tmp_fq_L} {tmp_fq_R} 2>&1 | tee {tmp_time_and_mem}  ")
         shell("mv {tmp_time_and_mem} {output.time_and_mem}")
-        # shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf {tmp_sam} > {output.out} ")
-        shell("mv {tmp_sam} {output.sam}")
+        shell("/usr/bin/time -v  python get_accuracy.py --truth {input.truth} --predicted_paf  {tmp_sam} > {output.out} ")
+        # shell("mv {tmp_sam} {output.sam}")
 
 
 rule bwa_mem_index:
