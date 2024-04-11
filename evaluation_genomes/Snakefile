@@ -104,9 +104,8 @@ rule minimap2_map:
             index = rules.minimap2_index.output.mm_index,
             truth =  config["ROOT_OUT"] + "/reads_PE/{dataset}/{read_length}.sam"
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2_map/{dataset}/{read_length}/aligning_time_and_mem.txt",
-            sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
-
-            # out = config["ROOT_OUT"] + "/evaluation_PE/minimap2_map/{dataset}/{read_length}.result"
+            # sam =  config["ROOT_OUT"] + "/alignments_PE/minimap2_map/{dataset}/{read_length}.sam"
+            out = config["ROOT_OUT"] + "/evaluation_PE/minimap2_map/{dataset}/{read_length}.result"
     run:
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_L.fq".format(input.fastq_L))
         shell("cp {0} /scratch/$SLURM_JOB_ID/reads_R.fq".format(input.fastq_R))
