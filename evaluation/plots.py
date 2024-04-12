@@ -37,8 +37,8 @@ def plot_accuracy(input_csv, outfolder, palette, tools, linewidth = 2.5):
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(90, 99), xticks=[50,75,100,150,200,250,300,500])
-    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250,300,500])
+    g.set(ylim=(80, 99), xlim=(40, 260), xticks=[50,75,100,150,200,250]) #,300,500
+    g.set_xticklabels(rotation=60, labels=[50,75,100,150,200,250]) #,300,500
     g.tight_layout()
     # g.set(ylim=(95, 100))
     # ax.set_xticks([18,24,30,36])
@@ -217,14 +217,17 @@ def main(args):
 
     palette = {
     'minimap2': 'tab:blue',
-    'strobealign': 'tab:green',
+    'strobealign_v071': 'tab:green',
     'bwa_mem': 'tab:orange',
-    'accelalign': 'tab:red',
-    'bowtie2' : 'tab:purple',
-    'snap' : 'pink',
-    'bwa_mem2' : 'black'
+    # 'accelalign': 'tab:red',
+    # 'bowtie2' : 'tab:purple',
+    # 'snap' : 'pink',
+    # 'bwa_mem2' : 'black'
+    "strobealign_v0120_opt" : 'pink',
+    "strobealign_multicontext" : 'black'
     }
-    tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2",  "strobealign"]
+    # tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2",  "strobealign"]
+    tools = [ "minimap2", "bwa_mem", "strobealign_v071", "strobealign_v0120_opt", "strobealign_multicontext"]
 
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)

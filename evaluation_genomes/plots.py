@@ -15,7 +15,7 @@ import pandas as pd
 from matplotlib import pyplot
 
 
-def plot_accuracy(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5):
+def plot_accuracy(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=(0,500)):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.2)
     # sns.set(font_scale=1.6) # for main SIM3
@@ -40,7 +40,7 @@ def plot_accuracy(input_csv, outfolder, palette, tools, read_lengths, linewidth 
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(80, 98), xticks=read_lengths)
+    g.set(ylim=(80, 98), xlim=xlim, xticks=read_lengths)
     g.set_xticklabels(rotation=90, labels=read_lengths)
     g.tight_layout()
     # g.set(ylim=(95, 100))
@@ -49,7 +49,7 @@ def plot_accuracy(input_csv, outfolder, palette, tools, read_lengths, linewidth 
     plt.savefig(os.path.join(outfolder, "accuracy_plot.pdf"))
     plt.close()
 
-def plot_percentage_aligned(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5):
+def plot_percentage_aligned(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=(0,500)):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.2)
     # sns.set(font_scale=1.6) # for main SIM3
@@ -81,7 +81,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, read_lengths, 
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(95, 100), xticks=read_lengths)
+    g.set(ylim=(95, 100), xlim=xlim, xticks=read_lengths)
     g.set_xticklabels(rotation=90, labels=read_lengths)
     g.tight_layout()
     # g.set(ylim=(95, 100))
@@ -90,7 +90,7 @@ def plot_percentage_aligned(input_csv, outfolder, palette, tools, read_lengths, 
     plt.savefig(os.path.join(outfolder, "percentage_aligned_plot.pdf"))
     plt.close()
 
-def plot_overaligned(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5):
+def plot_overaligned(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=(0,500)):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.2)
     # sns.set(font_scale=1.6) # for main SIM3
@@ -122,7 +122,7 @@ def plot_overaligned(input_csv, outfolder, palette, tools, read_lengths, linewid
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set( xticks=read_lengths) #ylim=(40, 100),
+    g.set(xlim=xlim, xticks=read_lengths) #ylim=(40, 100),
     g.set_xticklabels(rotation=90, labels=read_lengths)
     g.tight_layout()
     # g.set(ylim=(95, 100))
@@ -132,7 +132,7 @@ def plot_overaligned(input_csv, outfolder, palette, tools, read_lengths, linewid
     plt.close()
 
 
-def plot_memory_usage(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5):
+def plot_memory_usage(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=(0,500)):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.2)
     # sns.set(font_scale=1.6) # for main SIM3
@@ -155,7 +155,7 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, read_lengths, linewi
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set( xticks=read_lengths) #ylim=(40, 100),
+    g.set(xlim=xlim, xticks=read_lengths) #ylim=(40, 100),
     g.set_xticklabels(rotation=90, labels=read_lengths)
     g.tight_layout()
     # g.set(ylim=(95, 100))
@@ -164,7 +164,7 @@ def plot_memory_usage(input_csv, outfolder, palette, tools, read_lengths, linewi
     plt.savefig(os.path.join(outfolder, "memory_plot.pdf"))
     plt.close()
 
-def plot_runtime(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5):
+def plot_runtime(input_csv, outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=(0,500)):
     matplotlib.rcParams.update({'font.size': 18})
     sns.set(font_scale=1.2)
     # sns.set(font_scale=1.6) # for main SIM3
@@ -187,10 +187,10 @@ def plot_runtime(input_csv, outfolder, palette, tools, read_lengths, linewidth =
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
     g.set(yscale="log")
-    g.set( yticks= [i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,9999,1000)] + [i for i in range(10000,39999,10000)]) #, ylim=(0, 5200))
+    g.set( yticks= [i for i in range(10,99,10)] + [i for i in range(100,999,100)] + [i for i in range(1000,1999,1000)]) # + [i for i in range(10000,39999,10000)]) #, ylim=(0, 5200))
     # g.set_yticklabels( ["100"] + ["" for i in range(200,999,100)] + ["1000"] +  ["" for i in range(2000,9999,1000)] + ["10000"] +  [i for i in range(1000,2999,1000)]])
 
-    g.set( xticks=read_lengths) #ylim=(40, 100),
+    g.set(xlim=xlim, xticks=read_lengths) #ylim=(40, 100),
     g.set_xticklabels(rotation=90, labels=read_lengths)
     g.tight_layout()
     # g.set( yticks=[0,1000,2000,4000,6000,12000,18000,24000]) #ylim=(40, 100),
@@ -244,21 +244,24 @@ def main(args):
     # tools =["minimap2", "bwa_mem", 'accelalign', "bowtie2", "snap", "bwa_mem2", "strobealign_v071", "strobealign_master_preindexed", "strobealign_v080"] #, "strobealign_mixed"] "urmap",
 
     palette = {
+    'minimap2': 'tab:blue',
+    'bwa_mem': 'tab:orange',
     'strobealign_v071': 'tab:green',
-    "strobealign_v080_cmake" : 'lightsalmon',
-    "strobealign_v080_conda" : 'tab:blue'
+    "strobealign_v0120_opt" : 'pink',
+    "strobealign_multicontext" : 'black'
     }
-    read_lengths =  [50, 75, 91, 100, 111, 125, 136, 150, 176, 200, 250, 300, 500] 
-    tools = ["strobealign_v071", "strobealign_v080_cmake", "strobealign_v080_conda"]
-    
+    # read_lengths = [50, 75, 91, 100, 111, 125, 136, 150, 176, 200, 250, 300, 500]
+    read_lengths = [50, 75, 100, 150, 200, 250]
+    tools = ["minimap2", "bwa_mem", "strobealign_v071", "strobealign_v0120_opt", "strobealign_multicontext"]
+    xlim=(40,260)
     accuracy_csv = add_column(args.accuracy_csv)
     runtime_mem_csv = add_column(args.runtime_mem_csv)
 
-    plot_accuracy(accuracy_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5)
-    plot_percentage_aligned(accuracy_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5)
-    plot_overaligned(accuracy_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5)
-    plot_runtime(runtime_mem_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5)
-    plot_memory_usage(runtime_mem_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5)
+    plot_accuracy(accuracy_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=xlim)
+    plot_percentage_aligned(accuracy_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=xlim)
+    # plot_overaligned(accuracy_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=xlim)
+    plot_runtime(runtime_mem_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=xlim)
+    plot_memory_usage(runtime_mem_csv, args.outfolder, palette, tools, read_lengths, linewidth = 2.5, xlim=xlim)
 
 
 if __name__ == '__main__':
