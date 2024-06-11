@@ -28,7 +28,7 @@ def plot_accuracy(input_csv, outfolder, palette, tools, read_lengths, linewidth 
     #             "accelalign" : "", "accelalign_map" : (5,5)}
     # print(indata)
     g = sns.relplot(data=indata, x="read_length", y="accuracy", hue="tool", style="type", linewidth = linewidth, kind="line", #dashes = dashes,
-        col="dataset", hue_order = tools, # hue="datastructure", style="datastructure",
+        col="dataset", hue_order = tools, facet_kws={'sharey': False}, # hue="datastructure", style="datastructure",
         col_wrap=2, col_order=["drosophila", "maize", "CHM13", "rye"], palette=palette)
          # col_order=["SIM3"], palette=palette)
     # ax = sns.lineplot(data=indata, x="k", y="unique", hue="datastructure", style="chr", palette = sns.color_palette()[:7])
@@ -40,7 +40,8 @@ def plot_accuracy(input_csv, outfolder, palette, tools, read_lengths, linewidth 
     # ax.set_xlabel("k")
     # axes.set_xticks([18,24,30,36] )
     # ax.set_ylim((75, 100))
-    g.set(ylim=(80, 98), xlim=xlim, xticks=read_lengths)
+    # ylim=(80, 98),
+    g.set( xlim=xlim, xticks=read_lengths)
     g.set_xticklabels(rotation=90, labels=read_lengths)
     g.tight_layout()
     # g.set(ylim=(95, 100))
