@@ -66,9 +66,9 @@ rule mason_simulate_variants:
 rule mason_simulate_reads:
     input:  ref = config["HG38"],
              sim_vcf = rules.mason_simulate_variants.output.sim_vcf
-    output: sim_fq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM\d+}/reads_R1.fastq",
-            sim_fq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM\d+}/reads_R2.fastq",
-            sim_sam =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset,SIM\d+}.sam"
+    output: sim_fq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset,SIM\d+}/reads_R1.fastq",
+            sim_fq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset,SIM\d+}/reads_R2.fastq",
+            sim_sam =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset,SIM\d+}.sam"
     # wildcard_constraints:
     #    dataset="SIM*"
     run:
@@ -88,8 +88,8 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
-    input: fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/aligning_time_and_mem.txt",
@@ -114,8 +114,8 @@ rule bwa_mem_index:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem_align:
-    input: fastq_L = "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L = "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/aligning_time_and_mem.txt",
@@ -141,8 +141,8 @@ rule bwa_mem2_index:
         shell("/usr/bin/time -v  bwa-mem2 index -p {idxbase} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem2_align:
-    input: fastq_L = "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L = "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             index = config["HG38"] + ".bwa_mem2.ann",
             ref = config["HG38"]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem2/{dataset}/aligning_time_and_mem.txt",
@@ -162,8 +162,8 @@ rule bwa_mem2_align:
 
 rule strobealign_v071:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v071/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v071/{dataset}.sam"
@@ -190,8 +190,8 @@ rule strobealign_v071:
 
 rule strobealign_wfa2:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_wfa2/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_wfa2/{dataset}.sam"
@@ -205,8 +205,8 @@ rule strobealign_wfa2:
 
 rule strobealign_b5305a0:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_b5305a0/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_b5305a0/{dataset}.sam"
@@ -220,8 +220,8 @@ rule strobealign_b5305a0:
 
 rule strobealign_v080_cmake:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v080_cmake/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v080_cmake/{dataset}.sam"
@@ -235,8 +235,8 @@ rule strobealign_v080_cmake:
 
 rule strobealign_v090_cmake:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v090_cmake/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v090_cmake/{dataset}.sam"
@@ -250,8 +250,8 @@ rule strobealign_v090_cmake:
 
 rule strobealign_v0120_cmake:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0120_cmake/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v0120_cmake/{dataset}.sam"
@@ -264,8 +264,8 @@ rule strobealign_v0120_cmake:
 
 rule strobealign_ksw2_cmake:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_ksw2_cmake/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_ksw2_cmake/{dataset}.sam"
@@ -278,8 +278,8 @@ rule strobealign_ksw2_cmake:
 
 rule strobealign_116d124:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_116d124/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_116d124/{dataset}.sam"
@@ -292,8 +292,8 @@ rule strobealign_116d124:
 
 rule strobealign_v0120_opt:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0120_opt/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v0120_opt/{dataset}.sam"
@@ -308,8 +308,8 @@ rule strobealign_v0120_opt:
 
 rule strobealign_v0140:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0140/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v0140/{dataset}.sam"
@@ -324,8 +324,8 @@ rule strobealign_v0140:
 
 rule strobealign_mcs_022a721:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_mcs_022a721/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mcs_022a721/{dataset}.sam"
@@ -346,8 +346,8 @@ rule accelalign_index:
         shell("/usr/bin/time -v  accindex -t 16 {input.ref} 2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule accelalign_align:
-    input:  fastq_L =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input:  fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             index = rules.accelalign_index.output.accelalign_index
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/accelalign/{dataset}/aligning_time_and_mem.txt",
@@ -374,8 +374,8 @@ rule bowtie2_index:
         shell("/usr/bin/time -v  bowtie2-build --threads 1 {input.ref} {index}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bowtie2_align:
-    input:  fastq_L =   "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input:  fastq_L =   "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             bt2_index =  config["HG38"] + "-bt2.1.bt2",
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bowtie2/{dataset}/aligning_time_and_mem.txt",
@@ -404,8 +404,8 @@ rule snap_index:
         shell("/usr/bin/time -v  snap-aligner index {input.ref}  {output.snp_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule snap_align:
-    input: fastq_L =   "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L =   "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
             index = rules.snap_index.output.snp_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/snap/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/snap/{dataset}.sam"
@@ -443,8 +443,8 @@ rule urmap_index:
         shell("/usr/bin/time -v  urmap -make_ufi {input.ref}  -output {output.ufi_index} 2>&1 | tee {output.time_and_mem}") 
 
 rule urmap_align:
-    input: fastq_L =   "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/data/HG004/{dataset}/reads_R2.fastq",
+    input: fastq_L =   "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq",
             index = rules.urmap_index.output.ufi_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/urmap/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/urmap/{dataset}.sam"
@@ -537,7 +537,7 @@ rule bcftools_intersect_sim:
 
 
 rule bcftools_split_true:
-    input: variants_vcf = "/proj/snic2022-6-31/nobackup/data/HG004/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz"
+    input: variants_vcf = "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/HG004_GRCh38_1_22_v4.2.1_benchmark.vcf.gz"
     output: vcf_SNV_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.SNV.vcf.gz",
             vcf_INDEL_true = config["ROOT_OUT"] + "/vcf/HG004.true.variants.INDEL.vcf.gz"
     # wildcard_constraints:
