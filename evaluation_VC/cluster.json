@@ -122,7 +122,19 @@
         "mail_type" : "FAIL"
     },
 
-    "strobealign_multicontext": 
+    "strobealign_v0140": 
+    {
+        "account" : "naiss2024-5-55",
+        "jobname" : "s_v0.14.0",
+        "cpus-per-task" : "20",
+        "Nodes" : 1,
+        "C" : "mem128GB",
+        "runtime" : "04:00:00",
+        "mail" : "ksahlin@kth.se",
+        "mail_type" : "FAIL"
+    },
+
+    "strobealign_mcs_022a721": 
     {
         "account" : "naiss2024-5-55",
         "jobname" : "s_mcs",
