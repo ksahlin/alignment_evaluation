@@ -88,8 +88,8 @@ rule minimap2_index:
         shell("/usr/bin/time -v  minimap2 -t 1 -k21 -w11 -d {output.mm_index} {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule minimap2_align:
-    input: fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq.gz",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq.gz", 
             # ref = config["HG38"],
             index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/minimap2/{dataset}/aligning_time_and_mem.txt",
@@ -114,8 +114,8 @@ rule bwa_mem_index:
         shell("/usr/bin/time -v  bwa index {input.ref}  2>&1 | tee {output.time_and_mem}") #  2> {output.time_and_mem}
 
 rule bwa_mem_align:
-    input: fastq_L = "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
+    input: fastq_L = "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq.gz",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq.gz", 
             index = config["HG38"] + ".bwt",
             ref = config["HG38"]
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/bwa_mem/{dataset}/aligning_time_and_mem.txt",
@@ -308,8 +308,8 @@ rule strobealign_v0120_opt:
 
 rule strobealign_v0140:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq.gz",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq.gz", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_v0140/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_v0140/{dataset}.sam"
@@ -324,8 +324,8 @@ rule strobealign_v0140:
 
 rule strobealign_mcs_022a721:
     input:  ref = config["HG38"],
-            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq",
-            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq", 
+            fastq_L =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R1.fastq.gz",
+            fastq_R =  "/proj/snic2022-6-31/nobackup/dardel_move/data/HG004/{dataset}/reads_R2.fastq.gz", 
             # index = rules.minimap2_index.output.mm_index
     output: time_and_mem =  config["ROOT_OUT"] + "/time_and_mem_PE/strobealign_mcs_022a721/{dataset}/aligning_time_and_mem.txt",
             sam =  config["ROOT_OUT"] + "/alignments_PE/strobealign_mcs_022a721/{dataset}.sam"
@@ -605,7 +605,7 @@ rule get_stats:
 # tool=["minimap2", "bwa_mem", "strobealign_v071", 'accelalign', "bowtie2", "snap", "urmap", "bwa_mem2", "strobealign_v080_cmake", "strobealign_v090_cmake", "strobealign_v0120_cmake", "strobealign_wfa2", "strobealign_b5305a0", "strobealign_ksw2_cmake", "strobealign_mcs_022a721", "strobealign_116d124"])
 
 rule summary_variant_call_stats:
-    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", "strobealign_mcs_022a721", "strobealign_v0120_opt", "strobealign_v0140"])
+    input: call_stats_files =  expand(config["ROOT_OUT"] + "/results/{tool}/{dataset}/results.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", "strobealign_mcs_022a721", "strobealign_v0140"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/variant_calls.result"
     run:
         # summary_file = open(out, "w")
@@ -653,7 +653,7 @@ rule summary_variant_call_stats:
 
 
 rule summary_time_and_mem:
-    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", "strobealign_mcs_022a721", "strobealign_v0120_opt", "strobealign_v0140"])
+    input: time_and_mem_files =  expand(config["ROOT_OUT"] + "/time_and_mem_PE/{tool}/{dataset}/aligning_time_and_mem.txt",  dataset = ["BIO150", "BIO250", "SIM150", "SIM250"], tool=["minimap2", "bwa_mem", "strobealign_v071", "strobealign_mcs_022a721", "strobealign_v0140"])
     output: out = config["ROOT_OUT"] + "/evaluation_SV/time_and_mem.result"
     run:
         # summary_file = open(out, "w")
