@@ -316,9 +316,9 @@ rule strobealign_v0140:
     run: 
 
         if wildcards.dataset == "BIO150" or wildcards.dataset == "SIM150":
-            shell("/usr/bin/time -v  strobealign-v0.14.0 -t 16 -r 150 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") # 2>&1 | tee {tmp_time_and_mem}
+            shell("/usr/bin/time -v   ~/.conda/envs/strobealign-v0.14.0/bin/strobealign -t 16 -r 150 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") # 2>&1 | tee {tmp_time_and_mem}
         elif  wildcards.dataset == "BIO250" or wildcards.dataset == "SIM250":
-            shell("/usr/bin/time -v  strobealign-v0.14.0 -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
+            shell("/usr/bin/time -v   ~/.conda/envs/strobealign-v0.14.0/bin/strobealign -t 16 -r 250 -o {output.sam} {input.ref} {input.fastq_L} {input.fastq_R} 2> {output.time_and_mem}") #  2>&1 | tee {tmp_time_and_mem}
 
 
 
